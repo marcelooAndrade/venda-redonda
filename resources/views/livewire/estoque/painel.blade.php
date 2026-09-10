@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Operação"
@@ -35,7 +35,7 @@
 
     {{-- Saldos --}}
     @if ($aba === 'saldos')
-        <x-ui.card title="Posição de estoque" subtitle="Valorizada pelo custo médio ponderado.">
+        <x-ui.card title="Posição de estoque" subtitle="Valorizada pelo custo médio ponderado." :padded="false">
             <x-slot:actions>
                 <label class="flex items-center gap-2 text-xs text-graphite-600">
                     <input type="checkbox" wire:model.live="somenteAbaixoDoMinimo" class="size-4 accent-graphite-900">
@@ -45,18 +45,18 @@
             </x-slot:actions>
 
             @if ($this->saldos->isEmpty())
-                <x-ui.empty-state title="Sem posição de estoque" description="Nenhum produto com controle de estoque movimentado ainda." />
+                <x-ui.empty-state class="m-5" title="Sem posição de estoque" description="Nenhum produto com controle de estoque movimentado ainda." />
             @else
                 <x-ui.table>
                     <thead>
                         <tr class="border-b border-graphite-200">
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Código</th>
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Produto</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Saldo</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Mínimo</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Custo médio</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Valor</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500"></th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Código</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Produto</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Saldo</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Mínimo</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Custo médio</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Valor</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,7 +92,7 @@
     {{-- Kardex --}}
     @if ($aba === 'kardex')
         <x-ui.card :title="$this->produto ? 'Kardex: '.$this->produto->descricao : 'Kardex'"
-            subtitle="Cada linha é um fato registrado. Nada aqui foi editado.">
+            subtitle="Cada linha é um fato registrado. Nada aqui foi editado." :padded="false">
             <x-slot:actions>
                 <x-ui.input type="date" wire:model.live="de" class="w-40" />
                 <x-ui.input type="date" wire:model.live="ate" class="w-40" />
@@ -106,13 +106,13 @@
                 <x-ui.table>
                     <thead>
                         <tr class="border-b border-graphite-200">
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Data</th>
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Tipo</th>
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Documento</th>
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Usuário</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Qtd.</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Custo un.</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Saldo</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Data</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Tipo</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Documento</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Usuário</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Qtd.</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Custo un.</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Saldo</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,7 +120,7 @@
                             <tr class="border-b border-graphite-100" wire:key="mov-{{ $mov->id }}">
                                 <td class="num px-2 py-2">{{ $mov->created_at?->format('d/m/Y H:i') }}</td>
                                 <td class="px-2 py-2">
-                                    <span class="overline px-2 py-1 {{ $mov->tipo->classesBadge() }}">{{ $mov->tipo->rotulo() }}</span>
+                                    <span class="etiqueta px-2 py-1 {{ $mov->tipo->classesBadge() }}">{{ $mov->tipo->rotulo() }}</span>
                                 </td>
                                 <td class="px-2 py-2">{{ $mov->documento ?? '-' }}</td>
                                 <td class="px-2 py-2">{{ $mov->user?->name ?? '-' }}</td>
@@ -144,7 +144,7 @@
 
     {{-- Inventário --}}
     @if ($aba === 'inventario')
-        <x-ui.card title="Contagem de inventário" subtitle="Informe o contado. O sistema movimenta apenas a diferença.">
+        <x-ui.card title="Contagem de inventário" subtitle="Informe o contado. O sistema movimenta apenas a diferença." :padded="false">
             <form wire:submit="gravarInventario" class="grid gap-4">
                 <x-ui.field label="Justificativa" for="inv-just" required
                     hint="Fica registrada em cada movimento gerado."
@@ -156,10 +156,10 @@
                 <x-ui.table>
                     <thead>
                         <tr class="border-b border-graphite-200">
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Produto</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Sistema</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Contado</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Diferença</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Produto</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Sistema</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Contado</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Diferença</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -1,6 +1,9 @@
 @props(['label' => null, 'for' => null, 'hint' => null, 'error' => null, 'required' => false])
 
-<div {{ $attributes->merge(['class' => 'grid gap-1.5']) }}>
+{{-- `content-start` alinha os campos de uma mesma linha: sem ele, o campo
+     que tem dica embaixo distribui a sobra entre as linhas do grid e o
+     input sobe alguns pixels em relação aos vizinhos. --}}
+<div {{ $attributes->merge(['class' => 'grid content-start gap-1.5']) }}>
     @if ($label)
         <label @if($for) for="{{ $for }}" @endif class="text-xs font-medium text-graphite-600">
             {{ $label }}@if($required)<span class="text-primary-600" aria-hidden="true"> *</span>@endif

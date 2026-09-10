@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-4xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Identidade"
@@ -50,9 +50,9 @@
                         {{ number_format($this->contrastePrimaria, 2, ',', '.') }}
                     </span>
                     @if ($this->contrastePrimaria >= 4.5)
-                        <span class="overline bg-success-100 px-2 py-1 text-success-800">Passa em WCAG AA</span>
+                        <span class="etiqueta bg-success-100 px-2 py-1 text-success-800">Passa em WCAG AA</span>
                     @else
-                        <span class="overline bg-ember-100 px-2 py-1 text-ember-800">Será escurecida ao salvar</span>
+                        <span class="etiqueta bg-ember-100 px-2 py-1 text-ember-800">Será escurecida ao salvar</span>
                     @endif
                 </div>
             @endif

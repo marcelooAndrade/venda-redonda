@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Visão geral"
@@ -34,25 +34,25 @@
     @endif
 
     @if ($this->pendentes->isNotEmpty())
-        <x-ui.card title="Notas que pararam no caminho" subtitle="{{ $this->pendentes->count() }} nota(s) aguardando uma decisão sua">
+        <x-ui.card title="Notas que pararam no caminho" subtitle="{{ $this->pendentes->count() }} nota(s) aguardando uma decisão sua" :padded="false">
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200 text-left">
-                        <th class="overline px-4 py-2 text-graphite-500">Número</th>
-                        <th class="overline px-4 py-2 text-graphite-500">Destinatário</th>
-                        <th class="overline px-4 py-2 text-graphite-500">Situação</th>
-                        <th class="overline px-4 py-2 text-graphite-500">O que fazer</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Número</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Destinatário</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Situação</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">O que fazer</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($this->pendentes as $nota)
                         <tr class="border-b border-graphite-100 last:border-0">
-                            <td class="num px-4 py-3 font-medium text-graphite-900">
+                            <td class="num px-5 py-3 font-medium text-graphite-900">
                                 {{ $nota->numero ? number_format($nota->numero, 0, ',', '.').'/'.$nota->serie : 'sem número' }}
                             </td>
-                            <td class="px-4 py-3 text-graphite-700">{{ $nota->destinatario?->razao_social ?? 'sem destinatário' }}</td>
-                            <td class="px-4 py-3"><x-ui.badge-status :status="$nota->status" /></td>
-                            <td class="px-4 py-3 text-graphite-600">
+                            <td class="px-5 py-3 text-graphite-700">{{ $nota->destinatario?->razao_social ?? 'sem destinatário' }}</td>
+                            <td class="px-5 py-3"><x-ui.badge-status :status="$nota->status" /></td>
+                            <td class="px-5 py-3 text-graphite-600">
                                 @if ($nota->status === \App\Enums\Fiscal\NFeStatus::EmProcessamento)
                                     Consulte pela chave antes de qualquer coisa. A SEFAZ pode já ter autorizado sem a resposta ter voltado, e reemitir criaria duplicidade.
                                 @elseif ($nota->status === \App\Enums\Fiscal\NFeStatus::Rejeitada)
@@ -79,26 +79,26 @@
 
     {{-- Só depois, o retrato do mês. --}}
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <x-ui.card class="px-4 py-4">
-            <p class="overline text-graphite-500">Faturado no mês</p>
+        <x-ui.card>
+            <p class="etiqueta text-graphite-500">Faturado no mês</p>
             <p class="num display-title mt-1 text-3xl text-graphite-900">{{ number_format($mes['faturado'], 2, ',', '.') }}</p>
             <p class="mt-1 text-xs text-graphite-500">Sem as canceladas</p>
         </x-ui.card>
 
-        <x-ui.card class="px-4 py-4">
-            <p class="overline text-graphite-500">Autorizadas no mês</p>
+        <x-ui.card>
+            <p class="etiqueta text-graphite-500">Autorizadas no mês</p>
             <p class="num display-title mt-1 text-3xl text-graphite-900">{{ number_format($mes['autorizadas'], 0, ',', '.') }}</p>
             <p class="mt-1 text-xs text-graphite-500">{{ $mes['canceladas'] }} cancelada(s)</p>
         </x-ui.card>
 
-        <x-ui.card class="px-4 py-4">
-            <p class="overline text-graphite-500">Rascunhos abertos</p>
+        <x-ui.card>
+            <p class="etiqueta text-graphite-500">Rascunhos abertos</p>
             <p class="num display-title mt-1 text-3xl text-graphite-900">{{ number_format($mes['rascunhos'], 0, ',', '.') }}</p>
             <p class="mt-1 text-xs text-graphite-500">Ainda não consomem número</p>
         </x-ui.card>
 
-        <x-ui.card class="px-4 py-4">
-            <p class="overline text-graphite-500">Certificado</p>
+        <x-ui.card>
+            <p class="etiqueta text-graphite-500">Certificado</p>
             @if ($this->certificado === null)
                 <p class="display-title mt-1 text-3xl text-danger-700">Nenhum</p>
                 <p class="mt-1 text-xs text-graphite-500">Necessário para transmitir</p>
@@ -113,10 +113,10 @@
         </x-ui.card>
     </div>
 
-    <x-ui.card title="Últimas notas">
+    <x-ui.card title="Últimas notas" :padded="false">
         @if ($this->ultimas->isEmpty())
             <x-ui.empty-state
-                class="m-4"
+                class="m-5"
                 title="Nenhuma nota ainda"
                 description="Quando a primeira nota for lançada, ela aparece aqui.">
                 <x-slot:action>
@@ -129,23 +129,23 @@
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200 text-left">
-                        <th class="overline px-4 py-2 text-graphite-500">Número</th>
-                        <th class="overline px-4 py-2 text-graphite-500">Destinatário</th>
-                        <th class="overline px-4 py-2 text-graphite-500">Emissão</th>
-                        <th class="overline px-4 py-2 text-graphite-500">Situação</th>
-                        <th class="overline px-4 py-2 text-right text-graphite-500">Valor</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Número</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Destinatário</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Emissão</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Situação</th>
+                        <th class="etiqueta px-5 py-2 text-right text-graphite-500">Valor</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($this->ultimas as $nota)
                         <tr class="border-b border-graphite-100 last:border-0">
-                            <td class="num px-4 py-3 font-medium text-graphite-900">
+                            <td class="num px-5 py-3 font-medium text-graphite-900">
                                 {{ $nota->numero ? number_format($nota->numero, 0, ',', '.').'/'.$nota->serie : 'sem número' }}
                             </td>
-                            <td class="px-4 py-3 text-graphite-700">{{ $nota->destinatario?->razao_social ?? 'sem destinatário' }}</td>
-                            <td class="num px-4 py-3 text-graphite-600">{{ $nota->data_emissao?->format('d/m/Y') }}</td>
-                            <td class="px-4 py-3"><x-ui.badge-status :status="$nota->status" /></td>
-                            <td class="num px-4 py-3 text-right text-graphite-900">{{ number_format((float) $nota->valor_nota, 2, ',', '.') }}</td>
+                            <td class="px-5 py-3 text-graphite-700">{{ $nota->destinatario?->razao_social ?? 'sem destinatário' }}</td>
+                            <td class="num px-5 py-3 text-graphite-600">{{ $nota->data_emissao?->format('d/m/Y') }}</td>
+                            <td class="px-5 py-3"><x-ui.badge-status :status="$nota->status" /></td>
+                            <td class="num px-5 py-3 text-right text-graphite-900">{{ number_format((float) $nota->valor_nota, 2, ',', '.') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

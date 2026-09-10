@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Contabilidade"
@@ -126,7 +126,7 @@
 
                         @foreach ($grupos as [$titulo, $campos])
                             <fieldset class="border-t border-graphite-200 pt-4">
-                                <legend class="overline text-graphite-500">{{ $titulo }}</legend>
+                                <legend class="etiqueta text-graphite-500">{{ $titulo }}</legend>
                                 @if ($titulo === 'Reforma Tributária (IBS, CBS e IS)')
                                     <p class="mb-3 text-xs text-ember-700">
                                         Obrigatório em produção desde 03/08/2026 para emitente CRT 3, conforme NT 2025.002-RTC v1.40.
@@ -155,19 +155,19 @@
                 </x-ui.card>
 
                 {{-- Histórico --}}
-                <x-ui.card title="Regras deste perfil" subtitle="Nenhuma é apagada. A anterior recebe fim de vigência.">
+                <x-ui.card title="Regras deste perfil" subtitle="Nenhuma é apagada. A anterior recebe fim de vigência." :padded="false">
                     @if ($this->perfilSelecionado->regras->isEmpty())
-                        <x-ui.empty-state title="Nenhuma regra escrita ainda" />
+                        <x-ui.empty-state class="m-5" title="Nenhuma regra escrita ainda" />
                     @else
                         <x-ui.table>
                             <thead>
                                 <tr class="border-b border-graphite-200">
-                                    <th class="overline px-2 py-2 text-left text-graphite-500">Vigência</th>
-                                    <th class="overline px-2 py-2 text-left text-graphite-500">Âmbito</th>
-                                    <th class="overline px-2 py-2 text-left text-graphite-500">CRT</th>
-                                    <th class="overline px-2 py-2 text-left text-graphite-500">CST/CSOSN</th>
-                                    <th class="overline px-2 py-2 text-right text-graphite-500">ICMS</th>
-                                    <th class="overline px-2 py-2 text-right text-graphite-500">IBS+CBS</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Vigência</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Âmbito</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">CRT</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">CST/CSOSN</th>
+                                    <th class="etiqueta px-2 py-2 text-right text-graphite-500">ICMS</th>
+                                    <th class="etiqueta px-2 py-2 text-right text-graphite-500">IBS+CBS</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -178,7 +178,7 @@
                                             @if ($r->vigente_ate)
                                                 <span class="text-graphite-500">a {{ $r->vigente_ate->format('d/m/Y') }}</span>
                                             @else
-                                                <span class="overline ml-1 bg-success-100 px-1.5 py-0.5 text-success-800">Vigente</span>
+                                                <span class="etiqueta ml-1 bg-success-100 px-1.5 py-0.5 text-success-800">Vigente</span>
                                             @endif
                                         </td>
                                         <td class="px-2 py-2">{{ $r->ambito->rotulo() }}</td>

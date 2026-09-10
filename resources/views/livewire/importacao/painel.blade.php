@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Operação"
@@ -42,7 +42,7 @@
     {{-- Conciliação --}}
     @if ($this->nota)
         <x-ui.card :title="'Nota '.$this->nota->numero.'/'.$this->nota->serie"
-            :subtitle="($this->nota->pessoa?->razao_social ?? 'Nota própria').' · emitida em '.$this->nota->data_emissao->format('d/m/Y')">
+            :subtitle="($this->nota->pessoa?->razao_social ?? 'Nota própria').' · emitida em '.$this->nota->data_emissao->format('d/m/Y')" :padded="false">
             <x-slot:actions>
                 <x-ui.button variant="ghost" wire:click="$set('notaId', null)">Fechar</x-ui.button>
                 @if (! $this->nota->confirmada())
@@ -66,11 +66,11 @@
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Item do fornecedor</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Qtd.</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Custo un.</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">CFOP</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Produto interno</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Item do fornecedor</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Qtd.</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Custo un.</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">CFOP</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Produto interno</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,7 +113,7 @@
                                         </div>
                                     </div>
                                     @if ($item->produto)
-                                        <span class="overline mt-1 inline-block bg-success-100 px-1.5 py-0.5 text-success-800">
+                                        <span class="etiqueta mt-1 inline-block bg-success-100 px-1.5 py-0.5 text-success-800">
                                             Vinculado a {{ $item->produto->codigo }}
                                         </span>
                                     @endif
@@ -127,7 +127,7 @@
     @endif
 
     {{-- Listagem --}}
-    <x-ui.card title="Notas importadas">
+    <x-ui.card title="Notas importadas" :padded="false">
         <x-slot:actions>
             <x-ui.select wire:model.live="filtro" class="w-auto">
                 <option value="pendente">Pendentes de conciliação</option>
@@ -138,18 +138,18 @@
         </x-slot:actions>
 
         @if ($this->notas->isEmpty())
-            <x-ui.empty-state title="Nenhuma nota neste filtro" description="Envie um XML acima para começar." />
+            <x-ui.empty-state class="m-5" title="Nenhuma nota neste filtro" description="Envie um XML acima para começar." />
         @else
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Nota</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Fornecedor</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Emissão</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Itens</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Valor</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Situação</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500"></th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Nota</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Fornecedor</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Emissão</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Itens</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Valor</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Situação</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -168,7 +168,7 @@
                                         default => 'bg-ember-100 text-ember-800',
                                     };
                                 @endphp
-                                <span class="overline px-2 py-1 {{ $classes }}">{{ ucfirst($n->status) }}</span>
+                                <span class="etiqueta px-2 py-1 {{ $classes }}">{{ ucfirst($n->status) }}</span>
                             </td>
                             <td class="px-2 py-2 text-right">
                                 <x-ui.button variant="ghost" size="sm" wire:click="conciliar({{ $n->id }})">Abrir</x-ui.button>

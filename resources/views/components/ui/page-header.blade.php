@@ -3,7 +3,7 @@
 <header {{ $attributes->merge(['class' => 'flex flex-wrap items-end justify-between gap-4 border-b border-graphite-200 pb-4']) }}>
     <div class="min-w-0">
         @if ($eyebrow)
-            <p class="overline text-graphite-500">{{ $eyebrow }}</p>
+            <p class="etiqueta text-graphite-500">{{ $eyebrow }}</p>
         @endif
         <h1 class="display-title mt-1 text-3xl text-graphite-900">{{ $title }}</h1>
         @if ($description)

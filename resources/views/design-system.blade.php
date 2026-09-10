@@ -97,14 +97,14 @@
         </x-ui.card>
 
         {{-- Tabela --}}
-        <x-ui.card title="Tabela" subtitle="Coluna numérica sempre em tabular-nums, senão conferir totais fica sofrível.">
+        <x-ui.card title="Tabela" subtitle="Coluna numérica sempre em tabular-nums, senão conferir totais fica sofrível." :padded="false">
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Número</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Destinatário</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Status</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Valor</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Número</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Destinatário</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Status</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Valor</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,7 +154,7 @@
                     ['display', 'Barlow Condensed 700', 'display-title text-3xl'],
                     ['title', 'Barlow Condensed 700', 'display-title text-2xl'],
                     ['subtitle', 'Barlow Condensed 700', 'display-title text-xl'],
-                    ['overline', 'Inter 600 · 0.16em', 'overline text-graphite-600'],
+                    ['etiqueta', 'Inter 600 · 0.16em', 'etiqueta text-graphite-600'],
                     ['body', 'Inter 400 · base', 'text-sm'],
                     ['caption', 'Inter 400', 'text-xs text-graphite-500'],
                 ] as [$token, $config, $classe])

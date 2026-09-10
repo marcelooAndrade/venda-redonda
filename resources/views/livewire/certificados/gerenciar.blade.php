@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-4xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Emitente"
@@ -19,11 +19,11 @@
             @php $dias = $this->ativo->diasParaVencer(); @endphp
 
             <dl class="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-                <div><dt class="overline text-graphite-500">Titular</dt><dd class="mt-0.5">{{ $this->ativo->titular }}</dd></div>
-                <div><dt class="overline text-graphite-500">CNPJ</dt><dd class="num mt-0.5">{{ $this->ativo->cnpj }}</dd></div>
-                <div><dt class="overline text-graphite-500">Válido até</dt><dd class="num mt-0.5">{{ $this->ativo->valido_ate->format('d/m/Y') }}</dd></div>
+                <div><dt class="etiqueta text-graphite-500">Titular</dt><dd class="mt-0.5">{{ $this->ativo->titular }}</dd></div>
+                <div><dt class="etiqueta text-graphite-500">CNPJ</dt><dd class="num mt-0.5">{{ $this->ativo->cnpj }}</dd></div>
+                <div><dt class="etiqueta text-graphite-500">Válido até</dt><dd class="num mt-0.5">{{ $this->ativo->valido_ate->format('d/m/Y') }}</dd></div>
                 <div>
-                    <dt class="overline text-graphite-500">Situação</dt>
+                    <dt class="etiqueta text-graphite-500">Situação</dt>
                     <dd class="mt-0.5">
                         @if ($this->ativo->vencido())
                             <span class="font-semibold text-danger-700">Vencido</span>
@@ -113,17 +113,17 @@
     @endcan
 
     {{-- Histórico --}}
-    <x-ui.card title="Histórico" subtitle="Certificados anteriores permanecem registrados. Nenhum é apagado.">
+    <x-ui.card title="Histórico" subtitle="Certificados anteriores permanecem registrados. Nenhum é apagado." :padded="false">
         @if ($this->certificados->isEmpty())
-            <x-ui.empty-state title="Sem histórico" />
+            <x-ui.empty-state class="m-5" title="Sem histórico" />
         @else
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Titular</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Validade</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Enviado por</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Situação</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Titular</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Validade</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Enviado por</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Situação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -134,11 +134,11 @@
                             <td class="px-2 py-2">{{ $cert->enviadoPor?->name ?? '-' }}</td>
                             <td class="px-2 py-2">
                                 @if ($cert->ativo)
-                                    <span class="overline bg-success-100 px-2 py-1 text-success-800">Ativo</span>
+                                    <span class="etiqueta bg-success-100 px-2 py-1 text-success-800">Ativo</span>
                                 @elseif ($cert->vencido())
-                                    <span class="overline bg-graphite-100 px-2 py-1 text-graphite-600">Vencido</span>
+                                    <span class="etiqueta bg-graphite-100 px-2 py-1 text-graphite-600">Vencido</span>
                                 @else
-                                    <span class="overline bg-graphite-100 px-2 py-1 text-graphite-600">Substituído</span>
+                                    <span class="etiqueta bg-graphite-100 px-2 py-1 text-graphite-600">Substituído</span>
                                 @endif
                             </td>
                         </tr>

@@ -9,7 +9,7 @@
     ];
 @endphp
 
-<div role="alert" {{ $attributes->merge(['class' => 'border-l-2 border p-3 text-sm '.($variants[$variant] ?? $variants['info'])]) }}>
+<div role="alert" {{ $attributes->merge(['class' => 'rounded-md border border-l-[3px] p-3.5 text-sm '.($variants[$variant] ?? $variants['info'])]) }}>
     @if ($title)
         <p class="mb-1 font-semibold">{{ $title }}</p>
     @endif

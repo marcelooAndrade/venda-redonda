@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Faturamento"
@@ -91,7 +91,7 @@
             {{-- Linha do tempo --}}
             @if ($this->eventos->isNotEmpty())
                 <div class="mb-4 border-l-2 border-graphite-200 pl-4">
-                    <p class="overline mb-2 text-graphite-500">Eventos</p>
+                    <p class="etiqueta mb-2 text-graphite-500">Eventos</p>
                     @foreach ($this->eventos as $ev)
                         <div class="mb-2 text-sm">
                             <span class="font-semibold">{{ $ev->rotulo() }}</span>
@@ -169,7 +169,7 @@
         </x-ui.card>
 
         {{-- Itens --}}
-        <x-ui.card title="Itens" :subtitle="$nota->itens->count().' item(ns)'">
+        <x-ui.card title="Itens" :subtitle="$nota->itens->count().' item(ns)'" :padded="false">
             @if ($nota->editavel())
                 <form wire:submit="adicionarItem" class="mb-4 grid gap-3 sm:grid-cols-[1fr_7rem_9rem_auto]">
                     <x-ui.field label="Produto" for="i-prod" :error="$errors->first('produtoId')">
@@ -196,14 +196,14 @@
                 <x-ui.table>
                     <thead>
                         <tr class="border-b border-graphite-200">
-                            <th class="overline px-2 py-2 text-left text-graphite-500">#</th>
-                            <th class="overline px-2 py-2 text-left text-graphite-500">Produto</th>
-                            <th class="overline px-2 py-2 text-left text-graphite-500">CFOP</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Qtd.</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Unitário</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">ICMS</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">IBS+CBS</th>
-                            <th class="overline px-2 py-2 text-right text-graphite-500">Total</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">#</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">Produto</th>
+                            <th class="etiqueta px-2 py-2 text-left text-graphite-500">CFOP</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Qtd.</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Unitário</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">ICMS</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">IBS+CBS</th>
+                            <th class="etiqueta px-2 py-2 text-right text-graphite-500">Total</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -258,7 +258,7 @@
     @endif
 
     {{-- Listagem --}}
-    <x-ui.card title="Notas">
+    <x-ui.card title="Notas" :padded="false">
         <x-slot:actions>
             <x-ui.select wire:model.live="filtro" class="w-auto">
                 <option value="todas">Todas</option>
@@ -269,16 +269,16 @@
         </x-slot:actions>
 
         @if ($this->notas->isEmpty())
-            <x-ui.empty-state title="Nenhuma nota" description="Comece criando uma nota nova." />
+            <x-ui.empty-state class="m-5" title="Nenhuma nota" description="Comece criando uma nota nova." />
         @else
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Número</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Destinatário</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Emissão</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Situação</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Valor</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Número</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Destinatário</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Emissão</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Situação</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Valor</th>
                         <th></th>
                     </tr>
                 </thead>

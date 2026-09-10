@@ -18,15 +18,23 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
     --font-display: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
 
-    /* Raio zero é a assinatura da marca. Todo controle medido no site tem 0. */
-    --radius-xs: 0px;
-    --radius-sm: 0px;
-    --radius-md: 0px;
-    --radius-lg: 0px;
-    --radius-xl: 0px;
-    --radius-2xl: 0px;
-    --radius-3xl: 0px;
-    --radius-4xl: 0px;
+    /*
+     | Raio contido.
+     |
+     | O site da RCM tem raio zero em todo controle, e a primeira versão
+     | copiou isso. Num site de 6 campos a aresta viva lê como precisão; numa
+     | tela operada o dia inteiro lê como dureza. O raio aqui é pequeno de
+     | propósito: suaviza sem virar cápsula, e o caráter industrial continua
+     | vindo da tipografia condensada e da barra vermelha. Ver docs/design-system.md.
+     */
+    --radius-xs: 2px;
+    --radius-sm: 3px;
+    --radius-md: 5px;
+    --radius-lg: 7px;
+    --radius-xl: 10px;
+    --radius-2xl: 14px;
+    --radius-3xl: 20px;
+    --radius-4xl: 28px;
 
     /* Vermelho RCM. 600 é a marca, 700 é o hover, ambos medidos. */
     --color-primary-50: #fef2f3;
@@ -158,7 +166,14 @@
     line-height: 1.05;
 }
 
-@utility overline {
+/*
+ | Rótulo miúdo em caixa alta.
+ |
+ | Não pode se chamar `overline`: o Tailwind já tem esse utilitário para
+ | `text-decoration-line: overline`, e as duas regras se somavam, desenhando
+ | um risco acima de todo rótulo do sistema.
+ */
+@utility etiqueta {
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.16em;

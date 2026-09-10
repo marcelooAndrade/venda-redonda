@@ -6,7 +6,8 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 10, parte 1: o painel substituiu a tela do starter kit em `/dashboard`.** 417 testes passando, Pint limpo.
+**Módulo 10, parte 1 (painel) e uma revisão de UI.** 417 testes passando, Pint limpo.
+A revisão trocou o raio zero por uma escala contida, tirou o `max-w-6xl` de cada página, corrigiu a colisão do utilitário `overline` e resolveu a rolagem horizontal no celular. Ver a Decisão 3 revista em `docs/design-system.md`.
 Falta a parte 2 do Módulo 10, os relatórios. Seguem pendentes a contingência SVC e a distribuição DF-e.
 
 | Fase | Entrega | Status |
@@ -97,6 +98,10 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | DANFE só a partir do `nfeProc` guardado | Montar do banco arriscaria imprimir algo diferente do que a SEFAZ autorizou, se um cadastro mudar depois. Ver DF-024 |
 | 2026-09-10 | O painel abre com pendência, não com faturamento | Quem abre o sistema de manhã precisa saber o que travou ontem antes de saber quanto faturou. Nota em processamento vem primeiro porque reemitir duplica |
 | 2026-09-10 | Título da aba usa o nome do tenant | Num sistema que serve várias empresas, "Laravel" na aba entrega que o sistema é de outro. A aba é parte da marca |
+| 2026-09-10 | Raio zero revisto para escala de 2 a 28px | O que lê como precisão num site de 6 campos lê como dureza numa tela operada o dia inteiro. A identidade vinha da tipografia e da barra vermelha, não do raio. Ver Decisão 3 em `docs/design-system.md` |
+| 2026-09-10 | Utilitário `overline` renomeado para `etiqueta` | `overline` é utilitário nativo do Tailwind para `text-decoration-line`. As duas regras somavam e desenhavam um risco acima de todo rótulo do sistema |
+| 2026-09-10 | O contêiner da página vive no layout, não na view | Cada view repetia `mx-auto max-w-6xl`, o que deixava faixas vazias em monitor largo e obrigava a lembrar da classe em toda tela nova |
+| 2026-09-10 | `min-w-0` em card e em campo | Item de grid nasce com `min-width: auto`. Sem isso a tabela larga estoura o card e a página inteira rola na horizontal no celular |
 | 2026-09-10 | Certificado com algoritmo antigo é convertido, não recusado | Ver DF-007 |
 | 2026-09-10 | Fixtures de certificado versionadas | Autoassinados, CNPJ fictício, chave descartável. Tornam os testes de certificado reais em vez de mockados |
 | 2026-09-10 | Documento sempre `string`, nunca inteiro | CNPJ pode ter letra, e um documento iniciado por zero perderia o zero. Ver DF-009 |

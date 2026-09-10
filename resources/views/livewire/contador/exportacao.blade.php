@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-3xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Contabilidade"
@@ -28,12 +28,12 @@
                 ] as $rotulo => $valor)
                     <div class="bg-white p-3">
                         <span class="num display-title block text-2xl">{{ $valor }}</span>
-                        <span class="overline text-graphite-500">{{ $rotulo }}</span>
+                        <span class="etiqueta text-graphite-500">{{ $rotulo }}</span>
                     </div>
                 @endforeach
                 <div class="bg-white p-3">
                     <span class="num display-title block text-2xl">{{ number_format($this->previa['valor'], 0, ',', '.') }}</span>
-                    <span class="overline text-graphite-500">Faturado</span>
+                    <span class="etiqueta text-graphite-500">Faturado</span>
                 </div>
             </div>
 

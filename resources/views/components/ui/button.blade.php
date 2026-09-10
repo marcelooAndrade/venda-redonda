@@ -10,9 +10,9 @@
     // danger-600 têm contraste de apenas 1,43 entre si, e num emissor fiscal
     // "Transmitir" e "Cancelar NF-e" convivem na mesma tela.
     $variants = [
-        'primary' => 'bg-graphite-900 text-white border border-graphite-900 hover:bg-graphite-700 hover:border-graphite-700',
-        'secondary' => 'bg-transparent text-graphite-900 border border-graphite-300 hover:bg-graphite-100',
-        'destructive' => 'bg-danger-600 text-white border border-danger-600 hover:bg-danger-700 hover:border-danger-700',
+        'primary' => 'bg-graphite-900 text-white border border-graphite-900 shadow-sm hover:bg-graphite-700 hover:border-graphite-700',
+        'secondary' => 'bg-white text-graphite-900 border border-graphite-300 shadow-sm hover:bg-graphite-50',
+        'destructive' => 'bg-danger-600 text-white border border-danger-600 shadow-sm hover:bg-danger-700 hover:border-danger-700',
         'ghost' => 'bg-transparent text-graphite-600 border border-transparent hover:bg-graphite-100 hover:text-graphite-900',
     ];
 
@@ -23,7 +23,7 @@
     ];
 
     $classes = implode(' ', [
-        'inline-flex items-center justify-center gap-2 font-semibold uppercase tracking-[0.05em]',
+        'inline-flex items-center justify-center gap-2 rounded-md font-semibold uppercase tracking-[0.05em]',
         'transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
         'focus-visible:outline-primary-600 disabled:opacity-50 disabled:pointer-events-none',
         $variants[$variant] ?? $variants['primary'],

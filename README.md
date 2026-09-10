@@ -54,6 +54,7 @@ Sugestão de roteiro, começando pela RCM:
 | Tela | O que observar |
 |---|---|
 | **Painel** | A tela que abre depois do login. Repare na ordem: pendência antes de faturamento |
+| **Qualquer tela, em monitor largo** | O conteúdo ocupa a largura toda. Estreite a janela até a largura de celular: nada rola na horizontal |
 | **Design System** | A paleta completa, os oito status da NF-e e a decisão de por que o botão de ação primária não é vermelho |
 | **Marca** | Troque a cor e salve. Recarregue: o sistema inteiro muda. Tente um amarelo claro para ver o ajuste automático de contraste |
 | **Regras fiscais** | Entre como `contador@rcm.test`. Repare no histórico de vigência: a regra antiga encerrada em 02/08 e a nova, com IBS e CBS |

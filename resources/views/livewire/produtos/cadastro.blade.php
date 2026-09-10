@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Cadastros"
@@ -108,24 +108,24 @@
     </x-ui.card>
     @endcan
 
-    <x-ui.card title="Cadastrados">
+    <x-ui.card title="Cadastrados" :padded="false">
         <x-slot:actions>
             <x-ui.input wire:model.live.debounce.400ms="busca" placeholder="Buscar descrição, código, NCM ou GTIN" class="w-72" />
         </x-slot:actions>
 
         @if ($this->produtos->isEmpty())
-            <x-ui.empty-state title="Nenhum produto" description="Cadastre o primeiro produto para poder emitir notas." />
+            <x-ui.empty-state class="m-5" title="Nenhum produto" description="Cadastre o primeiro produto para poder emitir notas." />
         @else
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Código</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Descrição</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">NCM</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Un.</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Perfil fiscal</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Preço</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Ações</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Código</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Descrição</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">NCM</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Un.</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Perfil fiscal</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Preço</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,7 +144,7 @@
                                 @if ($produto->perfilFiscal)
                                     {{ $produto->perfilFiscal->nome }}
                                 @else
-                                    <span class="overline bg-ember-100 px-1.5 py-0.5 text-ember-800">Sem perfil</span>
+                                    <span class="etiqueta bg-ember-100 px-1.5 py-0.5 text-ember-800">Sem perfil</span>
                                 @endif
                             </td>
                             <td class="num px-2 py-2 text-right">{{ number_format((float) $produto->preco_venda, 2, ',', '.') }}</td>

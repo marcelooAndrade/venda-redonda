@@ -37,7 +37,7 @@ O build publicado tem os mesmos hashes do build local (`index-BREuhcTA.js`, `ind
 
 | Traço | Medida | Observação |
 |---|---|---|
-| **Raio de borda** | **0px em todos os controles** | Botões, inputs, select, textarea, cards e formulário. É a assinatura visual da marca |
+| **Raio de borda** | **0px em todos os controles** | Medido no site. **Não foi mantido no sistema**: ver a revisão da Decisão 3 |
 | Alternância de seções | branco, #1A1A1A, #F5F5F5, branco, gradiente #2A2A2A para #1A1A1A | Ritmo claro e escuro |
 | Altura mínima de botão | 48px | |
 | Altura mínima de input | 44px | |
@@ -104,9 +104,25 @@ O hero traz `absolute left-4 top-1/2 h-48 w-1 bg-rcm-red`, uma barra vermelha ve
 
 No admin, essa barra vira o **indicador de item ativo na sidebar**: 3px vermelhos na borda esquerda do item selecionado. A marca aparece exatamente onde a identidade original a colocava, sem competir com nenhuma ação.
 
-### Decisão 3: raio zero é lei
+### Decisão 3: raio zero era lei, e foi revista
 
-Todo controle medido no site tem `border-radius: 0px`. Botões, inputs, select, textarea, formulário. Manter zero em todo o sistema, incluindo modais, badges, cards e tabelas. É o traço que mais distingue esta identidade de um admin genérico, e é gratuito de preservar.
+**Como estava.** Todo controle medido no site tem `border-radius: 0px`, e a primeira versão do sistema copiou isso em botões, inputs, cards, badges e tabelas, com o argumento de que era o traço que mais distinguia a identidade de um admin genérico.
+
+**Por que mudou.** Revisto em 10/09/2026, depois de ver o sistema montado. O argumento estava certo sobre a marca e errado sobre o contexto. Num site de seis campos, a aresta viva lê como precisão; numa tela operada o dia inteiro, com dezenas de campos e linhas de tabela, lê como dureza. A palavra do cliente ao ver as telas foi "quadradão".
+
+**Como ficou.** Escala contida, pequena de propósito:
+
+| Token | Valor | Onde aparece |
+|---|---|---|
+| `--radius-xs` | 2px | Detalhes |
+| `--radius-sm` | 3px | Barra do item ativo |
+| `--radius-md` | 5px | Botões, inputs, select, textarea, alertas |
+| `--radius-lg` | 7px | Cards, estado vazio |
+| `--radius-xl` a `4xl` | 10 a 28px | Reservados |
+
+Pastilha de status é a exceção: usa `rounded-full`, porque chip de estado lê melhor arredondado e o ponto quadrado dentro dela parecia defeito.
+
+**O que segurou a identidade.** O caráter industrial não vinha do raio, e sim da tipografia condensada em caixa alta, do grafite quase preto e da barra vermelha de 3px no item ativo. Esses três ficaram intactos, e a marca continua reconhecível com as arestas suavizadas.
 
 ### Decisão 4: as duas cores derivadas das fotos ganham papel semântico
 
@@ -293,7 +309,7 @@ O sistema é definido por **borda**, não por sombra. É o que o site faz: 1px e
 | `border-strong` | 1px `graphite-900` | Ênfase |
 | `shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Dropdown, medido no site |
 | `shadow-industrial` | `0 18px 40px rgba(0,0,0,0.35)` | Modal, herdado do site |
-| `radius` | **`0`** | Sem exceção |
+| `radius` | `2` a `28px` | `md` (5px) em controle, `lg` (7px) em card, `full` em pastilha de status |
 | `focus` | `outline: 2px solid primary-600; outline-offset: 2px` | Marca no foco, como no site |
 
 O site já usa `focus-visible:outline-rcm-red` em todos os interativos. O anel de foco vermelho é herança direta, e é onde a marca aparece com mais frequência no admin.

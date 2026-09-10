@@ -1,4 +1,4 @@
-<div class="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6">
+<div class="grid gap-6">
 
     <x-ui.page-header
         eyebrow="Cadastros"
@@ -138,7 +138,7 @@
 
             {{-- Papéis --}}
             <div>
-                <p class="overline mb-2 text-graphite-500">Papéis</p>
+                <p class="etiqueta mb-2 text-graphite-500">Papéis</p>
                 <div class="flex flex-wrap gap-5">
                     @foreach ([['e_cliente','Cliente'],['e_fornecedor','Fornecedor'],['e_transportadora','Transportadora']] as [$campo, $rotulo])
                         <label class="flex items-center gap-2 text-sm">
@@ -166,7 +166,7 @@
     @endcan
 
     {{-- Listagem --}}
-    <x-ui.card title="Cadastrados">
+    <x-ui.card title="Cadastrados" :padded="false">
         <x-slot:actions>
             <x-ui.select wire:model.live="papel" class="w-auto">
                 <option value="todos">Todos os papéis</option>
@@ -178,16 +178,16 @@
         </x-slot:actions>
 
         @if ($this->pessoas->isEmpty())
-            <x-ui.empty-state title="Nenhum cadastro" description="Use o formulário acima para incluir o primeiro." />
+            <x-ui.empty-state class="m-5" title="Nenhum cadastro" description="Use o formulário acima para incluir o primeiro." />
         @else
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Nome</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Documento</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Município</th>
-                        <th class="overline px-2 py-2 text-left text-graphite-500">Papéis</th>
-                        <th class="overline px-2 py-2 text-right text-graphite-500">Ações</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Nome</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Documento</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Município</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Papéis</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -203,9 +203,9 @@
                             <td class="px-2 py-2">{{ $pessoa->municipio }}/{{ $pessoa->uf }}</td>
                             <td class="px-2 py-2">
                                 <span class="flex flex-wrap gap-1">
-                                    @if ($pessoa->e_cliente)<span class="overline bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Cliente</span>@endif
-                                    @if ($pessoa->e_fornecedor)<span class="overline bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Fornecedor</span>@endif
-                                    @if ($pessoa->e_transportadora)<span class="overline bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Transp.</span>@endif
+                                    @if ($pessoa->e_cliente)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Cliente</span>@endif
+                                    @if ($pessoa->e_fornecedor)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Fornecedor</span>@endif
+                                    @if ($pessoa->e_transportadora)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Transp.</span>@endif
                                 </span>
                             </td>
                             <td class="px-2 py-2 text-right">
