@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Certificados\Gerenciar;
+use App\Livewire\Contador\Exportacao;
 use App\Livewire\Estoque\Painel;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Pessoas\Cadastro;
@@ -13,6 +14,7 @@ Route::view('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
+    Route::get('contabilidade', Exportacao::class)->name('contabilidade');
     Route::get('notas', Emissao::class)->name('notas');
     Route::get('importacao', App\Livewire\Importacao\Painel::class)->name('importacao');
     Route::get('estoque', Painel::class)->name('estoque');
