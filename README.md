@@ -75,7 +75,7 @@ A nota 1.480 da demonstração aparece autorizada porque foi marcada assim no se
 ## Comandos úteis
 
 ```bash
-php artisan test                          # 403 testes
+php artisan test                          # 404 testes
 ./vendor/bin/pint                         # formatação
 php artisan emissor:demo --fresh          # recomeça do zero
 

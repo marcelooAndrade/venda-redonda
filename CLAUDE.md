@@ -6,7 +6,7 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulos 8 (Eventos) e 9 (Pacote do contador) concluídos.** 403 testes passando, Pint limpo.
+**Módulos 8 (Eventos) e 9 (Pacote do contador) concluídos.** 404 testes passando, Pint limpo.
 Há um comando de demonstração (`php artisan emissor:demo --fresh`) e o `README.md` explica como rodar na máquina local.
 Próximo: Módulo 10 (painel e relatórios). Seguem pendentes a contingência SVC e a distribuição DF-e.
 

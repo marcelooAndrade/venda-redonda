@@ -286,7 +286,11 @@ class NFeEventService
         $normalizado = mb_strtolower($texto);
 
         foreach (self::VEDACOES as [$termo, $descricao]) {
-            if (str_contains($normalizado, $termo)) {
+            // Só no começo da palavra. Por substring solta, "due" casaria
+            // dentro de "aduela" e bloquearia uma correção de descrição, que
+            // é justamente para o que a CC-e serve. A âncora fica apenas no
+            // início para que "valor" continue pegando "valores".
+            if (preg_match('/\b'.preg_quote($termo, '/').'/u', $normalizado) === 1) {
                 throw new RuntimeException(
                     "A carta de correção não pode alterar {$descricao}. "
                     .'Para isso, cancele a nota e reemita, ou emita nota complementar.'

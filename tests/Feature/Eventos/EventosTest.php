@@ -156,6 +156,17 @@ describe('carta de correção', function () {
         );
     })->throws(RuntimeException::class, 'não pode');
 
+    it('nao confunde termo vedado dentro de outra palavra', function () {
+        // "aduela" contém "due". Bloquear uma correção de descrição, que é
+        // exatamente para o que a CC-e existe, sairia caro: sem ela o operador
+        // só tem cancelar e reemitir.
+        $nota = notaAutorizada(['cartaCorrecao' => new RespostaSefaz('135', 'Evento registrado')]);
+
+        $evento = eventos()->cartaCorrecao($nota, 'Onde se le aduela leia-se aduela de aco carbono', $this->user);
+
+        expect($evento->sequencia)->toBe(1);
+    });
+
     it('recusa incluir ou alterar parcela, que a lei veda', function () {
         $nota = notaAutorizada();
 
