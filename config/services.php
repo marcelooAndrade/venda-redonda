@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'receitaws' => [
+        // Opcional. Sem token vale o plano gratuito, limitado por minuto.
+        'token' => env('RECEITAWS_TOKEN'),
+    ],
+
 ];

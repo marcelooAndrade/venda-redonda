@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 2 (Emitente e Certificado Digital) concluído.** 98 testes passando, Pint limpo.
-Aguardando aprovação para o Módulo 3 (Clientes, Fornecedores e Transportadoras).
+**Módulo 3 (Cadastros e integrações) concluído.** 147 testes passando, Pint limpo.
+Aguardando aprovação para o Módulo 4 (Produtos e Tributação).
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1 e 2 prontos |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1, 2 e 3 prontos |
 
 ## Stack
 
@@ -94,6 +94,10 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Middleware `DefinirEmitenteDoContexto` no grupo web | Permissões são escopadas por emitente. Sem definir o time por requisição, o usuário chega sem papel e leva 403 mesmo sendo administrador. Testes que chamam `setPermissionsTeamId()` na mão mascaram isso |
 | 2026-09-10 | Certificado com algoritmo antigo é convertido, não recusado | Ver DF-007 |
 | 2026-09-10 | Fixtures de certificado versionadas | Autoassinados, CNPJ fictício, chave descartável. Tornam os testes de certificado reais em vez de mockados |
+| 2026-09-10 | Documento sempre `string`, nunca inteiro | CNPJ pode ter letra, e um documento iniciado por zero perderia o zero. Ver DF-009 |
+| 2026-09-10 | Município e código IBGE vêm ambos do ViaCEP | A ReceitaWS não devolve IBGE. Usar o município da Receita com o IBGE do ViaCEP arrisca um par inconsistente, que a SEFAZ rejeita |
+| 2026-09-10 | `Http::preventStrayRequests()` global no Pest | `Http::fake` com padrão só intercepta o que casa: o resto sai de verdade para a internet. Um teste chegou a bater na API real sem eu perceber |
+| 2026-09-10 | Coerência indIEDest x IE validada no cadastro | Contribuinte sem IE, ou isento com IE preenchida, é rejeição na transmissão. Melhor barrar no cadastro |
 
 ## Documentação
 

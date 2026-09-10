@@ -102,3 +102,35 @@ O `app-transm` trata isso no mesmo `catch` genérico da senha errada, então o u
 **Decisão.** Detectar a assinatura do erro e converter pelo provider legacy (`openssl pkcs12 -legacy`), reexportando em formato atual. Confirmado funcionando com fixture real. Só quando a conversão não é possível é que aparece mensagem de erro, e ela explica o algoritmo antigo sem culpar a senha.
 
 O registro guarda `convertido_de_legado`, e a tela avisa para pedir o A1 em formato atual na próxima renovação.
+
+## DF-008 · Transportadora não é obrigatória na NF-e
+
+**Verificado em:** 2026-09-10, contra `leiauteNFe_v4.00.xsd` do pacote `PL_010_V1.30`.
+
+O grupo `transp` exige apenas **`modFrete`**:
+
+```xml
+<xs:element name="modFrete">              <!-- obrigatório -->
+<xs:element name="transporta" minOccurs="0">   <!-- opcional -->
+```
+
+Valores de `modFrete`: 0 CIF, 1 FOB, 2 por conta de terceiros, 3 transporte próprio do remetente, 4 transporte próprio do destinatário, 9 sem ocorrência de transporte.
+
+Dentro de `transporta`, até o CNPJ é opcional. **Uma NF-e sem transportadora nenhuma é autorizada normalmente.**
+
+**Situação da RCM.** O dono leva (modFrete 3) ou o cliente retira (modFrete 4). Nenhum dos dois exige identificar transportador.
+
+**Decisão.** Implementar assim mesmo, porque o sistema é reutilizável entre empresas clientes e as demais contratam frete. O custo é baixo: transportadora é uma flag na tabela `pessoas`, não uma tabela nem um módulo. Campos de placa, UF e RNTC só aparecem no formulário quando o papel é marcado.
+
+## DF-009 · CNPJ alfanumérico
+
+**Verificado em:** 2026-09-10
+**Fonte:** NT Conjunta CNPJ Alfanumérico (NT 2025.001) e Nota Técnica COCAD/SUARA/RFB nº 49/2024.
+
+A Receita Federal gerou o primeiro CNPJ alfanumérico em **31/07/2026**, então já é realidade em produção. Os dois formatos convivem, e o CNPJ numérico já emitido continua válido.
+
+**Algoritmo.** Módulo 11 com os mesmos pesos de sempre. O que muda é o valor de cada caractere: código ASCII menos 48, então `0` vale 0, `A` vale 17 e `Z` vale 42. As duas últimas posições seguem sempre numéricas.
+
+**Vetor de referência oficial:** `12.ABC.345/01DE-35`. Conferido à mão antes de implementar: DV1 soma 459, resto 8, dígito 3; DV2 soma 424, resto 6, dígito 5.
+
+**Consequência prática.** O documento é sempre `string`, nunca inteiro, em toda a base. Um CNPJ iniciado por zero perderia o zero, e um alfanumérico não caberia num campo numérico.

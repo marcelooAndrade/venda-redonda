@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /*
@@ -16,6 +17,11 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        // Nenhum teste fala com a internet. Requisição não fingida vira erro
+        // em vez de sair para a rede e tornar a suíte dependente dela.
+        Http::preventStrayRequests();
+    })
     ->in('Feature');
 
 /*
