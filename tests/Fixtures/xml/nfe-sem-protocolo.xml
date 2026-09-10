@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+  <infNFe versao="4.00" Id="NFe35260911444777000161550010000099991234567890">
+    <ide><cUF>35</cUF><nNF>9999</nNF><serie>1</serie><mod>55</mod>
+      <dhEmi>2026-09-05T09:00:00-03:00</dhEmi><tpNF>1</tpNF></ide>
+    <emit><CNPJ>11444777000161</CNPJ><xNome>METALURGICA PIRACICABA LTDA</xNome></emit>
+    <dest><CNPJ>11222333000181</CNPJ><xNome>RCM DO BRASIL LTDA</xNome></dest>
+    <det nItem="1"><prod><cProd>X</cProd><xProd>Item qualquer</xProd><NCM>72222000</NCM>
+      <CFOP>5102</CFOP><uCom>KG</uCom><qCom>1.0000</qCom><vUnCom>1.00</vUnCom><vProd>1.00</vProd>
+      <uTrib>KG</uTrib><qTrib>1.0000</qTrib><vUnTrib>1.00</vUnTrib></prod></det>
+    <total><ICMSTot><vNF>1.00</vNF><vProd>1.00</vProd></ICMSTot></total>
+  </infNFe>
+</NFe>

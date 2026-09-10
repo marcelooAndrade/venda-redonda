@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 5 (Estoque) concluído.** 294 testes passando, Pint limpo.
-Próximo: Módulo 6 (Importação de XML) e depois o 7 (Emissão), onde entra o NfeXmlBuilder.
+**Módulo 6 (Importação) concluído**, menos a Distribuição DF-e. 339 testes passando, Pint limpo.
+Próximo: Módulo 7 (Emissão), onde entra o NfeXmlBuilder.
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 5 prontos. Falta 6 a 10 |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 6 prontos. Falta 7 a 10 |
 
 ## Stack
 
@@ -114,6 +114,10 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | `lockForUpdate` no saldo a cada movimento | Sem ele, duas saídas simultâneas passam na mesma checagem e o estoque fica negativo sem autorização |
 | 2026-09-10 | Inventário movimenta a diferença, não o total contado | Lançar o total zeraria o histórico e faria o Kardex mentir |
 | 2026-09-10 | Default booleano `true` declarado em `$attributes` | O mesmo bug apareceu quatro vezes. Um teste parametrizado agora guarda a classe inteira. Ver DF-014 |
+| 2026-09-10 | Importar, conciliar e confirmar são etapas distintas | Entre registrar o XML e mexer no estoque existe conferência humana. Ver DF-015 |
+| 2026-09-10 | `NFeXmlParser` é classe pura, sem banco | No `app-transm` a mesma lógica vivia dentro de um God class de 1474 linhas. Aqui é testável com XML real sem subir a aplicação |
+| 2026-09-10 | Vínculo fornecedor-produto salvo a cada conciliação manual | A segunda nota do mesmo fornecedor já entra conciliada |
+| 2026-09-10 | Lote de importação não para no primeiro erro | Em fechamento de mês, parar no primeiro faria reprocessar tudo |
 
 ## Documentação
 

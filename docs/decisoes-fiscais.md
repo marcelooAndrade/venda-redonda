@@ -251,3 +251,47 @@ Aconteceu quatro vezes:
 | `Emitente::$ativo` | Idem |
 
 **Remédio:** todo default booleano `true` é declarado também em `$attributes`. Um teste parametrizado em `tests/Feature/DefaultsEmMemoriaTest.php` guarda a classe inteira do bug e quebra se alguém adicionar uma coluna nova sem o default em memória.
+
+## DF-015 · Importação separa registrar de confirmar
+
+**Decidido em:** 2026-09-10
+
+O XML entra em duas etapas, e a separação é deliberada:
+
+| Etapa | O que faz |
+|---|---|
+| **Importar** | Registra o que chegou. Cria o fornecedor a partir do XML, converte o CFOP, calcula o custo rateado. **Não movimenta estoque** |
+| **Conciliar** | Casa os itens do fornecedor com o cadastro de produtos. Parte é automática, o resto é decisão humana |
+| **Confirmar** | Aí sim dá entrada no estoque, com o custo já rateado |
+
+Entre registrar e movimentar existe uma conferência humana. Sem essa separação, um XML com item desconhecido criaria produto errado no estoque sem ninguém olhar.
+
+### Só nota autorizada
+
+O parser exige `protNFe` com `cStat` 100. Nota sem protocolo é recusada com mensagem explícita: não é possível dar entrada no estoque com base em documento que a SEFAZ não autorizou.
+
+### A escada da conciliação
+
+A ordem das tentativas importa:
+
+1. **Vínculo salvo** (`produto_fornecedor`) vence tudo, porque foi um humano que decidiu
+2. **GTIN**, por ser identificador global
+3. O que sobrar fica para o operador resolver na tela
+
+Cada vínculo manual é gravado, então a segunda nota do mesmo fornecedor já entra conciliada. É o que faz a importação deixar de ser trabalho repetitivo.
+
+### Custo de entrada
+
+```
+custo_unitario = (produtos + frete + seguro + outros + IPI − desconto) / quantidade
+```
+
+Conferido com XML real: (14.250 + 350 + 730) / 500 = **30,66**.
+
+O fator de conversão do fornecedor é aplicado na confirmação: se ele vende em KG e contamos em unidades de meio quilo, a quantidade dobra e o custo por unidade cai pela metade.
+
+### Lote não para no primeiro erro
+
+Um arquivo com problema não interrompe os demais. Em lote de fim de mês, parar no primeiro faria o operador reprocessar tudo. As falhas são relatadas por arquivo, com o motivo.
+
+ZIP é aceito, entradas com `..` no caminho são ignoradas (zip slip), e arquivos que não são XML são pulados em silêncio.
