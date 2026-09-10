@@ -295,3 +295,43 @@ O fator de conversão do fornecedor é aplicado na confirmação: se ele vende e
 Um arquivo com problema não interrompe os demais. Em lote de fim de mês, parar no primeiro faria o operador reprocessar tudo. As falhas são relatadas por arquivo, com o motivo.
 
 ZIP é aceito, entradas com `..` no caminho são ignoradas (zip slip), e arquivos que não são XML são pulados em silêncio.
+
+## DF-016 · O `Make` sem schema assume PL_009, anterior à Reforma
+
+**Verificado em:** 2026-09-10, lendo o código da `sped-nfe` v5.2.8.
+
+O construtor do `Make` tem `$schema = 9` como padrão. O render só emite os grupos da Reforma sob `if ($this->schema > 9)`:
+
+```php
+public function __construct($schema = null)
+{
+    $this->schema = 9; //PL_009_V4
+```
+
+**Consequência.** `new Make()` sem argumento descarta **em silêncio** os grupos IBS, CBS, IS e `DFeReferenciado`. Não há erro, não há aviso: o XML sai bonito e sem a Reforma. Para um emitente CRT 3, isso é rejeição garantida desde 03/08/2026.
+
+**Decisão.** O schema vem de `config('fiscal.schema')`, padrão `PL_010_V1.30`, e é usado tanto no `Make` quanto no `Tools`. Um teste verifica que os grupos IBS/CBS aparecem no XML quando a regra fiscal os define.
+
+## DF-017 · O referenciamento da devolução é por item
+
+**Verificado em:** 2026-09-10, lendo `TraitTagDetOptions` e o render do `Make`.
+
+`tagDFeReferenciado` grava em `aDFeReferenciado[$item]`, e o render anexa ao `det`, não ao `ide`:
+
+```php
+if (!empty($this->aDFeReferenciado[$item])) {
+    $this->addTag($det, $this->aDFeReferenciado[$item], 'Falta a tag det!');
+}
+```
+
+Ou seja: numa devolução, **cada item aponta o item correspondente da nota original**, com chave de acesso e número do item. Não é uma referência única no cabeçalho, como era o antigo `refNFe`.
+
+**Consequência no modelo.** A referência mora em `nota_itens` (`chave_referenciada` e `item_referenciado`), não numa tabela separada ligada à nota. O modelo inicial estava errado e foi corrigido.
+
+## DF-018 · XML sem assinatura nunca valida contra o XSD
+
+**Verificado em:** 2026-09-10
+
+O `nfe_v4.00.xsd` exige o nó `Signature`. Validar o XML recém-montado sempre falha com "Missing child element(s)".
+
+A ordem correta é **montar, assinar, validar**. O teste do builder faz exatamente isso, com um certificado de teste, e é ele que prova que o XML gerado é aceitável pela SEFAZ do ponto de vista estrutural.

@@ -29,4 +29,18 @@ return [
     'versao_nfe' => '4.00',
     'modelo' => 55,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pacote de leiaute (schema)
+    |--------------------------------------------------------------------------
+    |
+    | O `Make` da sped-nfe assume PL_009 quando não recebe schema, e PL_009 é
+    | anterior à Reforma Tributária: os grupos IBS, CBS, IS e DFeReferenciado
+    | simplesmente não são renderizados, sem erro nenhum.
+    |
+    | Confirmar contra a NT vigente antes de emitir em produção. Ver DF-003.
+    |
+    */
+    'schema' => env('FISCAL_SCHEMA', 'PL_010_V1.30'),
+
 ];
