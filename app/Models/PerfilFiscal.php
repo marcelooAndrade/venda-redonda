@@ -18,6 +18,14 @@ class PerfilFiscal extends Model
 {
     use Auditavel, DoTenantViaEmitente;
 
+    /**
+     * Defaults também em memória, não só no banco: coluna booleana `true`
+     * vem `null` num model recém instanciado, e `null` é falsy.
+     */
+    protected $attributes = [
+        'ativo' => true,
+    ];
+
     protected $table = 'perfis_fiscais';
 
     protected $fillable = ['emitente_id', 'nome', 'descricao', 'ativo'];

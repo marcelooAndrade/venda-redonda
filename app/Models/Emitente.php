@@ -22,6 +22,7 @@ class Emitente extends Model
      */
     protected $attributes = [
         'ambiente' => 'homologacao',
+        'ativo' => true,
     ];
 
     protected $guarded = ['id', 'ambiente'];

@@ -202,3 +202,52 @@ A curva da neutra foi extraída da escala grafite medida no site da RCM, então 
 Marca clara demais não é rejeitada: dizer ao cliente que a marca dele está errada não é opção. A cor é escurecida **o mínimo necessário** até passar em WCAG AA com texto branco, e a original continua disponível nos tons claros da escala.
 
 Medido: `#1B8A4B`, um verde de transportadora que parece seguro, tem contraste **4,39** e não passa. Vira `#1a8347`, com 4,79. Um amarelo `#F5D90A` (1,42) vira `#85760a` (4,57).
+
+## DF-013 · Estoque como razão imutável
+
+**Decidido em:** 2026-09-10
+
+`estoque_movimentos` nunca é editado nem apagado. O model recusa `update` e `delete` na própria camada, com exceção explícita. Correção é sempre movimento novo, de sinal contrário.
+
+O que isso preserva: o Kardex conta o que **de fato aconteceu**. Uma nota cancelada aparece como saída seguida de estorno, e não como uma saída que sumiu. Em fiscalização, a diferença é enorme.
+
+### Custo médio ponderado
+
+Só entrada com custo conhecido move a média:
+
+```
+novo = (saldo × custo_atual + entrada × custo_entrada) / (saldo + entrada)
+```
+
+Saída, estorno e inventário mantêm a média intacta. **Na saída, o custo médio vigente é gravado no movimento**, porque a média muda depois e o custo daquela saída se perderia.
+
+Conferido em produção com dados reais: 200 a 62,40 mais 100 a 71,20 resulta em custo médio de 65,3333.
+
+### Concorrência
+
+Toda escrita acontece em transação com `lockForUpdate` sobre o saldo. Sem o lock, duas saídas simultâneas leem o mesmo saldo, ambas passam na checagem de disponibilidade, e o estoque fica negativo sem autorização.
+
+### Inventário movimenta a diferença
+
+A contagem física gera um movimento da **diferença apurada**, nunca do total contado. Lançar o total zeraria o histórico e faria o Kardex mentir. Justificativa é obrigatória e fica gravada no movimento.
+
+### Saldo negativo
+
+Bloqueado por padrão, liberável por emitente em `permite_saldo_negativo`. Produto com `controla_estoque = false` não entra no razão: o Kardex reflete só o que tem saldo.
+
+## DF-014 · Defaults de banco precisam existir também em memória
+
+**Decidido em:** 2026-09-10, depois da quarta ocorrência do mesmo bug.
+
+Coluna booleana com default `true` no banco vem `null` num model recém instanciado, e `null` é falsy. Quem lê o atributo antes de reler do banco enxerga `false` e decide errado.
+
+Aconteceu quatro vezes:
+
+| Onde | Consequência |
+|---|---|
+| `Emitente::$ambiente` | Objeto recém-criado vinha sem ambiente |
+| `Tenant::$ativo` | Tenant era tratado como inativo e o escopo global filtrava tudo |
+| `Produto::$controla_estoque` | Checagem de saldo era pulada, permitindo estoque negativo sem autorização |
+| `Emitente::$ativo` | Idem |
+
+**Remédio:** todo default booleano `true` é declarado também em `$attributes`. Um teste parametrizado em `tests/Feature/DefaultsEmMemoriaTest.php` guarda a classe inteira do bug e quebra se alguém adicionar uma coluna nova sem o default em memória.

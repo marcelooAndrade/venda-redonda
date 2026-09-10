@@ -12,6 +12,15 @@ class Produto extends Model
 {
     use Auditavel, DoTenantViaEmitente;
 
+    /**
+     * Defaults também em memória, não só no banco: coluna booleana `true`
+     * vem `null` num model recém instanciado, e `null` é falsy.
+     */
+    protected $attributes = [
+        'ativo' => true,
+        'controla_estoque' => true,
+    ];
+
     protected $guarded = ['id'];
 
     protected function casts(): array

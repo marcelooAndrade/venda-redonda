@@ -19,6 +19,16 @@ class NaturezaOperacao extends Model
 {
     use Auditavel, DoTenantViaEmitente;
 
+    /**
+     * Defaults também em memória, não só no banco: coluna booleana `true`
+     * vem `null` num model recém instanciado, e `null` é falsy.
+     */
+    protected $attributes = [
+        'ativo' => true,
+        'movimenta_estoque' => true,
+        'gera_financeiro' => true,
+    ];
+
     protected $table = 'naturezas_operacao';
 
     protected $guarded = ['id'];

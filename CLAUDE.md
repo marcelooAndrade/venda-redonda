@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 4 concluído.** 257 testes passando, Pint limpo.
-Próximo: Módulo 5 (Estoque) e depois o Módulo 7 (Emissão), onde entra o NfeXmlBuilder.
+**Módulo 5 (Estoque) concluído.** 294 testes passando, Pint limpo.
+Próximo: Módulo 6 (Importação de XML) e depois o 7 (Emissão), onde entra o NfeXmlBuilder.
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 4 prontos. Falta 5 a 10 |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 5 prontos. Falta 6 a 10 |
 
 ## Stack
 
@@ -109,6 +109,11 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Neutra ancorada no tom 900, primária no 600 | O "preto" de uma marca é o tom mais escuro, não o do meio. A curva reproduz a escala grafite medida no site |
 | 2026-09-10 | Contraste insuficiente é corrigido, não recusado | Dizer ao cliente que a marca dele está errada não é opção. Escurece o mínimo até passar em AA |
 | 2026-09-10 | Preparo de teste na `TestCase`, não no `Pest.php` | Parte da suíte são classes PHPUnit do starter kit, que o `beforeEach` do Pest não alcança |
+| 2026-09-10 | Movimento de estoque recusa `update` e `delete` no model | Razão imutável não é convenção, é regra imposta pelo código. Ver DF-013 |
+| 2026-09-10 | Custo médio vigente gravado no movimento de saída | A média muda depois, e o custo daquela saída se perderia |
+| 2026-09-10 | `lockForUpdate` no saldo a cada movimento | Sem ele, duas saídas simultâneas passam na mesma checagem e o estoque fica negativo sem autorização |
+| 2026-09-10 | Inventário movimenta a diferença, não o total contado | Lançar o total zeraria o histórico e faria o Kardex mentir |
+| 2026-09-10 | Default booleano `true` declarado em `$attributes` | O mesmo bug apareceu quatro vezes. Um teste parametrizado agora guarda a classe inteira. Ver DF-014 |
 
 ## Documentação
 

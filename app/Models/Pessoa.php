@@ -17,6 +17,15 @@ class Pessoa extends Model
 {
     use Auditavel, DoTenantViaEmitente, HasFactory;
 
+    /**
+     * Defaults também em memória, não só no banco: coluna booleana `true`
+     * vem `null` num model recém instanciado, e `null` é falsy.
+     */
+    protected $attributes = [
+        'ativo' => true,
+        'consumidor_final' => true,
+    ];
+
     protected $fillable = [
         'emitente_id', 'tipo_pessoa', 'documento', 'razao_social', 'nome_fantasia',
         'ind_ie_dest', 'inscricao_estadual', 'inscricao_municipal', 'suframa',
