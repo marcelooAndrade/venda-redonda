@@ -1,8 +1,16 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+@php
+    // A aba do navegador é parte da marca. Num sistema que serve várias
+    // empresas, o nome do tenant vale mais que o nome do produto. Fora de
+    // uma requisição com host resolvido, cai no nome do sistema.
+    $marca = app(\App\Support\TenantAtual::class)->obter()?->nome
+        ?? config('app.name', 'Laravel');
+@endphp
+
 <title>
-    {{ filled($title ?? null) ? $title.' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
+    {{ filled($title ?? null) ? $title.' - '.$marca : $marca }}
 </title>
 
 <link rel="icon" href="/favicon.ico" sizes="any">

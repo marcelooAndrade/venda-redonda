@@ -6,16 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulos 8 (Eventos) e 9 (Pacote do contador) concluídos.** 404 testes passando, Pint limpo.
-Há um comando de demonstração (`php artisan emissor:demo --fresh`) e o `README.md` explica como rodar na máquina local.
-Próximo: Módulo 10 (painel e relatórios). Seguem pendentes a contingência SVC e a distribuição DF-e.
+**Módulo 10, parte 1: o painel substituiu a tela do starter kit em `/dashboard`.** 417 testes passando, Pint limpo.
+Falta a parte 2 do Módulo 10, os relatórios. Seguem pendentes a contingência SVC e a distribuição DF-e.
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 9 prontos. Falta o 10 |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 9 prontos. Do 10, falta só os relatórios |
 
 ## Stack
 
@@ -96,6 +95,8 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Vedações da CC-e cobrem os cinco incisos, não três | A lista parou nos incisos I a III e deixava passar campo de DU-E e parcela. Ver DF-023 |
 | 2026-09-10 | O limite de 20 cartas vem do XSD, não do Ajuste | O Ajuste manda consolidar, sem número. Quem limita é `nSeqEvento` no `leiauteCCe_v1.00.xsd`, então é limite técnico e pode mudar por NT |
 | 2026-09-10 | DANFE só a partir do `nfeProc` guardado | Montar do banco arriscaria imprimir algo diferente do que a SEFAZ autorizou, se um cadastro mudar depois. Ver DF-024 |
+| 2026-09-10 | O painel abre com pendência, não com faturamento | Quem abre o sistema de manhã precisa saber o que travou ontem antes de saber quanto faturou. Nota em processamento vem primeiro porque reemitir duplica |
+| 2026-09-10 | Título da aba usa o nome do tenant | Num sistema que serve várias empresas, "Laravel" na aba entrega que o sistema é de outro. A aba é parte da marca |
 | 2026-09-10 | Certificado com algoritmo antigo é convertido, não recusado | Ver DF-007 |
 | 2026-09-10 | Fixtures de certificado versionadas | Autoassinados, CNPJ fictício, chave descartável. Tornam os testes de certificado reais em vez de mockados |
 | 2026-09-10 | Documento sempre `string`, nunca inteiro | CNPJ pode ter letra, e um documento iniciado por zero perderia o zero. Ver DF-009 |

@@ -53,6 +53,7 @@ Sugestão de roteiro, começando pela RCM:
 
 | Tela | O que observar |
 |---|---|
+| **Painel** | A tela que abre depois do login. Repare na ordem: pendência antes de faturamento |
 | **Design System** | A paleta completa, os oito status da NF-e e a decisão de por que o botão de ação primária não é vermelho |
 | **Marca** | Troque a cor e salve. Recarregue: o sistema inteiro muda. Tente um amarelo claro para ver o ajuste automático de contraste |
 | **Regras fiscais** | Entre como `contador@rcm.test`. Repare no histórico de vigência: a regra antiga encerrada em 02/08 e a nova, com IBS e CBS |
@@ -75,7 +76,7 @@ A nota 1.480 da demonstração aparece autorizada porque foi marcada assim no se
 ## Comandos úteis
 
 ```bash
-php artisan test                          # 404 testes
+php artisan test                          # 417 testes
 ./vendor/bin/pint                         # formatação
 php artisan emissor:demo --fresh          # recomeça do zero
 
@@ -105,4 +106,4 @@ O `decisoes-fiscais.md` é o mais importante para conferir com o contador: é on
 - **CRT da RCM**: se for 3, o IBS/CBS já é exigência desde 03/08/2026
 - Tabelas **CFOP, CEST, cClassTrib e tPag** ficaram vazias de propósito, aguardando fonte oficial
 - **Distribuição DF-e** (buscar notas na SEFAZ automaticamente) e **contingência SVC**
-- Módulo 10: painel e relatórios
+- Módulo 10: faltam os relatórios; o painel já está pronto
