@@ -6,9 +6,8 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 4 (Tributação) em andamento.** 192 testes passando, Pint limpo.
-Regras fiscais, TaxCalculator e a página do contador estão prontos.
-Falta a tela de produtos e as naturezas de operação.
+**Multitenancy e marca dinâmica concluídos.** 224 testes passando, Pint limpo.
+Do Módulo 4 faltam a tela de produtos e as naturezas de operação.
 
 | Fase | Entrega | Status |
 |---|---|---|
@@ -103,6 +102,13 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Toda regra fiscal tem vigência | Regra muda com o tempo. A anterior recebe fim de vigência em vez de ser apagada, para nota antiga continuar conferindo |
 | 2026-09-10 | `TaxCalculator` resolve pela data da operação | Nunca por "a regra atual". Nota retroativa usa a regra da época, e isso está coberto por teste |
 | 2026-09-10 | Navegação filtra por permissão | Ver DF-011 |
+| 2026-09-10 | Tenant acima do emitente, resolvido pelo host | Um tenant pode ter matriz e filiais, cada uma com seu CNPJ. Ver DF-012 |
+| 2026-09-10 | Sem tenant resolvido, consulta não devolve nada | Falha de resolução vira "não encontrei", nunca vazamento entre clientes |
+| 2026-09-10 | Escopo de tenant também no `User` | Não é só listagem: filtra a busca do provider de autenticação. Sem isso, credencial de um tenant autentica no host de outro |
+| 2026-09-10 | Marca trocada por sobrescrita de variável CSS | Todo utilitário do Tailwind 4 aponta para `var(--color-*)`. Mesmo bundle para todos os tenants, sem CSS por cliente |
+| 2026-09-10 | Neutra ancorada no tom 900, primária no 600 | O "preto" de uma marca é o tom mais escuro, não o do meio. A curva reproduz a escala grafite medida no site |
+| 2026-09-10 | Contraste insuficiente é corrigido, não recusado | Dizer ao cliente que a marca dele está errada não é opção. Escurece o mínimo até passar em AA |
+| 2026-09-10 | Preparo de teste na `TestCase`, não no `Pest.php` | Parte da suíte são classes PHPUnit do starter kit, que o `beforeEach` do Pest não alcança |
 
 ## Documentação
 

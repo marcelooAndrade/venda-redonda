@@ -24,6 +24,9 @@ class EmitenteAtual
             return null;
         }
 
+        // A relação passa pelo model Emitente, então o escopo global de tenant
+        // já se aplica: emitente de outro tenant simplesmente não aparece.
+
         $escolhido = session()->get(self::CHAVE);
 
         if ($escolhido !== null) {

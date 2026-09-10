@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\DefinirEmitenteDoContexto;
+use App\Http\Middleware\ResolverTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Permissões são escopadas por emitente. Sem definir o time a cada
         // requisição, o usuário chega sem papel algum.
+        $middleware->web(prepend: [
+            // Precisa vir antes de tudo: o escopo global de dados depende dele.
+            ResolverTenant::class,
+        ]);
+
         $middleware->web(append: [
             DefinirEmitenteDoContexto::class,
         ]);

@@ -17,4 +17,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap">
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+{{-- Marca do tenant. Todo utilitário do Tailwind aponta para var(--color-*),
+     então sobrescrever os tokens aqui repinta o sistema inteiro, inclusive o
+     Flux. Vem depois do @vite de propósito, para ganhar do bundle. --}}
+@php($marcaCss = app(\App\Support\TenantAtual::class)->obter()?->marca()?->paraCss())
+@if ($marcaCss)
+    <style>{!! $marcaCss !!}</style>
+@endif
 @fluxAppearance

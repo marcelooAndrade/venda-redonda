@@ -158,3 +158,47 @@ O `TaxCalculator` recebe a data da operação e resolve a regra por ela, nunca p
 O contador via "Certificado" no menu e levaria 403 ao clicar. Mostrar um caminho que não leva a lugar nenhum é pior do que não mostrar.
 
 Cada item de navegação declara a permissão que exige, e some para quem não a tem. A permissão continua sendo verificada na rota: esconder o item é usabilidade, não segurança.
+
+## DF-012 · Multitenancy e marca dinâmica
+
+**Decidido em:** 2026-09-10, por definição de Marcelo.
+
+### Estrutura
+
+`Tenant` é a empresa cliente que usa o sistema, e fica **acima** do emitente: um tenant pode ter matriz e filiais, cada uma com seu CNPJ. Resolvido pelo host da requisição, com domínio próprio tendo prioridade sobre subdomínio.
+
+| Camada | Escopo |
+|---|---|
+| `Emitente`, `User` | `tenant_id` direto |
+| `Pessoa`, `PerfilFiscal` | Via `emitente_id` |
+
+**Sem tenant resolvido, nada é devolvido.** O padrão é o silêncio: uma falha de resolução vira "não encontrei", nunca "olha o dado do vizinho".
+
+### O escopo alcança a autenticação
+
+O escopo de tenant no `User` não é só de listagem: ele filtra também a busca do provider de autenticação. Sem isso, a credencial de um tenant autentica no host de outro, o que é falha de segurança, não de usabilidade. Coberto por teste.
+
+### Marca dinâmica sem CSS por tenant
+
+Todo utilitário do Tailwind 4 compila para `var(--color-*)`:
+
+```css
+.bg-primary-600{background-color:var(--color-primary-600)}
+```
+
+Então trocar a marca é sobrescrever os tokens no `<head>`. Uma transportadora verde e preta recebe **o mesmo bundle** que a RCM vermelha e grafite. Não há CSS compilado por tenant, nem classe condicional, e o Flux acompanha porque `zinc` está alinhado ao `graphite`.
+
+A escala de 11 tons é gerada a partir de duas cores da marca:
+
+| Cor | Âncora | Motivo |
+|---|---|---|
+| Primária | tom **600** | É a cor de ação da marca |
+| Neutra | tom **900** | O "preto" de uma marca é o tom mais escuro, não o do meio |
+
+A curva da neutra foi extraída da escala grafite medida no site da RCM, então informar `#1A1A1A` reproduz exatamente a paleta do design system. Isso está travado por teste.
+
+### Contraste é corrigido, não recusado
+
+Marca clara demais não é rejeitada: dizer ao cliente que a marca dele está errada não é opção. A cor é escurecida **o mínimo necessário** até passar em WCAG AA com texto branco, e a original continua disponível nos tons claros da escala.
+
+Medido: `#1B8A4B`, um verde de transportadora que parece seguro, tem contraste **4,39** e não passa. Vira `#1a8347`, com 4,79. Um amarelo `#F5D90A` (1,42) vira `#85760a` (4,57).

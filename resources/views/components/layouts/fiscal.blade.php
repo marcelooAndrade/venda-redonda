@@ -2,6 +2,7 @@
 
 @php
     $emitente = app(\App\Support\EmitenteAtual::class)->resolver();
+    $tenant = app(\App\Support\TenantAtual::class)->obter();
     $user = auth()->user();
 
     // A navegação reflete os módulos e a permissão de quem está olhando.
@@ -36,8 +37,16 @@
              hero do site, onde uma barra vertical vermelha corta a fachada. --}}
         <aside class="hidden w-56 shrink-0 flex-col bg-graphite-900 md:flex">
             <div class="flex items-center gap-2.5 border-b border-white/10 px-4 py-4">
-                <span class="flex size-7 items-center justify-center bg-primary-600 font-display text-xs font-bold text-white">R</span>
-                <span class="font-display text-base font-bold uppercase tracking-wide text-white">emissor NF-e</span>
+                @if ($tenant?->logo_path)
+                    <img src="{{ $tenant->logo_path }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
+                @else
+                    <span class="flex size-7 shrink-0 items-center justify-center bg-primary-600 font-display text-xs font-bold text-white">
+                        {{ mb_strtoupper(mb_substr($tenant?->rotulo() ?? 'N', 0, 1)) }}
+                    </span>
+                    <span class="truncate font-display text-base font-bold uppercase tracking-wide text-white">
+                        {{ $tenant?->rotulo() ?? 'Emissor NF-e' }}
+                    </span>
+                @endif
             </div>
 
             <nav class="flex flex-1 flex-col gap-px py-3" aria-label="Navegação principal">

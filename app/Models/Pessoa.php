@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Fiscal\IndIEDest;
 use App\Enums\Fiscal\TipoPessoa;
 use App\Models\Concerns\Auditavel;
+use App\Models\Concerns\DoTenantViaEmitente;
 use App\Support\Documento;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pessoa extends Model
 {
-    use Auditavel, HasFactory;
+    use Auditavel, DoTenantViaEmitente, HasFactory;
 
     protected $fillable = [
         'emitente_id', 'tipo_pessoa', 'documento', 'razao_social', 'nome_fantasia',

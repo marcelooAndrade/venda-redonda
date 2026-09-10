@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Fiscal\Ambiente;
 use App\Models\Concerns\Auditavel;
+use App\Models\Concerns\DoTenant;
 use Database\Factories\EmitenteFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Emitente extends Model
 {
     /** @use HasFactory<EmitenteFactory> */
-    use Auditavel, HasFactory;
+    use Auditavel, DoTenant, HasFactory;
 
     /**
      * O ambiente nunca é preenchível em massa. Emitente nasce em homologação
@@ -22,6 +23,8 @@ class Emitente extends Model
     protected $attributes = [
         'ambiente' => 'homologacao',
     ];
+
+    protected $guarded = ['id', 'ambiente'];
 
     protected $fillable = [
         'razao_social',

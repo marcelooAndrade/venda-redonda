@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Emitente;
+use App\Models\Tenant;
+use App\Support\TenantAtual;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,6 +17,9 @@ class EmitenteFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id' => app(TenantAtual::class)->id()
+                ?? Tenant::query()->first()?->getKey()
+                ?? Tenant::create(['nome' => 'Tenant de teste', 'slug' => 'teste'])->getKey(),
             'razao_social' => $this->faker->company().' Ltda',
             'nome_fantasia' => $this->faker->company(),
             'cnpj' => (string) $this->faker->unique()->numerify('##############'),
