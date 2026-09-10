@@ -4,7 +4,7 @@ Inventário do emissor-nfe: o que está pronto, o que ficou de fora de propósit
 
 Este é o documento para responder "o sistema já faz X?". Para **por que** cada coisa é como é, veja `decisoes-fiscais.md` (regra fiscal), `design-system.md` (visual) e o registro de decisões no `CLAUDE.md`.
 
-> Atualizado em 10/09/2026. 417 testes passando, Pint limpo, 21 commits.
+> Atualizado em 10/09/2026. 431 testes passando, Pint limpo.
 
 ## Em uma frase
 
@@ -77,8 +77,11 @@ Emissor de NF-e modelo 55, layout 4.00, multiempresa, com a marca trocando pela 
 
 - O **host identifica o tenant**: domínio próprio vence subdomínio.
 - Sem tenant resolvido, a consulta não devolve nada. Isolamento por escopo global.
-- Logo e cores trocam por **sobrescrita de variável CSS**, sem recompilar.
+- Cores trocam por **sobrescrita de variável CSS**, sem recompilar.
 - Rampa de 11 tons gerada a partir de uma cor, com **ajuste automático de contraste** para WCAG AA.
+- **Duas logos, enviadas na tela Marca.** A do sistema aparece na barra lateral; a do DANFE sai impressa na via auxiliar. São separadas porque matriz e filial dividem o sistema e têm CNPJs distintos.
+- A logo fica no disco privado e é servida por rota autenticada, resolvida pelo host. Não existe URL pública, nem pedido possível para a logo de outro cliente.
+- Trocar a logo apaga a anterior. Remover volta para o quadrado com a inicial.
 
 ### Contabilidade
 
@@ -130,6 +133,8 @@ Nada disso eu consigo resolver sozinho:
 
 As correções que mais mudaram o rumo, e que valem lembrar:
 
+**`logo_path` sumia sem erro no Emitente.** O upload gravava, o `update()` retornava sucesso e a coluna continuava nula: o campo não estava no `$fillable`. É a mesma classe de bug do `tenant_id` abaixo, e a terceira vez que ela aparece. O teste que a pegou vai da tela até o PDF, e falha se alguém tirar o campo da lista de novo.
+
 **Login entre tenants funcionava.** Era buraco de segurança real. O `tenant_id` estava sendo descartado em silêncio porque o atributo `#[Fillable]` do Laravel 13 não o listava. Um usuário de um tenant autenticava no outro.
 
 **IBS e CBS não eram trabalho futuro.** A NT 2025.002-RTC v1.40 tornou obrigatório em produção desde 03/08/2026 para CRT 3. Entraram no Módulo 4, não em fase posterior.
@@ -152,20 +157,20 @@ As correções que mais mudaram o rumo, e que valem lembrar:
 
 ## Cobertura de teste
 
-417 testes executados. A contagem por área abaixo é de testes **declarados**, e soma 403: a diferença são testes parametrizados, que expandem em vários na execução.
+431 testes executados. A contagem por área abaixo é de testes **declarados**, e soma 417: a diferença são testes parametrizados, que expandem em vários na execução.
 
 | Área | Testes | Área | Testes |
 |---|---|---|---|
-| Emissão | 41 | Tenancy | 20 |
+| Emissão | 41 | Tenancy | 36 |
 | Tributação | 38 | Emitentes | 19 |
 | Importação | 28 | Pessoas | 19 |
 | Estoque | 27 | Eventos | 18 |
 | Certificado | 22 | Auth | 18 |
-| Perfis | 15 | Design System | 14 |
+| Perfis | 15 | Design System | 11 |
 | Integrações | 12 | Settings | 11 |
 | Painel | 10 | Produtos | 10 |
 | Contador | 6 | Auditoria | 4 |
-| Unitários | 66 | Raiz | 5 |
+| Unitários | 66 | Raiz | 6 |
 
 ## Os outros documentos
 

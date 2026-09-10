@@ -2,14 +2,18 @@
 
 namespace App\Livewire\Tenancy;
 
+use App\Models\Emitente;
 use App\Models\Tenant;
+use App\Support\EmitenteAtual;
 use App\Support\TemaMarca;
 use App\Support\TenantAtual;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 /**
  * Configura a identidade visual do tenant.
@@ -21,6 +25,19 @@ use Livewire\Component;
 #[Title('Marca')]
 class Marca extends Component
 {
+    use WithFileUploads;
+
+    /**
+     * As duas logos aceitam o mesmo tipo de arquivo, e não podem divergir.
+     * Sem SVG: o `sped-da` não desenha SVG no PDF do DANFE, e SVG servido da
+     * mesma origem que o sistema é vetor de script.
+     */
+    private const REGRAS_LOGO = ['required', 'image', 'mimes:png,jpg,jpeg', 'max:1024'];
+
+    public $logoSistema = null;
+
+    public $logoDanfe = null;
+
     public string $primaria = '';
 
     public string $neutra = '';
@@ -45,6 +62,12 @@ class Marca extends Component
     public function tenant(): ?Tenant
     {
         return app(TenantAtual::class)->obter();
+    }
+
+    #[Computed]
+    public function emitente(): ?Emitente
+    {
+        return app(EmitenteAtual::class)->resolver();
     }
 
     /** @return array<int, string> */
@@ -112,6 +135,78 @@ class Marca extends Component
         unset($this->tenant, $this->previaPrimaria, $this->previaNeutra, $this->contrastePrimaria);
 
         session()->flash('sucesso', 'Marca salva. Recarregue para ver o sistema com as novas cores.');
+    }
+
+    public function salvarLogoSistema(): void
+    {
+        $this->authorize('emitente.gerenciar');
+
+        $this->validate([
+            'logoSistema' => self::REGRAS_LOGO,
+        ]);
+
+        $anterior = $this->tenant->logo_path;
+        $path = $this->logoSistema->store('marca/tenant/'.$this->tenant->getKey(), 'fiscal');
+
+        $this->tenant->update(['logo_path' => $path]);
+        $this->apagar($anterior);
+
+        $this->logoSistema = null;
+        unset($this->tenant);
+    }
+
+    public function removerLogoSistema(): void
+    {
+        $this->authorize('emitente.gerenciar');
+
+        $anterior = $this->tenant->logo_path;
+        $this->tenant->update(['logo_path' => null]);
+        $this->apagar($anterior);
+
+        unset($this->tenant);
+    }
+
+    public function salvarLogoDanfe(): void
+    {
+        $this->authorize('emitente.gerenciar');
+
+        $this->validate([
+            'logoDanfe' => self::REGRAS_LOGO,
+        ]);
+
+        $emitente = $this->emitente;
+        abort_if($emitente === null, 404);
+
+        $anterior = $emitente->logo_path;
+        $path = $this->logoDanfe->store('marca/emitente/'.$emitente->getKey(), 'fiscal');
+
+        $emitente->update(['logo_path' => $path]);
+        $this->apagar($anterior);
+
+        $this->logoDanfe = null;
+        unset($this->emitente);
+    }
+
+    public function removerLogoDanfe(): void
+    {
+        $this->authorize('emitente.gerenciar');
+
+        $emitente = $this->emitente;
+        abort_if($emitente === null, 404);
+
+        $anterior = $emitente->logo_path;
+        $emitente->update(['logo_path' => null]);
+        $this->apagar($anterior);
+
+        unset($this->emitente);
+    }
+
+    /** Logo não é documento fiscal: substituída ou removida, o arquivo vai junto. */
+    private function apagar(?string $path): void
+    {
+        if (filled($path) && Storage::disk('fiscal')->exists($path)) {
+            Storage::disk('fiscal')->delete($path);
+        }
     }
 
     public function render()

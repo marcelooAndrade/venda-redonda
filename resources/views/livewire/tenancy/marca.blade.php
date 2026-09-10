@@ -61,6 +61,92 @@
         </form>
     </x-ui.card>
 
+    {{-- Logos. São duas de propósito: o tenant é a empresa que assina o
+         sistema, o emitente é o CNPJ que assina a nota. Matriz e filial
+         dividem a primeira e podem imprimir logos diferentes na segunda. --}}
+    <x-ui.card title="Logos" subtitle="Uma identifica o sistema na tela, a outra sai impressa no DANFE. Não se substituem.">
+        <div class="grid gap-8 md:grid-cols-2">
+
+            <form wire:submit="salvarLogoSistema" class="grid min-w-0 content-start gap-3">
+                <div>
+                    <h3 class="text-xs font-semibold text-graphite-900">Logo do sistema</h3>
+                    <p class="mt-1 text-xs text-graphite-600">
+                        Aparece na barra lateral, no lugar do quadrado com a inicial.
+                    </p>
+                </div>
+
+                {{-- A prévia vai sobre grafite porque é sobre grafite que a
+                     logo vai viver. Logo escura some na sidebar, e é melhor
+                     descobrir isso aqui do que depois de salvar. --}}
+                <div class="flex h-20 items-center justify-center border border-graphite-300 bg-graphite-900 px-4">
+                    @if ($this->tenant?->logo_path)
+                        <img src="{{ route('marca.logo') }}" alt="Logo do sistema" class="max-h-12 w-auto object-contain">
+                    @else
+                        <span class="text-xs text-graphite-400">Nenhuma logo enviada</span>
+                    @endif
+                </div>
+
+                <x-ui.field label="Arquivo" for="logo-sistema" :error="$errors->first('logoSistema')"
+                    hint="PNG ou JPG, até 1 MB. Fundo transparente fica melhor.">
+                    <input type="file" id="logo-sistema" wire:model="logoSistema" accept="image/png,image/jpeg"
+                        class="w-full min-w-0 rounded-md border border-graphite-300 bg-white p-2 text-xs text-graphite-700 file:mr-3 file:cursor-pointer file:rounded file:border-0 file:bg-graphite-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-graphite-900">
+                </x-ui.field>
+
+                <div class="flex flex-wrap gap-2">
+                    <x-ui.button type="submit" size="sm" wire:loading.attr="disabled" wire:target="logoSistema,salvarLogoSistema">
+                        Enviar
+                    </x-ui.button>
+                    @if ($this->tenant?->logo_path)
+                        <x-ui.button type="button" variant="ghost" size="sm"
+                            wire:click="removerLogoSistema"
+                            wire:confirm="Remover a logo do sistema? A barra lateral volta a mostrar a inicial.">
+                            Remover
+                        </x-ui.button>
+                    @endif
+                </div>
+            </form>
+
+            <form wire:submit="salvarLogoDanfe" class="grid min-w-0 content-start gap-3">
+                <div>
+                    <h3 class="text-xs font-semibold text-graphite-900">Logo do DANFE</h3>
+                    <p class="mt-1 text-xs text-graphite-600">
+                        Impressa na via auxiliar da nota, do emitente
+                        <span class="font-medium text-graphite-900">{{ $this->emitente?->nome_fantasia ?: $this->emitente?->razao_social ?: 'em foco' }}</span>.
+                    </p>
+                </div>
+
+                {{-- Aqui o fundo é branco porque o DANFE é impresso em papel. --}}
+                <div class="flex h-20 items-center justify-center border border-graphite-300 bg-white px-4">
+                    @if ($this->emitente?->logo_path)
+                        <span class="etiqueta bg-success-100 px-2 py-1 text-success-800">Logo definida</span>
+                    @else
+                        <span class="text-xs text-graphite-500">Nenhuma logo enviada</span>
+                    @endif
+                </div>
+
+                <x-ui.field label="Arquivo" for="logo-danfe" :error="$errors->first('logoDanfe')"
+                    hint="PNG ou JPG, até 1 MB. O DANFE imprime em preto e branco.">
+                    <input type="file" id="logo-danfe" wire:model="logoDanfe" accept="image/png,image/jpeg"
+                        class="w-full min-w-0 rounded-md border border-graphite-300 bg-white p-2 text-xs text-graphite-700 file:mr-3 file:cursor-pointer file:rounded file:border-0 file:bg-graphite-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-graphite-900">
+                </x-ui.field>
+
+                <div class="flex flex-wrap gap-2">
+                    <x-ui.button type="submit" size="sm" wire:loading.attr="disabled" wire:target="logoDanfe,salvarLogoDanfe">
+                        Enviar
+                    </x-ui.button>
+                    @if ($this->emitente?->logo_path)
+                        <x-ui.button type="button" variant="ghost" size="sm"
+                            wire:click="removerLogoDanfe"
+                            wire:confirm="Remover a logo do DANFE? As próximas vias saem sem ela.">
+                            Remover
+                        </x-ui.button>
+                    @endif
+                </div>
+            </form>
+
+        </div>
+    </x-ui.card>
+
     {{-- Prévia --}}
     <x-ui.card title="Prévia da escala" subtitle="Onze tons gerados a partir das duas cores. A marca fica no tom 600, o escuro no 900.">
         <div class="grid gap-5">

@@ -44,7 +44,7 @@
         <aside class="hidden w-60 shrink-0 flex-col bg-graphite-900 md:flex">
             <div class="flex h-14 items-center gap-2.5 border-b border-white/10 px-5">
                 @if ($tenant?->logo_path)
-                    <img src="{{ $tenant->logo_path }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
+                    <img src="{{ route('marca.logo') }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
                 @else
                     <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary-600 font-display text-xs font-bold text-white">
                         {{ mb_strtoupper(mb_substr($tenant?->rotulo() ?? 'N', 0, 1)) }}

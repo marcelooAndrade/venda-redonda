@@ -61,9 +61,11 @@ use App\Models\PerfilFiscal;
 use App\Models\PerfilFiscalRegra;
 use App\Models\Pessoa;
 use App\Models\Produto;
+use App\Models\User;
 use App\Services\Fiscal\RespostaSefaz;
 use App\Services\Fiscal\SefazGateway;
 use App\Services\Stock\StockService;
+use App\Support\TenantAtual;
 
 function produtoDe(Emitente $emitente, array $extra = []): Produto
 {
@@ -250,4 +252,22 @@ function comGateway(array $roteiro): object
 function autorizada(string $chave = '35260911222333000181550010000014801033717992'): RespostaSefaz
 {
     return new RespostaSefaz('100', 'Autorizado o uso da NF-e', '135260000123456', null, '<nfeProc/>', $chave);
+}
+
+/*
+ * Usuário do tenant de teste, com perfil e emitente vinculados.
+ *
+ * Três suítes precisam dele: a tela de marca, o upload de logo e o
+ * isolamento entre tenants.
+ */
+function usuarioMarca(string $perfil): User
+{
+    $tenant = app(TenantAtual::class)->obter();
+    $user = User::factory()->create(['tenant_id' => $tenant->id]);
+    $emitente = Emitente::factory()->create(['tenant_id' => $tenant->id]);
+    $user->emitentes()->attach($emitente);
+    setPermissionsTeamId($emitente->id);
+    $user->assignRole($perfil);
+
+    return $user;
 }

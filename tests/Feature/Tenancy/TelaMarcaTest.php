@@ -2,25 +2,10 @@
 
 use App\Enums\Perfil;
 use App\Livewire\Tenancy\Marca;
-use App\Models\Emitente;
 use App\Models\Tenant;
-use App\Models\User;
 use App\Support\TemaMarca;
-use App\Support\TenantAtual;
 use Database\Seeders\PerfilSeeder;
 use Livewire\Livewire;
-
-function usuarioMarca(string $perfil): User
-{
-    $tenant = app(TenantAtual::class)->obter();
-    $user = User::factory()->create(['tenant_id' => $tenant->id]);
-    $emitente = Emitente::factory()->create(['tenant_id' => $tenant->id]);
-    $user->emitentes()->attach($emitente);
-    setPermissionsTeamId($emitente->id);
-    $user->assignRole($perfil);
-
-    return $user;
-}
 
 beforeEach(fn () => $this->seed(PerfilSeeder::class));
 
