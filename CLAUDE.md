@@ -6,25 +6,34 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Fase 1 concluída.** Design system extraído do site e escrito em `docs/design-system.md`.
-Aguardando aprovação da paleta para iniciar a Fase 2 (arquitetura e modelagem).
+**Fase 2 concluída.** Arquitetura em `docs/arquitetura.md`, regras fiscais em `docs/decisoes-fiscais.md`.
+Aguardando aprovação para iniciar a Fase 3 (implementação, Módulo 1: Base).
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
-| 1 | Design system a partir de rcmdobrasil.com.br | Paleta concluída, aguardando aprovação |
-| 2 | Arquitetura e modelagem | Pendente |
+| 1 | Design system a partir de rcmdobrasil.com.br | Paleta aprovada. Componentes Blade pendentes do scaffold |
+| 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
 | 3 | Implementação, módulos 1 a 10 | Pendente |
 
 ## Stack
 
-Definida na Fase 2. O prompt do projeto estabelece como alvo: Laravel estável mais recente, PHP 8.3 ou superior, MySQL ou PostgreSQL, Livewire + Alpine.js + Tailwind, `nfephp-org/sped-nfe` + `sped-common` + `sped-da`, filas e scheduler, `spatie/laravel-permission`, Pest, deploy no Laravel Cloud.
+Definida na Fase 2. Detalhes e justificativas em `docs/arquitetura.md`.
 
-Divergências conhecidas em relação ao projeto de referência, a justificar na Fase 2:
+| Camada | Escolha |
+|---|---|
+| PHP | `^8.3` |
+| Framework | Laravel 13.x |
+| Banco | MySQL 8 |
+| Front | Livewire 3 + Alpine 3 + Tailwind 4 |
+| Fiscal | `nfephp-org/sped-nfe ^5.2.8`, `sped-common`, `sped-da` com versão fixa |
+| Permissões | `spatie/laravel-permission`, com `emitente_id` como team key |
+| Filas | `database`, worker gerenciado |
+| Storage | S3 privado obrigatório |
+| Testes | Pest 3 |
+| Deploy | Laravel Cloud |
 
-- O `app-transm` usa **Blade puro + Alpine**, sem Livewire.
-- O `app-transm` usa **helper próprio de permissões**, não o `spatie/laravel-permission`.
-- O `app-transm` roda a fila **por cron**, não por worker persistente, por limitação da hospedagem atual. No Laravel Cloud isso não se aplica.
+Divergências deliberadas em relação ao `app-transm`, ambas justificadas em `docs/arquitetura.md`: **Livewire** no lugar de Blade puro, e **`spatie/laravel-permission`** no lugar do helper próprio de 269 linhas.
 
 ## Variáveis do projeto
 
@@ -32,7 +41,9 @@ Divergências conhecidas em relação ao projeto de referência, a justificar na
 |---|---|
 | Caminho do projeto de referência | `/Users/marceloandrade/Projetos/app-transm` (somente leitura) |
 | Nome do sistema | `emissor-nfe` (assumido a partir do exemplo do prompt, confirmar) |
-| Dados do responsável técnico (`infRespTec`) | **Pendente.** Necessário no Módulo 2 |
+| Dados do responsável técnico (`infRespTec`) | **Pendente.** Bloqueia o Módulo 2 |
+| CRT da RCM do Brasil | **Pendente.** Define se IBS/CBS é exigência de hoje ou de abr/2027 |
+| Banco de produção no Laravel Cloud | **Pendente.** MySQL 8 ou PostgreSQL |
 
 ## Regras de trabalho
 
@@ -72,6 +83,11 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | `steel` e `ember` derivados das fotos da empresa | Em vez de importar azul e amarelo genéricos, as cores semânticas saem do azul-aço da fachada (195 a 210 graus) e do âmbar do metal fundido (30 a 45 graus) |
 | 2026-09-10 | Formulários do admin em superfície clara | O site usa formulário sobre fundo escuro, adequado a 6 campos de contato. Em lançamento de itens de NF-e o dia inteiro, fundo escuro cansa e piora a leitura numérica |
 | 2026-09-10 | `tabular-nums` obrigatório em colunas numéricas | Sem isso os dígitos desalinham entre linhas e conferir uma coluna de totais fiscais fica sofrível |
+| 2026-09-10 | Livewire 3, contrariando o Blade puro da referência | A tela de emissão recalcula tributos a cada mudança. Como todo total precisa ser recalculado no servidor por segurança fiscal, o Livewire evita manter duas implementações do mesmo cálculo |
+| 2026-09-10 | `spatie/laravel-permission` com teams | O acesso é por emitente, não global. O recurso de teams mapeia direto para multiemitente. O helper da referência não cobre isso |
+| 2026-09-10 | Uma tabela `pessoas`, não três | Uma metalúrgica pode ser cliente e fornecedora ao mesmo tempo. Três tabelas transformariam esse CNPJ em dois cadastros que divergem no primeiro endereço atualizado |
+| 2026-09-10 | IBS/CBS entra no Módulo 4, não em fase posterior | NT 2025.002-RTC v1.40: obrigatório em produção desde 03/08/2026 para CRT 3. Ver DF-001 |
+| 2026-09-10 | Estoque como razão imutável | Movimento nunca é editado ou apagado. Correção é movimento de estorno, o que preserva o Kardex como registro fiel |
 
 ## Documentação
 
