@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Multitenancy e marca dinâmica concluídos.** 224 testes passando, Pint limpo.
-Do Módulo 4 faltam a tela de produtos e as naturezas de operação.
+**Módulo 4 concluído.** 257 testes passando, Pint limpo.
+Próximo: Módulo 5 (Estoque) e depois o Módulo 7 (Emissão), onde entra o NfeXmlBuilder.
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1, 2 e 3 prontos. Módulo 4 em andamento |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 4 prontos. Falta 5 a 10 |
 
 ## Stack
 
@@ -132,6 +132,7 @@ php artisan db:seed --class=PerfilSeeder            # 4 perfis, 25 permissões
 php artisan db:seed --class=TabelasFiscaisSeeder    # CST, CSOSN, unidades
 php artisan fiscal:importar-municipios    # IBGE: 27 UFs e 5.571 municípios
 php artisan fiscal:importar-ncm           # Siscomex: tabela NCM vigente
+php artisan fiscal:alertar-certificados   # marcos de 30, 15 e 7 dias
 npm run build                             # assets
 php artisan serve                         # /design-system mostra a vitrine (só admin)
 ```

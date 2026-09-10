@@ -2,6 +2,7 @@
 
 use App\Livewire\Certificados\Gerenciar;
 use App\Livewire\Pessoas\Cadastro;
+use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,8 @@ Route::view('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
+    Route::get('marca', Marca::class)->name('marca');
+    Route::get('produtos', App\Livewire\Produtos\Cadastro::class)->name('produtos');
     Route::get('regras-fiscais', Regras::class)->name('regras-fiscais');
     Route::get('destinatarios', Cadastro::class)->name('destinatarios');
     Route::get('certificados', Gerenciar::class)->name('certificados');
