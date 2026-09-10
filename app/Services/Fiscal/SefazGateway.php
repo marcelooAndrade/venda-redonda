@@ -27,4 +27,20 @@ interface SefazGateway
     public function consultarChave(Emitente $emitente, string $chave): RespostaSefaz;
 
     public function statusServico(Emitente $emitente): RespostaSefaz;
+
+    /** Evento de cancelamento (110111). */
+    public function cancelar(Emitente $emitente, string $chave, string $protocolo, string $justificativa): RespostaSefaz;
+
+    /** Evento de carta de correção (110110). */
+    public function cartaCorrecao(Emitente $emitente, string $chave, string $correcao, int $sequencia): RespostaSefaz;
+
+    /** Inutilização de faixa de numeração. */
+    public function inutilizar(
+        Emitente $emitente,
+        int $ano,
+        int $serie,
+        int $inicial,
+        int $final,
+        string $justificativa,
+    ): RespostaSefaz;
 }

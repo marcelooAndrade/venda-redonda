@@ -90,6 +90,55 @@ class NfephpSefazGateway implements SefazGateway
         );
     }
 
+    public function cancelar(Emitente $emitente, string $chave, string $protocolo, string $justificativa): RespostaSefaz
+    {
+        $std = $this->padronizar(
+            $this->tools->para($emitente)->sefazCancela($chave, $justificativa, $protocolo)
+        );
+
+        return $this->doEvento($std);
+    }
+
+    public function cartaCorrecao(Emitente $emitente, string $chave, string $correcao, int $sequencia): RespostaSefaz
+    {
+        $std = $this->padronizar(
+            $this->tools->para($emitente)->sefazCCe($chave, $correcao, $sequencia)
+        );
+
+        return $this->doEvento($std);
+    }
+
+    public function inutilizar(
+        Emitente $emitente,
+        int $ano,
+        int $serie,
+        int $inicial,
+        int $final,
+        string $justificativa,
+    ): RespostaSefaz {
+        $std = $this->padronizar(
+            $this->tools->para($emitente)->sefazInutiliza($serie, $inicial, $final, $justificativa, $ano)
+        );
+
+        return new RespostaSefaz(
+            cStat: (string) ($std->infInut->cStat ?? $std->cStat ?? '999'),
+            xMotivo: (string) ($std->infInut->xMotivo ?? $std->xMotivo ?? ''),
+            protocolo: isset($std->infInut->nProt) ? (string) $std->infInut->nProt : null,
+        );
+    }
+
+    private function doEvento(object $std): RespostaSefaz
+    {
+        $ret = $std->retEvento->infEvento ?? $std->infEvento ?? $std;
+
+        return new RespostaSefaz(
+            cStat: (string) ($ret->cStat ?? '999'),
+            xMotivo: (string) ($ret->xMotivo ?? ''),
+            protocolo: isset($ret->nProt) ? (string) $ret->nProt : null,
+            chave: isset($ret->chNFe) ? (string) $ret->chNFe : null,
+        );
+    }
+
     /** Junta o XML assinado com o protocolo, que é o arquivo de guarda legal. */
     private function protocolar(object $tools, string $assinado, string $retorno): ?string
     {

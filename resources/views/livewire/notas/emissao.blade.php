@@ -41,6 +41,14 @@
                             <span wire:loading wire:target="transmitir">Transmitindo...</span>
                         </x-ui.button>
                     @endcan
+                @elseif ($nota->status->is(\App\Enums\Fiscal\NFeStatus::Autorizada))
+                    <x-ui.button variant="secondary" wire:click="baixarDanfe">DANFE</x-ui.button>
+                    @can('nota.carta-correcao')
+                        <x-ui.button variant="secondary" wire:click="abrirEvento('cce')">Carta de correção</x-ui.button>
+                    @endcan
+                    @can('nota.cancelar')
+                        <x-ui.button variant="destructive" wire:click="abrirEvento('cancelamento')">Cancelar NF-e</x-ui.button>
+                    @endcan
                 @endif
             </x-slot:actions>
 
@@ -49,6 +57,56 @@
                     :title="'SEFAZ '.$nota->c_stat">
                     <span class="whitespace-pre-line">{{ $nota->x_motivo }}</span>
                 </x-ui.alert>
+            @endif
+
+            @error('evento')
+                <x-ui.alert variant="danger" class="mb-4" title="Evento recusado">
+                    <span class="whitespace-pre-line">{{ $message }}</span>
+                </x-ui.alert>
+            @enderror
+
+            {{-- Evento em foco --}}
+            @if ($evento)
+                <x-ui.card class="mb-4"
+                    :title="$evento === 'cancelamento' ? 'Cancelar NF-e' : 'Carta de correção'">
+                    <form wire:submit="gravarEvento" class="grid gap-3">
+                        <x-ui.field
+                            :label="$evento === 'cancelamento' ? 'Justificativa' : 'Texto da correção'"
+                            for="ev-texto" required
+                            :hint="$evento === 'cancelamento'
+                                ? 'Mínimo de 15 caracteres. Prazo legal de 24 horas após a autorização.'
+                                : 'Mínimo de 15 caracteres. Não pode alterar valores, destinatário nem datas.'">
+                            <x-ui.textarea id="ev-texto" rows="3" wire:model="textoEvento" />
+                        </x-ui.field>
+                        <div class="flex gap-2">
+                            <x-ui.button type="submit" :variant="$evento === 'cancelamento' ? 'destructive' : 'primary'">
+                                {{ $evento === 'cancelamento' ? 'Confirmar cancelamento' : 'Enviar correção' }}
+                            </x-ui.button>
+                            <x-ui.button variant="ghost" wire:click="$set('evento', null)">Desistir</x-ui.button>
+                        </div>
+                    </form>
+                </x-ui.card>
+            @endif
+
+            {{-- Linha do tempo --}}
+            @if ($this->eventos->isNotEmpty())
+                <div class="mb-4 border-l-2 border-graphite-200 pl-4">
+                    <p class="overline mb-2 text-graphite-500">Eventos</p>
+                    @foreach ($this->eventos as $ev)
+                        <div class="mb-2 text-sm">
+                            <span class="font-semibold">{{ $ev->rotulo() }}</span>
+                            <span class="num text-graphite-500">seq {{ $ev->sequencia }} ·
+                                {{ $ev->created_at->format('d/m/Y H:i') }} ·
+                                {{ $ev->user?->name ?? 'sistema' }}</span>
+                            @if ($ev->protocolo)
+                                <span class="num block text-xs text-graphite-500">Protocolo {{ $ev->protocolo }}</span>
+                            @endif
+                            @if ($ev->correcao || $ev->justificativa)
+                                <span class="block text-xs text-graphite-600">{{ $ev->correcao ?? $ev->justificativa }}</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             @endif
 
             @if ($nota->status->is(\App\Enums\Fiscal\NFeStatus::Autorizada))

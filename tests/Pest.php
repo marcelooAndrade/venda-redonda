@@ -61,6 +61,8 @@ use App\Models\PerfilFiscal;
 use App\Models\PerfilFiscalRegra;
 use App\Models\Pessoa;
 use App\Models\Produto;
+use App\Services\Fiscal\RespostaSefaz;
+use App\Services\Fiscal\SefazGateway;
 use App\Services\Stock\StockService;
 
 function produtoDe(Emitente $emitente, array $extra = []): Produto
@@ -170,4 +172,82 @@ function notaPronta(array $extraNota = [], array $extraRegra = []): Nota
     ]);
 
     return $nota->fresh(['itens', 'destinatario', 'emitente']);
+}
+
+/*
+ * Gateway falso da SEFAZ, roteirizado.
+ *
+ * Fica aqui porque três suítes precisam dele: transmissão, eventos e a tela
+ * de emissão. Guarda o que foi chamado, para as asserções de idempotência.
+ */
+function gatewayFake(array $roteiro): SefazGateway
+{
+    return new class($roteiro) implements SefazGateway
+    {
+        public array $chamadas = [];
+
+        public function __construct(private array $roteiro) {}
+
+        private function responder(string $metodo): RespostaSefaz
+        {
+            $this->chamadas[] = $metodo;
+            $r = $this->roteiro[$metodo] ?? new RespostaSefaz('999', "Sem roteiro para {$metodo}");
+
+            if ($r instanceof Throwable) {
+                throw $r;
+            }
+
+            return $r;
+        }
+
+        public function enviar(Emitente $e, string $xml): RespostaSefaz
+        {
+            return $this->responder('enviar');
+        }
+
+        public function consultarRecibo(Emitente $e, string $recibo): RespostaSefaz
+        {
+            return $this->responder('consultarRecibo');
+        }
+
+        public function consultarChave(Emitente $e, string $chave): RespostaSefaz
+        {
+            return $this->responder('consultarChave');
+        }
+
+        public function statusServico(Emitente $e): RespostaSefaz
+        {
+            $this->chamadas[] = 'statusServico';
+
+            return $this->roteiro['statusServico'] ?? new RespostaSefaz('107', 'Servico em operacao');
+        }
+
+        public function cancelar(Emitente $e, string $chave, string $protocolo, string $justificativa): RespostaSefaz
+        {
+            return $this->responder('cancelar');
+        }
+
+        public function cartaCorrecao(Emitente $e, string $chave, string $correcao, int $sequencia): RespostaSefaz
+        {
+            return $this->responder('cartaCorrecao');
+        }
+
+        public function inutilizar(Emitente $e, int $ano, int $serie, int $inicial, int $final, string $justificativa): RespostaSefaz
+        {
+            return $this->responder('inutilizar');
+        }
+    };
+}
+
+function comGateway(array $roteiro): object
+{
+    $fake = gatewayFake($roteiro);
+    app()->instance(SefazGateway::class, $fake);
+
+    return $fake;
+}
+
+function autorizada(string $chave = '35260911222333000181550010000014801033717992'): RespostaSefaz
+{
+    return new RespostaSefaz('100', 'Autorizado o uso da NF-e', '135260000123456', null, '<nfeProc/>', $chave);
 }

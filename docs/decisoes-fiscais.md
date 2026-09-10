@@ -363,3 +363,27 @@ E a disponibilidade de estoque é conferida **antes** disso: barrar cedo evita q
 Se a baixa de estoque falhar **depois** da autorização, a nota **continua autorizada**. A SEFAZ já disse que ela existe, e desfazer isso no sistema seria negar um fato registrado no fisco.
 
 A divergência de estoque é registrada em `sefaz_logs` para o operador resolver por ajuste ou inventário. Errar para o lado de refletir a realidade é sempre melhor do que errar para o lado de esconder.
+
+## DF-022 · O prazo de cancelamento é de 24 horas, e o sistema não o estende
+
+Fonte: Ajuste SINIEF 07/05, **cláusula décima segunda**, no texto consolidado do CONFAZ. Verificado em 10/09/2026.
+
+O prazo é "não superior a vinte e quatro horas, contado do momento em que foi concedida a Autorização de Uso da NF-e". O sistema barra antes de chamar a SEFAZ, com a mensagem dizendo o que fazer no lugar: emitir nota de devolução ou de anulação.
+
+O parágrafo único da mesma cláusula permite o cancelamento extemporâneo "a critério de cada unidade federada, em casos excepcionais". O sistema **não** implementa isso: depende de norma estadual que varia por UF, e chutar seria inventar regra fiscal. Quando a RCM precisar, entra como parâmetro do emitente, com a fonte registrada aqui.
+
+## DF-023 · O que a carta de correção não pode corrigir é lista da lei, não escolha nossa
+
+Fonte: Ajuste SINIEF 07/05, **cláusula décima quarta-A, incisos I a V**. Verificado em 10/09/2026.
+
+Os cinco incisos vedam corrigir: variáveis que determinam o valor do imposto, como base de cálculo, alíquota, preço e quantidade (I); dados que mudem o remetente ou o destinatário (II); a data de emissão ou de saída (III); os campos de exportação vinculados à DU-E (IV); e a inclusão ou alteração de parcelas (V). O sistema recusa o texto **antes** de enviar quando reconhece termos desses cinco grupos.
+
+A checagem é por termo e não é infalível: pega o caso óbvio, não o disfarçado. Não substitui o contador, apenas evita o erro comum.
+
+O limite de 20 cartas por nota **não** vem do Ajuste, que só manda consolidar na última carta tudo que já foi retificado (cláusula 14-A, § 4º). Vem do schema: `leiauteCCe_v1.00.xsd` restringe `nSeqEvento` ao padrão `[1-9]|[1][0-9]{0,1}|20`. Limite técnico, não legal, e por isso pode mudar com uma NT sem mudar o Ajuste.
+
+## DF-024 · O DANFE nasce do XML protocolado, nunca do que está no banco
+
+O DANFE é representação gráfica do documento **autorizado**. Gerá-lo a partir dos campos do banco abriria a chance de imprimir algo diferente do que a SEFAZ registrou, se um cadastro mudar depois da autorização.
+
+Por isso o `DanfeService` lê o `nfeProc` guardado, e a nota sem XML protocolado simplesmente não tem DANFE. É também o motivo de a demonstração local não conseguir gerar um: a nota do seed nunca passou pela SEFAZ.

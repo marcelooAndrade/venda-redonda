@@ -6,10 +6,13 @@ use App\Enums\Fiscal\NFeStatus;
 use App\Models\Emitente;
 use App\Models\NaturezaOperacao;
 use App\Models\Nota;
+use App\Models\NotaEvento;
 use App\Models\NotaItem;
 use App\Models\Pessoa;
 use App\Models\Produto;
 use App\Services\Fiscal\CalcularNota;
+use App\Services\Fiscal\DanfeService;
+use App\Services\Fiscal\NFeEventService;
 use App\Services\Fiscal\NFeTransmitter;
 use App\Services\Fiscal\NumeracaoService;
 use App\Support\EmitenteAtual;
@@ -37,6 +40,11 @@ class Emissao extends Component
     public string $quantidade = '1';
 
     public string $valorUnitario = '';
+
+    /** Ação de evento em foco: cancelamento ou carta de correção. */
+    public ?string $evento = null;
+
+    public string $textoEvento = '';
 
     public function mount(): void
     {
@@ -187,6 +195,67 @@ class Emissao extends Component
         NotaItem::where('nota_id', $this->notaId)->whereKey($itemId)->delete();
 
         $this->recalcular($calculadora);
+    }
+
+    #[Computed]
+    public function eventos()
+    {
+        return $this->notaId === null
+            ? collect()
+            : NotaEvento::query()->where('nota_id', $this->notaId)->with('user')->orderBy('id')->get();
+    }
+
+    public function abrirEvento(string $tipo): void
+    {
+        $this->evento = $tipo;
+        $this->textoEvento = '';
+        $this->resetErrorBag();
+    }
+
+    public function gravarEvento(NFeEventService $servico): void
+    {
+        $nota = $this->nota;
+        abort_if($nota === null, 404);
+
+        $this->authorize($this->evento === 'cancelamento' ? 'nota.cancelar' : 'nota.carta-correcao');
+
+        try {
+            $this->evento === 'cancelamento'
+                ? $servico->cancelar($nota, $this->textoEvento, Auth::user())
+                : $servico->cartaCorrecao($nota, $this->textoEvento, Auth::user());
+        } catch (Throwable $e) {
+            $this->addError('evento', $e->getMessage());
+
+            return;
+        }
+
+        $rotulo = $this->evento === 'cancelamento' ? 'Cancelamento' : 'Carta de correção';
+        $this->reset('evento', 'textoEvento');
+        unset($this->nota, $this->notas, $this->eventos);
+
+        session()->flash('sucesso', "{$rotulo} homologado pela SEFAZ.");
+    }
+
+    public function baixarDanfe(DanfeService $danfe)
+    {
+        $this->authorize('nota.ver');
+
+        $nota = $this->nota;
+        abort_if($nota === null, 404);
+
+        try {
+            $pdf = $danfe->gerar($nota);
+        } catch (Throwable $e) {
+            $this->addError('evento', $e->getMessage());
+
+            return null;
+        }
+
+        return response()->streamDownload(
+            fn () => print ($pdf),
+            "DANFE-{$nota->chave_acesso}.pdf",
+            ['Content-Type' => 'application/pdf'],
+        );
     }
 
     public function transmitir(NFeTransmitter $transmissor, CalcularNota $calculadora): void

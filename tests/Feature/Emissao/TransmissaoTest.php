@@ -1,72 +1,13 @@
 <?php
 
 use App\Enums\Fiscal\NFeStatus;
-use App\Models\Emitente;
 use App\Models\EstoqueMovimento;
 use App\Models\SefazLog;
 use App\Models\User;
 use App\Services\Fiscal\NFeTransmitter;
 use App\Services\Fiscal\RespostaSefaz;
-use App\Services\Fiscal\SefazGateway;
 use App\Services\Stock\StockService;
 use Illuminate\Support\Facades\Storage;
-
-/** Gateway falso, roteirizado. Guarda o que foi chamado, para as asserções. */
-function gatewayFake(array $roteiro): SefazGateway
-{
-    return new class($roteiro) implements SefazGateway
-    {
-        public array $chamadas = [];
-
-        public function __construct(private array $roteiro) {}
-
-        public function enviar(Emitente $e, string $xml): RespostaSefaz
-        {
-            $this->chamadas[] = 'enviar';
-            $r = $this->roteiro['enviar'] ?? null;
-
-            if ($r instanceof Throwable) {
-                throw $r;
-            }
-
-            return $r;
-        }
-
-        public function consultarRecibo(Emitente $e, string $recibo): RespostaSefaz
-        {
-            $this->chamadas[] = 'consultarRecibo';
-
-            return $this->roteiro['consultarRecibo'];
-        }
-
-        public function consultarChave(Emitente $e, string $chave): RespostaSefaz
-        {
-            $this->chamadas[] = 'consultarChave';
-
-            return $this->roteiro['consultarChave'];
-        }
-
-        public function statusServico(Emitente $e): RespostaSefaz
-        {
-            $this->chamadas[] = 'statusServico';
-
-            return $this->roteiro['statusServico'] ?? new RespostaSefaz('107', 'Servico em operacao');
-        }
-    };
-}
-
-function comGateway(array $roteiro): object
-{
-    $fake = gatewayFake($roteiro);
-    app()->instance(SefazGateway::class, $fake);
-
-    return $fake;
-}
-
-function autorizada(string $chave = '35260911222333000181550010000014801033717992'): RespostaSefaz
-{
-    return new RespostaSefaz('100', 'Autorizado o uso da NF-e', '135260000123456', null, '<nfeProc/>', $chave);
-}
 
 beforeEach(function () {
     Storage::fake('fiscal');
