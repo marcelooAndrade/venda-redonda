@@ -1,0 +1,23 @@
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+.DS_Store
+/.idea
+/.vscode
+/auth.json
+npm-debug.log
+yarn-error.log
+
+# Nunca versionar material fiscal real
+*.pfx
+*.p12
+/storage/app/fiscal
+/docs/design/referencia/*.png
