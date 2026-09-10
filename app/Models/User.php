@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\Auditavel;
+use App\Enums\Perfil;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\Auditavel;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -12,10 +13,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -67,6 +70,19 @@ class User extends Authenticatable implements PasskeyUser
     public function podeAcessar(Emitente $emitente): bool
     {
         return $this->emitentes()->whereKey($emitente->getKey())->exists();
+    }
+
+    /**
+     * As roles do spatie são escopadas por emitente (teams), então a checagem
+     * global precisa olhar o pivô direto, sem o escopo do time corrente.
+     */
+    public function eAdministradorEmAlgumEmitente(): bool
+    {
+        return DB::table(config('permission.table_names.model_has_roles'))
+            ->where('model_type', $this->getMorphClass())
+            ->where(config('permission.column_names.model_morph_key'), $this->getKey())
+            ->whereIn('role_id', Role::query()->where('name', Perfil::Administrador->value)->pluck('id'))
+            ->exists();
     }
 
     /**

@@ -6,13 +6,13 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Fase 3, Módulo 1 (Base): núcleo concluído.** 51 testes passando, Pint limpo.
+**Design system aplicado ao sistema.** 65 testes passando, Pint limpo.
 Aguardando aprovação para o Módulo 2 (Emitente e Certificado Digital).
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
-| 1 | Design system a partir de rcmdobrasil.com.br | Paleta aprovada. Componentes Blade pendentes do scaffold |
+| 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
 | 3 | Implementação, módulos 1 a 10 | Módulo 1: núcleo pronto, telas pendentes |
 
@@ -88,6 +88,9 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Uma tabela `pessoas`, não três | Uma metalúrgica pode ser cliente e fornecedora ao mesmo tempo. Três tabelas transformariam esse CNPJ em dois cadastros que divergem no primeiro endereço atualizado |
 | 2026-09-10 | IBS/CBS entra no Módulo 4, não em fase posterior | NT 2025.002-RTC v1.40: obrigatório em produção desde 03/08/2026 para CRT 3. Ver DF-001 |
 | 2026-09-10 | Estoque como razão imutável | Movimento nunca é editado ou apagado. Correção é movimento de estorno, o que preserva o Kardex como registro fiel |
+| 2026-09-10 | Manter o Flux e reposicionar por tokens, em vez de removê-lo | O Flux está em 26 arquivos do starter kit. Como o `@theme` do Tailwind 4 é global, redefinir a paleta, mapear `zinc` para `graphite` e zerar os raios traz as telas de autenticação para a identidade RCM sem refactor |
+| 2026-09-10 | `@theme static` em vez de `@theme` | O Tailwind faz tree-shaking dos tokens e só emite as variáveis usadas por utilitários gerados. Um design system precisa expor todos os 66 tokens |
+| 2026-09-10 | `EmitenteAtual` reconfere o vínculo a cada resolução | Nunca confiar só na sessão. Sessão adulterada ou vínculo revogado depois da escolha não pode dar acesso |
 
 ## Documentação
 
@@ -112,6 +115,7 @@ php artisan db:seed --class=TabelasFiscaisSeeder    # CST, CSOSN, unidades
 php artisan fiscal:importar-municipios    # IBGE: 27 UFs e 5.571 municípios
 php artisan fiscal:importar-ncm           # Siscomex: tabela NCM vigente
 npm run build                             # assets
+php artisan serve                         # /design-system mostra a vitrine (só admin)
 ```
 
 Banco: SQLite local e em teste, MySQL em produção. Não há servidor MySQL nesta máquina.

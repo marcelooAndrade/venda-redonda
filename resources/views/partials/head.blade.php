@@ -11,5 +11,10 @@
 
 @fonts
 
+{{-- Fontes da identidade RCM: Barlow Condensed nos títulos, Inter no corpo. --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap">
+
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance

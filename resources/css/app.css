@@ -8,43 +8,161 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+/*
+ | Design System RCM
+ |
+ | Extraído de rcmdobrasil.com.br por renderização real. Ver docs/design-system.md.
+ | Valores marcados como "medido" vieram do site, não são interpolação.
+ */
+@theme static {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-display: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
 
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f5f5f5;
-    --color-zinc-200: #e5e5e5;
-    --color-zinc-300: #d4d4d4;
-    --color-zinc-400: #a3a3a3;
-    --color-zinc-500: #737373;
-    --color-zinc-600: #525252;
-    --color-zinc-700: #404040;
-    --color-zinc-800: #262626;
-    --color-zinc-900: #171717;
-    --color-zinc-950: #0a0a0a;
+    /* Raio zero é a assinatura da marca. Todo controle medido no site tem 0. */
+    --radius-xs: 0px;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-xl: 0px;
+    --radius-2xl: 0px;
+    --radius-3xl: 0px;
+    --radius-4xl: 0px;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    /* Vermelho RCM. 600 é a marca, 700 é o hover, ambos medidos. */
+    --color-primary-50: #fef2f3;
+    --color-primary-100: #fce0e3;
+    --color-primary-200: #f9c3c9;
+    --color-primary-300: #f49aa4;
+    --color-primary-400: #ee6575;
+    --color-primary-500: #eb3a4f;
+    --color-primary-600: #e8192c;
+    --color-primary-700: #b91c1c;
+    --color-primary-800: #8f1519;
+    --color-primary-900: #6b1214;
+    --color-primary-950: #3d0809;
+
+    /* Grafite industrial. 800 é o charcoal, 900 é o preto, ambos medidos. */
+    --color-graphite-50: #f6f6f6;
+    --color-graphite-100: #e8e8e8;
+    --color-graphite-200: #d1d1d1;
+    --color-graphite-300: #b0b0b0;
+    --color-graphite-400: #8a8a8a;
+    --color-graphite-500: #6d6d6d;
+    --color-graphite-600: #555555;
+    --color-graphite-700: #3e3e3e;
+    --color-graphite-800: #2a2a2a;
+    --color-graphite-900: #1a1a1a;
+    --color-graphite-950: #0f0f0f;
+
+    /* Azul-aço da fachada, matiz 195 a 210 graus. Informativo. */
+    --color-steel-50: #f2f6f8;
+    --color-steel-100: #e1ecf0;
+    --color-steel-200: #c4d9e1;
+    --color-steel-300: #9fbfcb;
+    --color-steel-400: #7d97a3;
+    --color-steel-500: #5f7f8d;
+    --color-steel-600: #4b6875;
+    --color-steel-700: #3d5561;
+    --color-steel-800: #34474f;
+    --color-steel-900: #2d3c43;
+    --color-steel-950: #1a252a;
+
+    /* Âmbar do metal fundido, matiz 30 a 45 graus. Alerta e homologação. */
+    --color-ember-50: #fdf8ed;
+    --color-ember-100: #f9edd0;
+    --color-ember-200: #f2d89c;
+    --color-ember-300: #e8bc5f;
+    --color-ember-400: #dda132;
+    --color-ember-500: #c4861c;
+    --color-ember-600: #9e6c17;
+    --color-ember-700: #7c5314;
+    --color-ember-800: #5f4014;
+    --color-ember-900: #4a3212;
+    --color-ember-950: #2a1c09;
+
+    --color-success-50: #f0faf4;
+    --color-success-100: #dbf2e3;
+    --color-success-200: #b9e5c9;
+    --color-success-300: #88d0a5;
+    --color-success-400: #4fb47b;
+    --color-success-500: #2c9760;
+    --color-success-600: #1e7a4c;
+    --color-success-700: #1a613e;
+    --color-success-800: #174d33;
+    --color-success-900: #14402b;
+    --color-success-950: #0a2417;
+
+    /* Mais escuro que a marca de propósito, para não se confundir com ela. */
+    --color-danger-50: #fdf3f2;
+    --color-danger-100: #fae3e0;
+    --color-danger-200: #f5c9c4;
+    --color-danger-300: #eba49c;
+    --color-danger-400: #dc7266;
+    --color-danger-500: #c74a3c;
+    --color-danger-600: #b3261e;
+    --color-danger-700: #8f1e17;
+    --color-danger-800: #741c16;
+    --color-danger-900: #611b16;
+    --color-danger-950: #360b08;
+
+    /* O Flux usa zinc por todo lado. Alinhando ao grafite para que as telas
+       de autenticação e ajustes herdem a identidade sem refactor. */
+    --color-zinc-50: #f6f6f6;
+    --color-zinc-100: #e8e8e8;
+    --color-zinc-200: #d1d1d1;
+    --color-zinc-300: #b0b0b0;
+    --color-zinc-400: #8a8a8a;
+    --color-zinc-500: #6d6d6d;
+    --color-zinc-600: #555555;
+    --color-zinc-700: #3e3e3e;
+    --color-zinc-800: #2a2a2a;
+    --color-zinc-900: #1a1a1a;
+    --color-zinc-950: #0f0f0f;
+
+    --color-accent: var(--color-graphite-900);
+    --color-accent-content: var(--color-graphite-900);
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: #ffffff;
+        --color-accent-content: #ffffff;
+        --color-accent-foreground: var(--color-graphite-900);
     }
 }
 
 @layer base {
-
     *,
     ::after,
     ::before,
     ::backdrop,
     ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
+        border-color: var(--color-graphite-200, currentColor);
     }
+
+    /* Requisito funcional em sistema fiscal: sem tabular-nums os dígitos
+       desalinham entre linhas e conferir uma coluna de totais fica sofrível. */
+    .num,
+    td.num,
+    th.num,
+    [data-num] {
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+@utility display-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.05;
+}
+
+@utility overline {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
@@ -52,15 +170,5 @@
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
-
-input:focus[data-flux-control],
-textarea:focus[data-flux-control],
-select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
-}
-
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */
