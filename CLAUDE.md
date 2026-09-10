@@ -6,15 +6,16 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 3 (Cadastros e integrações) concluído.** 147 testes passando, Pint limpo.
-Aguardando aprovação para o Módulo 4 (Produtos e Tributação).
+**Módulo 4 (Tributação) em andamento.** 192 testes passando, Pint limpo.
+Regras fiscais, TaxCalculator e a página do contador estão prontos.
+Falta a tela de produtos e as naturezas de operação.
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1, 2 e 3 prontos |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1, 2 e 3 prontos. Módulo 4 em andamento |
 
 ## Stack
 
@@ -98,6 +99,10 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Município e código IBGE vêm ambos do ViaCEP | A ReceitaWS não devolve IBGE. Usar o município da Receita com o IBGE do ViaCEP arrisca um par inconsistente, que a SEFAZ rejeita |
 | 2026-09-10 | `Http::preventStrayRequests()` global no Pest | `Http::fake` com padrão só intercepta o que casa: o resto sai de verdade para a internet. Um teste chegou a bater na API real sem eu perceber |
 | 2026-09-10 | Coerência indIEDest x IE validada no cadastro | Contribuinte sem IE, ou isento com IE preenchida, é rejeição na transmissão. Melhor barrar no cadastro |
+| 2026-09-10 | Perfil `Contador` e página `/regras-fiscais` | A regra fiscal é responsabilidade de quem entende de tributação. Nenhuma alíquota, CST ou CFOP vive no código. Ver DF-010 |
+| 2026-09-10 | Toda regra fiscal tem vigência | Regra muda com o tempo. A anterior recebe fim de vigência em vez de ser apagada, para nota antiga continuar conferindo |
+| 2026-09-10 | `TaxCalculator` resolve pela data da operação | Nunca por "a regra atual". Nota retroativa usa a regra da época, e isso está coberto por teste |
+| 2026-09-10 | Navegação filtra por permissão | Ver DF-011 |
 
 ## Documentação
 

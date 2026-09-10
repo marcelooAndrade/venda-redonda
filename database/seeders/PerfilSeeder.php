@@ -60,6 +60,16 @@ class PerfilSeeder extends Seeder
                 'nota.ver', 'relatorio.ver',
             ],
 
+            // O contador costuma ser externo à empresa. Escreve a regra
+            // fiscal e leva os arquivos, mas não opera o faturamento.
+            Perfil::Contador->value => [
+                'emitente.ver', 'pessoa.ver', 'produto.ver', 'estoque.ver',
+                'tributacao.gerenciar',
+                'nota.ver', 'importacao.ver',
+                'relatorio.ver', 'contador.exportar',
+                'auditoria.ver',
+            ],
+
             Perfil::Consulta->value => $somenteLeitura,
         ];
 

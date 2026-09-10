@@ -134,3 +134,27 @@ A Receita Federal gerou o primeiro CNPJ alfanumérico em **31/07/2026**, então 
 **Vetor de referência oficial:** `12.ABC.345/01DE-35`. Conferido à mão antes de implementar: DV1 soma 459, resto 8, dígito 3; DV2 soma 424, resto 6, dígito 5.
 
 **Consequência prática.** O documento é sempre `string`, nunca inteiro, em toda a base. Um CNPJ iniciado por zero perderia o zero, e um alfanumérico não caberia num campo numérico.
+
+## DF-010 · Quem escreve a regra fiscal é o contador
+
+**Decidido em:** 2026-09-10, por definição de Marcelo.
+
+A responsabilidade tributária é de quem entende de tributação. O sistema não decide tributação: **nenhuma alíquota, CST, CSOSN, CFOP ou cClassTrib existe no código**. Tudo vem de `perfil_fiscal_regras`, preenchida pelo contador na tela `/regras-fiscais`.
+
+Três consequências:
+
+| Consequência | Como ficou |
+|---|---|
+| **Perfil próprio** | Novo perfil `Contador`. Escreve regra fiscal, consulta notas e exporta o pacote da contabilidade. Não emite, não cancela, não mexe no certificado, não vira o ambiente. O contador costuma ser externo à empresa |
+| **Vigência obrigatória** | Toda regra vale a partir de uma data. Ao registrar uma nova para o mesmo âmbito, a anterior **não é apagada**: recebe fim de vigência na véspera. Uma nota emitida em março continua conferindo com a regra de março |
+| **Registro de responsabilidade** | `PerfilFiscal` e `PerfilFiscalRegra` são auditáveis. Cada alteração grava autor, horário e IP. O campo `observacao_contador` guarda a fundamentação, por escrito, junto com o autor |
+
+O `TaxCalculator` recebe a data da operação e resolve a regra por ela, nunca por "a regra atual". Isso está coberto por teste: uma nota retroativa a 15/03/2026 usa a alíquota de 12% que valia então, não os 18% de hoje.
+
+## DF-011 · Navegação esconde o que o usuário não pode acessar
+
+**Decidido em:** 2026-09-10
+
+O contador via "Certificado" no menu e levaria 403 ao clicar. Mostrar um caminho que não leva a lugar nenhum é pior do que não mostrar.
+
+Cada item de navegação declara a permissão que exige, e some para quem não a tem. A permissão continua sendo verificada na rota: esconder o item é usabilidade, não segurança.

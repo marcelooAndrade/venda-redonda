@@ -10,9 +10,9 @@ beforeEach(function () {
     $this->seed(PerfilSeeder::class);
 });
 
-it('cria os quatro perfis do sistema', function () {
+it('cria os cinco perfis do sistema', function () {
     expect(Role::query()->pluck('name')->all())
-        ->toEqualCanonicalizing(['Administrador', 'Faturamento', 'Estoque', 'Consulta']);
+        ->toEqualCanonicalizing(['Administrador', 'Faturamento', 'Estoque', 'Contador', 'Consulta']);
 });
 
 it('permite perfis diferentes para o mesmo usuario em emitentes diferentes', function () {
