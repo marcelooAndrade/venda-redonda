@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Design system aplicado ao sistema.** 65 testes passando, Pint limpo.
-Aguardando aprovação para o Módulo 2 (Emitente e Certificado Digital).
+**Módulo 2 (Emitente e Certificado Digital) concluído.** 98 testes passando, Pint limpo.
+Aguardando aprovação para o Módulo 3 (Clientes, Fornecedores e Transportadoras).
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulo 1: núcleo pronto, telas pendentes |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 e 2 prontos |
 
 ## Stack
 
@@ -41,7 +41,7 @@ Divergências deliberadas em relação ao `app-transm`, ambas justificadas em `d
 |---|---|
 | Caminho do projeto de referência | `/Users/marceloandrade/Projetos/app-transm` (somente leitura) |
 | Nome do sistema | `emissor-nfe` (assumido a partir do exemplo do prompt, confirmar) |
-| Dados do responsável técnico (`infRespTec`) | Vira campo de configuração. Marcelo preenche antes de emitir em produção |
+| Dados do responsável técnico (`infRespTec`) | Em `config/fiscal.php` via `.env`, vazio. `AtivarProducao` recusa a virada enquanto faltar. Ver DF-006 |
 | CRT da RCM do Brasil | **Pendente.** Define se IBS/CBS é exigência de hoje ou de abr/2027 |
 | Banco de produção no Laravel Cloud | **Pendente.** MySQL 8 ou PostgreSQL |
 
@@ -91,6 +91,9 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Manter o Flux e reposicionar por tokens, em vez de removê-lo | O Flux está em 26 arquivos do starter kit. Como o `@theme` do Tailwind 4 é global, redefinir a paleta, mapear `zinc` para `graphite` e zerar os raios traz as telas de autenticação para a identidade RCM sem refactor |
 | 2026-09-10 | `@theme static` em vez de `@theme` | O Tailwind faz tree-shaking dos tokens e só emite as variáveis usadas por utilitários gerados. Um design system precisa expor todos os 66 tokens |
 | 2026-09-10 | `EmitenteAtual` reconfere o vínculo a cada resolução | Nunca confiar só na sessão. Sessão adulterada ou vínculo revogado depois da escolha não pode dar acesso |
+| 2026-09-10 | Middleware `DefinirEmitenteDoContexto` no grupo web | Permissões são escopadas por emitente. Sem definir o time por requisição, o usuário chega sem papel e leva 403 mesmo sendo administrador. Testes que chamam `setPermissionsTeamId()` na mão mascaram isso |
+| 2026-09-10 | Certificado com algoritmo antigo é convertido, não recusado | Ver DF-007 |
+| 2026-09-10 | Fixtures de certificado versionadas | Autoassinados, CNPJ fictício, chave descartável. Tornam os testes de certificado reais em vez de mockados |
 
 ## Documentação
 

@@ -7,6 +7,8 @@ use App\Models\Concerns\Auditavel;
 use Database\Factories\EmitenteFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Emitente extends Model
 {
@@ -28,6 +30,21 @@ class Emitente extends Model
         'inscricao_estadual',
         'inscricao_municipal',
         'crt',
+        'cnae',
+        'logradouro',
+        'numero',
+        'complemento',
+        'bairro',
+        'codigo_municipio',
+        'municipio',
+        'uf',
+        'cep',
+        'telefone',
+        'email',
+        'serie_padrao',
+        'aliquota_credito_simples',
+        'info_complementares_padrao',
+        'autxml_documento',
         'ativo',
     ];
 
@@ -36,6 +53,21 @@ class Emitente extends Model
         return [
             'ambiente' => Ambiente::class,
             'ativo' => 'boolean',
+            'serie_padrao' => 'integer',
+            'aliquota_credito_simples' => 'decimal:2',
+            'producao_ativada_em' => 'datetime',
         ];
+    }
+
+    /** @return BelongsToMany<User, $this> */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /** @return HasMany<EmitenteCertificado, $this> */
+    public function certificados(): HasMany
+    {
+        return $this->hasMany(EmitenteCertificado::class)->latest('id');
     }
 }

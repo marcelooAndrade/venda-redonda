@@ -1,11 +1,14 @@
 <?php
 
+use App\Livewire\Certificados\Gerenciar;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
+
+    Route::get('certificados', Gerenciar::class)->name('certificados');
 
     // Vitrine do design system. Só administrador, é ferramenta interna.
     Route::view('design-system', 'design-system')

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\DefinirEmitenteDoContexto;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Permissões são escopadas por emitente. Sem definir o time a cada
+        // requisição, o usuário chega sem papel algum.
+        $middleware->web(append: [
+            DefinirEmitenteDoContexto::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

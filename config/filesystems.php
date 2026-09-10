@@ -38,6 +38,21 @@ return [
             'report' => false,
         ],
 
+        // Material fiscal: certificados, XMLs e DANFEs. Sempre privado.
+        // No Laravel Cloud o disco local é efêmero, então FISCAL_DISK vira s3.
+        'fiscal' => [
+            'driver' => env('FISCAL_DISK_DRIVER', 'local'),
+            'root' => storage_path('app/fiscal'),
+            'visibility' => 'private',
+            'throw' => true,
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

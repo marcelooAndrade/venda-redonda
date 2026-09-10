@@ -75,3 +75,30 @@ Semeadas por serem pequenas e estáveis: CST de ICMS (11), CSOSN (10), CST de IP
 | **tPag** (meios de pagamento) | Os códigos são conhecidos, mas a Reforma alterou o grupo de pagamento. Precisa de conferência contra o MOC vigente antes de virar dado semeado |
 
 As tabelas existem no schema e estão vazias. Os comandos `fiscal:importar-cfop`, `fiscal:importar-cest` e `fiscal:importar-cclasstrib` serão implementados quando as fontes forem confirmadas, no mesmo padrão dos dois que já funcionam.
+
+## DF-006 · Responsável técnico em configuração global
+
+**Verificado em:** 2026-09-10
+
+O `infRespTec` identifica a software house perante a SEFAZ e é o mesmo em todos os emitentes desta instalação, então vive em `config/fiscal.php`, alimentado pelo `.env`:
+
+```
+FISCAL_RESP_TEC_CNPJ=
+FISCAL_RESP_TEC_CONTATO=
+FISCAL_RESP_TEC_EMAIL=
+FISCAL_RESP_TEC_TELEFONE=
+```
+
+**Fica vazio de propósito.** Marcelo preenche antes da primeira emissão em produção. Isso não trava o desenvolvimento nem a homologação: a validação só aparece na virada de ambiente, onde `AtivarProducao` recusa e diz exatamente quais campos faltam.
+
+## DF-007 · Certificado com algoritmo antigo é convertido, não recusado
+
+**Verificado em:** 2026-09-10, contra OpenSSL 3.6.3.
+
+Certificados A1 emitidos até alguns anos atrás vêm cifrados em RC2-40, que o OpenSSL 3 desabilitou. A leitura falha com `error:0308010C:digital envelope routines::unsupported`.
+
+O `app-transm` trata isso no mesmo `catch` genérico da senha errada, então o usuário recebe "confira o arquivo A1 e a senha" para um certificado que é perfeitamente válido.
+
+**Decisão.** Detectar a assinatura do erro e converter pelo provider legacy (`openssl pkcs12 -legacy`), reexportando em formato atual. Confirmado funcionando com fixture real. Só quando a conversão não é possível é que aparece mensagem de erro, e ela explica o algoritmo antigo sem culpar a senha.
+
+O registro guarda `convertido_de_legado`, e a tela avisa para pedir o A1 em formato atual na próxima renovação.

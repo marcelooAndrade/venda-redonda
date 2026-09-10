@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Services\Fiscal\ConversorLegado;
+use App\Services\Fiscal\ConversorLegadoOpenssl;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(ConversorLegado::class, ConversorLegadoOpenssl::class);
+
         //
     }
 

@@ -26,6 +26,8 @@ yarn-error.log
 # Nunca versionar material fiscal real
 *.pfx
 *.p12
+# Exceção: certificados autoassinados de teste, com CNPJ fictício e chave descartável.
+!tests/Fixtures/certificados/*.pfx
 /storage/app/fiscal
 /storage/app/private/fiscal
 /docs/design/referencia/*.png
