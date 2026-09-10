@@ -6,15 +6,16 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 7 (Emissão) concluído**, menos contingência e DANFE. 380 testes passando, Pint limpo.
-Próximo: Módulo 8 (Eventos: cancelamento, CC-e, inutilização).
+**Módulos 8 (Eventos) e 9 (Pacote do contador) concluídos.** 403 testes passando, Pint limpo.
+Há um comando de demonstração (`php artisan emissor:demo --fresh`) e o `README.md` explica como rodar na máquina local.
+Próximo: Módulo 10 (painel e relatórios). Seguem pendentes a contingência SVC e a distribuição DF-e.
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 7 prontos. Falta 8 a 10 |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 9 prontos. Falta o 10 |
 
 ## Stack
 
@@ -92,6 +93,9 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | `@theme static` em vez de `@theme` | O Tailwind faz tree-shaking dos tokens e só emite as variáveis usadas por utilitários gerados. Um design system precisa expor todos os 66 tokens |
 | 2026-09-10 | `EmitenteAtual` reconfere o vínculo a cada resolução | Nunca confiar só na sessão. Sessão adulterada ou vínculo revogado depois da escolha não pode dar acesso |
 | 2026-09-10 | Middleware `DefinirEmitenteDoContexto` no grupo web | Permissões são escopadas por emitente. Sem definir o time por requisição, o usuário chega sem papel e leva 403 mesmo sendo administrador. Testes que chamam `setPermissionsTeamId()` na mão mascaram isso |
+| 2026-09-10 | Vedações da CC-e cobrem os cinco incisos, não três | A lista parou nos incisos I a III e deixava passar campo de DU-E e parcela. Ver DF-023 |
+| 2026-09-10 | O limite de 20 cartas vem do XSD, não do Ajuste | O Ajuste manda consolidar, sem número. Quem limita é `nSeqEvento` no `leiauteCCe_v1.00.xsd`, então é limite técnico e pode mudar por NT |
+| 2026-09-10 | DANFE só a partir do `nfeProc` guardado | Montar do banco arriscaria imprimir algo diferente do que a SEFAZ autorizou, se um cadastro mudar depois. Ver DF-024 |
 | 2026-09-10 | Certificado com algoritmo antigo é convertido, não recusado | Ver DF-007 |
 | 2026-09-10 | Fixtures de certificado versionadas | Autoassinados, CNPJ fictício, chave descartável. Tornam os testes de certificado reais em vez de mockados |
 | 2026-09-10 | Documento sempre `string`, nunca inteiro | CNPJ pode ter letra, e um documento iniciado por zero perderia o zero. Ver DF-009 |
@@ -148,7 +152,8 @@ php artisan fiscal:importar-municipios    # IBGE: 27 UFs e 5.571 municípios
 php artisan fiscal:importar-ncm           # Siscomex: tabela NCM vigente
 php artisan fiscal:alertar-certificados   # marcos de 30, 15 e 7 dias
 npm run build                             # assets
-php artisan serve                         # /design-system mostra a vitrine (só admin)
+php artisan emissor:demo --fresh          # dois tenants, quatro perfis, dados de exemplo
+php artisan serve --host=0.0.0.0          # o host importa: sem ele *.localhost não resolve
 ```
 
 Banco: SQLite local e em teste, MySQL em produção. Não há servidor MySQL nesta máquina.
