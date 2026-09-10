@@ -2,23 +2,8 @@
 
 use App\Enums\Fiscal\TipoMovimentoEstoque;
 use App\Models\Emitente;
-use App\Models\Produto;
 use App\Models\User;
 use App\Services\Stock\StockService;
-
-function produtoDe(Emitente $emitente, array $extra = []): Produto
-{
-    return Produto::create(array_merge([
-        'emitente_id' => $emitente->id,
-        'codigo' => 'PC-'.fake()->unique()->numerify('###'),
-        'descricao' => 'Peça microfundida',
-        'ncm' => '73259910',
-        'unidade_comercial' => 'PC',
-        'unidade_tributavel' => 'PC',
-        'fator_conversao' => 1,
-        'origem' => '0',
-    ], $extra));
-}
 
 beforeEach(function () {
     $this->emitente = Emitente::factory()->create();

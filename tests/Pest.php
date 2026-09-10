@@ -45,7 +45,129 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/*
+ * Helpers compartilhados entre suítes.
+ *
+ * Ficam aqui, e não no arquivo onde nasceram, para que cada teste possa ser
+ * rodado isoladamente. Pest carrega este arquivo sempre; um arquivo de teste
+ * só é carregado quando ele mesmo entra na execução.
+ */
+
+use App\Models\Emitente;
+use App\Models\NaturezaOperacao;
+use App\Models\Nota;
+use App\Models\NotaItem;
+use App\Models\PerfilFiscal;
+use App\Models\PerfilFiscalRegra;
+use App\Models\Pessoa;
+use App\Models\Produto;
+use App\Services\Stock\StockService;
+
+function produtoDe(Emitente $emitente, array $extra = []): Produto
 {
-    // ..
+    return Produto::create(array_merge([
+        'emitente_id' => $emitente->id,
+        'codigo' => 'PC-'.fake()->unique()->numerify('###'),
+        'descricao' => 'Peça microfundida',
+        'ncm' => '73259910',
+        'unidade_comercial' => 'PC',
+        'unidade_tributavel' => 'PC',
+        'fator_conversao' => 1,
+        'origem' => '0',
+    ], $extra));
+}
+
+function xmlAutorizado(): string
+{
+    return (string) file_get_contents(base_path('tests/Fixtures/xml/nfe-autorizada.xml'));
+}
+
+function emitenteCompleto(): Emitente
+{
+    return Emitente::factory()->create([
+        'razao_social' => 'RCM DO BRASIL LTDA',
+        'nome_fantasia' => 'RCM do Brasil',
+        'cnpj' => '11222333000181',
+        'inscricao_estadual' => '123456789012',
+        'crt' => '3',
+        'logradouro' => 'Rua Joao Grigoleto', 'numero' => '83',
+        'bairro' => 'Distrito Industrial II',
+        'codigo_municipio' => '3503307', 'municipio' => 'Araras',
+        'uf' => 'SP', 'cep' => '13602200', 'telefone' => '1930960072',
+    ]);
+}
+
+function destinatarioCompleto(Emitente $e, array $extra = []): Pessoa
+{
+    return Pessoa::create(array_merge([
+        'emitente_id' => $e->id, 'tipo_pessoa' => 'J',
+        'documento' => '11444777000161',
+        'razao_social' => 'METALURGICA PIRACICABA LTDA',
+        'ind_ie_dest' => '1', 'inscricao_estadual' => '111222333444',
+        'logradouro' => 'Avenida Industrial', 'numero' => '450',
+        'bairro' => 'Distrito Industrial',
+        'codigo_municipio' => '3538709', 'municipio' => 'Piracicaba',
+        'uf' => 'SP', 'cep' => '13400000',
+        'e_cliente' => true,
+    ], $extra));
+}
+
+function notaPronta(array $extraNota = [], array $extraRegra = []): Nota
+{
+    $emitente = emitenteCompleto();
+    $dest = destinatarioCompleto($emitente);
+
+    $perfil = PerfilFiscal::create(['emitente_id' => $emitente->id, 'nome' => 'Peças']);
+    PerfilFiscalRegra::create(array_merge([
+        'perfil_fiscal_id' => $perfil->id, 'ambito' => 'interna', 'vigente_de' => '2026-01-01',
+        'cst_icms' => '00', 'aliquota_icms' => 18,
+        'cst_pis' => '01', 'aliquota_pis' => 1.65,
+        'cst_cofins' => '01', 'aliquota_cofins' => 7.6,
+    ], $extraRegra));
+
+    $natureza = NaturezaOperacao::create([
+        'emitente_id' => $emitente->id, 'perfil_fiscal_id' => $perfil->id,
+        'descricao' => 'Venda de producao propria',
+        'cfop_interno' => '5101', 'cfop_interestadual' => '6101',
+    ]);
+
+    $produto = Produto::create([
+        'emitente_id' => $emitente->id, 'perfil_fiscal_id' => $perfil->id,
+        'codigo' => 'PC-001', 'descricao' => 'Peca microfundida em aco inox 316L',
+        'ncm' => '73259910', 'unidade_comercial' => 'PC', 'unidade_tributavel' => 'PC',
+        'fator_conversao' => 1, 'origem' => '0', 'preco_venda' => 145.90,
+        'peso_liquido' => 0.45, 'peso_bruto' => 0.48,
+    ]);
+
+    $nota = Nota::create(array_merge([
+        'emitente_id' => $emitente->id,
+        'pessoa_id' => $dest->id,
+        'natureza_operacao_id' => $natureza->id,
+        'natureza_operacao' => $natureza->descricao,
+        'serie' => 1, 'numero' => 1480,
+        'ambiente' => 'homologacao',
+        'data_emissao' => now(),
+        'id_dest' => '1', 'mod_frete' => '9',
+        'valor_produtos' => 1459.00, 'valor_nota' => 1459.00,
+        'base_icms' => 1459.00, 'valor_icms' => 262.62,
+        'valor_pis' => 24.07, 'valor_cofins' => 110.88,
+    ], $extraNota));
+
+    // Produto com saldo, como numa fundição de verdade. Sem isso a
+    // transmissão é barrada antes de chegar na SEFAZ, e com razão.
+    app(StockService::class)->entrada($produto, 1000, 60.00, 'Saldo inicial');
+
+    NotaItem::create([
+        'nota_id' => $nota->id, 'produto_id' => $produto->id, 'numero' => 1,
+        'codigo' => 'PC-001', 'descricao' => 'Peca microfundida em aco inox 316L',
+        'ncm' => '73259910', 'cfop' => '5101', 'unidade' => 'PC', 'unidade_tributavel' => 'PC',
+        'origem' => '0', 'quantidade' => 10, 'quantidade_tributavel' => 10,
+        'valor_unitario' => 145.90, 'valor_produto' => 1459.00,
+        'cst_icms' => '00', 'mod_bc' => '3', 'base_icms' => 1459.00,
+        'aliquota_icms' => 18, 'valor_icms' => 262.62,
+        'cst_pis' => '01', 'valor_pis' => 24.07,
+        'cst_cofins' => '01', 'valor_cofins' => 110.88,
+    ]);
+
+    return $nota->fresh(['itens', 'destinatario', 'emitente']);
 }

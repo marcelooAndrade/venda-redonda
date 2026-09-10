@@ -8,11 +8,6 @@ use App\Models\User;
 use App\Services\Import\NFeImportService;
 use Illuminate\Support\Facades\Storage;
 
-function xmlAutorizado(): string
-{
-    return (string) file_get_contents(base_path('tests/Fixtures/xml/nfe-autorizada.xml'));
-}
-
 beforeEach(function () {
     Storage::fake('fiscal');
     // O destinatário do XML é o CNPJ da RCM.

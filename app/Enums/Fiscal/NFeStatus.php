@@ -55,6 +55,11 @@ enum NFeStatus: string
         return in_array($this, [self::Denegada, self::Cancelada, self::Inutilizada], true);
     }
 
+    public function is(self $outro): bool
+    {
+        return $this === $outro;
+    }
+
     /** Rejeitada volta para o rascunho: o operador corrige e retransmite. */
     public function recuperavel(): bool
     {

@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\User;
 use App\Services\Fiscal\ConversorLegado;
 use App\Services\Fiscal\ConversorLegadoOpenssl;
+use App\Services\Fiscal\NfephpSefazGateway;
+use App\Services\Fiscal\SefazGateway;
 use App\Support\TenantAtual;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -21,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(ConversorLegado::class, ConversorLegadoOpenssl::class);
+        $this->app->bind(SefazGateway::class, NfephpSefazGateway::class);
         $this->app->singleton(TenantAtual::class);
 
         //

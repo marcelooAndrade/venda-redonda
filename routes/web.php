@@ -2,6 +2,7 @@
 
 use App\Livewire\Certificados\Gerenciar;
 use App\Livewire\Estoque\Painel;
+use App\Livewire\Notas\Emissao;
 use App\Livewire\Pessoas\Cadastro;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
@@ -12,6 +13,7 @@ Route::view('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
+    Route::get('notas', Emissao::class)->name('notas');
     Route::get('importacao', App\Livewire\Importacao\Painel::class)->name('importacao');
     Route::get('estoque', Painel::class)->name('estoque');
     Route::get('marca', Marca::class)->name('marca');

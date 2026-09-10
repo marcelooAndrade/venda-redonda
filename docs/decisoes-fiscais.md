@@ -335,3 +335,31 @@ Ou seja: numa devolução, **cada item aponta o item correspondente da nota orig
 O `nfe_v4.00.xsd` exige o nó `Signature`. Validar o XML recém-montado sempre falha com "Missing child element(s)".
 
 A ordem correta é **montar, assinar, validar**. O teste do builder faz exatamente isso, com um certificado de teste, e é ele que prova que o XML gerado é aceitável pela SEFAZ do ponto de vista estrutural.
+
+## DF-019 · Idempotência na transmissão
+
+**Decidido em:** 2026-09-10
+
+Diante de falha de comunicação, o sistema **não sabe** se a SEFAZ recebeu. Retransmitir às cegas gera duplicidade, queima o número e obriga inutilização formal.
+
+A regra: **antes de qualquer reenvio, consultar a SEFAZ pela chave.**
+
+| Situação | O que o sistema faz |
+|---|---|
+| Consulta diz que já autorizou | Aplica o resultado. Não reenvia |
+| Consulta diz que não consta | Aí sim pode reenviar |
+| Consulta também falha | A nota fica em processamento, com aviso explícito. Retransmitir seria apostar |
+
+A chave é calculada e gravada **antes** do envio, justamente para que a consulta seja possível mesmo quando o envio falha.
+
+## DF-020 · O número é consumido só na transmissão
+
+Rascunho abandonado não pode queimar numeração. O número é atribuído no momento do envio, sob lock pessimista.
+
+E a disponibilidade de estoque é conferida **antes** disso: barrar cedo evita queimar número e evita chamar a SEFAZ à toa.
+
+## DF-021 · Nota autorizada não é desfeita por erro nosso
+
+Se a baixa de estoque falhar **depois** da autorização, a nota **continua autorizada**. A SEFAZ já disse que ela existe, e desfazer isso no sistema seria negar um fato registrado no fisco.
+
+A divergência de estoque é registrada em `sefaz_logs` para o operador resolver por ajuste ou inventário. Errar para o lado de refletir a realidade é sempre melhor do que errar para o lado de esconder.

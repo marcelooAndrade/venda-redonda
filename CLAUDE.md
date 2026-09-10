@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 6 (Importação) concluído**, menos a Distribuição DF-e. 339 testes passando, Pint limpo.
-Próximo: Módulo 7 (Emissão), onde entra o NfeXmlBuilder.
+**Módulo 7 (Emissão) concluído**, menos contingência e DANFE. 380 testes passando, Pint limpo.
+Próximo: Módulo 8 (Eventos: cancelamento, CC-e, inutilização).
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Concluída. Tokens, 12 componentes, layout fiscal e rota /design-system |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 6 prontos. Falta 7 a 10 |
+| 3 | Implementação, módulos 1 a 10 | Módulos 1 a 7 prontos. Falta 8 a 10 |
 
 ## Stack
 
@@ -118,6 +118,11 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | `NFeXmlParser` é classe pura, sem banco | No `app-transm` a mesma lógica vivia dentro de um God class de 1474 linhas. Aqui é testável com XML real sem subir a aplicação |
 | 2026-09-10 | Vínculo fornecedor-produto salvo a cada conciliação manual | A segunda nota do mesmo fornecedor já entra conciliada |
 | 2026-09-10 | Lote de importação não para no primeiro erro | Em fechamento de mês, parar no primeiro faria reprocessar tudo |
+| 2026-09-10 | Consultar a chave antes de retransmitir | Depois de timeout não se sabe se a SEFAZ recebeu. Reenviar às cegas queima número. Ver DF-019 |
+| 2026-09-10 | Número consumido só na transmissão | Rascunho abandonado não pode queimar numeração. Ver DF-020 |
+| 2026-09-10 | Estoque conferido antes de transmitir, tolerado depois | Barrar cedo evita queimar número; depois da autorização a nota é fato e não se desfaz. Ver DF-021 |
+| 2026-09-10 | Schema do leiaute vem da configuração | `new Make()` assume PL_009 e descarta os grupos da Reforma em silêncio. Ver DF-016 |
+| 2026-09-10 | Helpers de teste no `Pest.php` | Assim cada arquivo de teste roda isoladamente |
 
 ## Documentação
 
