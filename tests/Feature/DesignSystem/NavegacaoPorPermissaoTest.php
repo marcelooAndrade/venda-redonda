@@ -45,12 +45,12 @@ it('o administrador ve tudo', function () {
         ->assertOk()
         ->assertSee('Certificado')
         ->assertSee('Regras fiscais')
-        ->assertSee('Design System');
+        ->assertSee('Marca');
 });
 
-it('consulta nao ve design system', function () {
+it('consulta nao ve item so de administrador', function () {
     $this->actingAs(usuarioNav(Perfil::Consulta->value))
         ->get('/destinatarios')
         ->assertOk()
-        ->assertDontSee('Design System');
+        ->assertDontSee('Marca');
 });

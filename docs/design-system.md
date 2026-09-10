@@ -343,3 +343,5 @@ A faixa de ambiente ocupa a largura toda e só existe em homologação, em `embe
 Os demais entregáveis da Fase 1 (tokens no Tailwind via `@theme`, componentes Blade em `resources/views/components/ui/`, layout base e rota `/design-system`) dependem de um projeto Laravel que ainda não existe. O prompt cria esse projeto na Fase 2.
 
 Proposta: aprovar a paleta agora, e implementar tokens, componentes e a rota `/design-system` logo após o scaffold da Fase 2. Nenhum trabalho se perde, e a ordem passa a fazer sentido.
+
+> **Nota posterior, 10/09/2026.** A rota `/design-system` citada na seção 10 foi construída, serviu de vitrine durante a implementação e depois foi retirada: era andaime, não tela de operação. Os tokens do `@theme` e os componentes em `resources/views/components/ui/` continuam, e são eles que sustentam tudo o que este documento descreve.

@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use App\Services\Fiscal\ConversorLegado;
 use App\Services\Fiscal\ConversorLegadoOpenssl;
 use App\Services\Fiscal\NfephpSefazGateway;
@@ -11,7 +10,6 @@ use App\Support\TenantAtual;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -34,7 +32,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('ver-design-system', fn (User $user): bool => $user->eAdministradorEmAlgumEmitente());
 
         $this->configureDefaults();
     }
