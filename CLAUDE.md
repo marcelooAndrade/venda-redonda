@@ -6,15 +6,15 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Fase 2 concluída.** Arquitetura em `docs/arquitetura.md`, regras fiscais em `docs/decisoes-fiscais.md`.
-Aguardando aprovação para iniciar a Fase 3 (implementação, Módulo 1: Base).
+**Fase 3, Módulo 1 (Base): núcleo concluído.** 51 testes passando, Pint limpo.
+Aguardando aprovação para o Módulo 2 (Emitente e Certificado Digital).
 
 | Fase | Entrega | Status |
 |---|---|---|
 | 0 | Análise do APP - transm | Concluída e aprovada |
 | 1 | Design system a partir de rcmdobrasil.com.br | Paleta aprovada. Componentes Blade pendentes do scaffold |
 | 2 | Arquitetura e modelagem | Concluída, aguardando aprovação |
-| 3 | Implementação, módulos 1 a 10 | Pendente |
+| 3 | Implementação, módulos 1 a 10 | Módulo 1: núcleo pronto, telas pendentes |
 
 ## Stack
 
@@ -41,7 +41,7 @@ Divergências deliberadas em relação ao `app-transm`, ambas justificadas em `d
 |---|---|
 | Caminho do projeto de referência | `/Users/marceloandrade/Projetos/app-transm` (somente leitura) |
 | Nome do sistema | `emissor-nfe` (assumido a partir do exemplo do prompt, confirmar) |
-| Dados do responsável técnico (`infRespTec`) | **Pendente.** Bloqueia o Módulo 2 |
+| Dados do responsável técnico (`infRespTec`) | Vira campo de configuração. Marcelo preenche antes de emitir em produção |
 | CRT da RCM do Brasil | **Pendente.** Define se IBS/CBS é exigência de hoje ou de abr/2027 |
 | Banco de produção no Laravel Cloud | **Pendente.** MySQL 8 ou PostgreSQL |
 
@@ -103,4 +103,16 @@ Adotadas por consistência entre os sistemas:
 
 ## Comandos
 
-Definidos na Fase 2, quando o projeto Laravel for criado.
+```bash
+php artisan test                          # suíte completa (Pest, SQLite em memória)
+./vendor/bin/pint                         # formatação
+php artisan migrate:fresh                 # recria o schema
+php artisan db:seed --class=PerfilSeeder            # 4 perfis, 25 permissões
+php artisan db:seed --class=TabelasFiscaisSeeder    # CST, CSOSN, unidades
+php artisan fiscal:importar-municipios    # IBGE: 27 UFs e 5.571 municípios
+php artisan fiscal:importar-ncm           # Siscomex: tabela NCM vigente
+npm run build                             # assets
+```
+
+Banco: SQLite local e em teste, MySQL em produção. Não há servidor MySQL nesta máquina.
+Migrations são mantidas **portáveis**, sem o DDL específico de MySQL que o `app-transm` usa.
