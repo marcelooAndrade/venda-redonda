@@ -138,6 +138,7 @@ Adotadas por consistência entre os sistemas:
 
 | Arquivo | Conteúdo |
 |---|---|
+| `docs/funcionalidades.md` | **O que o sistema faz**, o que falta e o que depende do cliente |
 | `docs/analise-app-transm.md` | Análise do projeto de referência (Fase 0) |
 | `docs/design-system.md` | Paleta, tipografia e regras de uso (Fase 1) |
 | `docs/design/referencia/` | Screenshots de referência, desktop 1440 e mobile 390 |

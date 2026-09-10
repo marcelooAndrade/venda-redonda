@@ -93,6 +93,7 @@ Os dois primeiros baixam dados oficiais de verdade e levam alguns segundos.
 | Arquivo | Conteúdo |
 |---|---|
 | `CLAUDE.md` | Stack, convenções e o registro de decisões |
+| `docs/funcionalidades.md` | **O que o sistema faz**, o que ficou de fora e o que falta |
 | `docs/analise-app-transm.md` | O que foi aproveitado do sistema da Trans M, e o que não |
 | `docs/design-system.md` | A paleta extraída do site da RCM, com o método |
 | `docs/arquitetura.md` | Modelo de dados e fluxos, com diagramas |
