@@ -92,13 +92,31 @@ class Marca extends Component
         }
     }
 
+    /**
+     * Contraste da marca contra o texto que de fato se escreve sobre ela.
+     *
+     * Medir contra o branco acusava de defeituosa qualquer marca clara,
+     * inclusive a do próprio produto, num cenário que o sistema não usa:
+     * nenhum componente escreve em branco sobre a primária quando o escuro lê
+     * melhor.
+     */
     #[Computed]
     public function contrastePrimaria(): ?float
     {
         try {
-            return TemaMarca::contrasteComBranco($this->primaria);
+            return TemaMarca::contrasteEntre($this->primaria, $this->textoSobrePrimaria);
         } catch (InvalidArgumentException) {
             return null;
+        }
+    }
+
+    #[Computed]
+    public function textoSobrePrimaria(): string
+    {
+        try {
+            return TemaMarca::textoSobre($this->primaria, $this->neutra);
+        } catch (InvalidArgumentException) {
+            return '#ffffff';
         }
     }
 
@@ -132,7 +150,7 @@ class Marca extends Component
 
         $this->primaria = $ajustada;
         $this->neutra = $neutra;
-        unset($this->tenant, $this->previaPrimaria, $this->previaNeutra, $this->contrastePrimaria);
+        unset($this->tenant, $this->previaPrimaria, $this->previaNeutra, $this->contrastePrimaria, $this->textoSobrePrimaria);
 
         session()->flash('sucesso', 'Marca salva. Recarregue para ver o sistema com as novas cores.');
     }

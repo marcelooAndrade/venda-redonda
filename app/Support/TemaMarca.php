@@ -136,21 +136,62 @@ class TemaMarca
         return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
     }
 
+    /** Contraste WCAG entre duas cores quaisquer. */
+    public static function contrasteEntre(string $a, string $b): float
+    {
+        $la = self::luminancia($a);
+        $lb = self::luminancia($b);
+        [$claro, $escuro] = $la > $lb ? [$la, $lb] : [$lb, $la];
+
+        return round(($claro + 0.05) / ($escuro + 0.05), 2);
+    }
+
     public static function contrasteComBranco(string $hex): float
     {
-        return round(1.05 / (self::luminancia($hex) + 0.05), 2);
+        return self::contrasteEntre($hex, '#ffffff');
     }
 
     /**
-     * Escurece a cor até passar em WCAG AA com texto branco.
+     * Cor de texto legível sobre a cor informada.
      *
-     * Marca clara demais não é recusada: seria dizer ao cliente que a marca
-     * dele está errada. Ela é escurecida no tom de ação, e a cor original
-     * segue disponível nos tons claros da escala.
+     * Sobre marca clara escreve-se no escuro da própria marca; sobre marca
+     * escura, em branco. Quem decide é a medição, não a suposição.
      */
-    public static function ajustarParaContraste(string $hex): string
+    public static function textoSobre(string $fundo, ?string $escuro = null): string
+    {
+        $escuro = self::normalizar($escuro ?? self::NEUTRA_PADRAO);
+
+        return self::contrasteEntre($fundo, $escuro) >= self::contrasteEntre($fundo, '#ffffff')
+            ? $escuro
+            : '#ffffff';
+    }
+
+    /**
+     * Escurece a cor só quando nenhuma cor de texto lê sobre ela.
+     *
+     * A pergunta certa não é "passa com branco", é "existe texto legível sobre
+     * esta marca". Medir só contra o branco reprovava cor que o sistema nunca
+     * usaria com texto branco, e chegou a acusar de defeituosa a marca do
+     * próprio produto.
+     *
+     * Marca sem saída não é recusada: seria dizer ao cliente que a marca dele
+     * está errada. Ela é escurecida até o branco ler, e a cor original segue
+     * disponível nos tons claros da escala.
+     */
+    public static function ajustarParaContraste(string $hex, ?string $escuro = null): string
     {
         $cor = self::normalizar($hex);
+        $escuro = self::normalizar($escuro ?? self::NEUTRA_PADRAO);
+
+        $legivel = fn (string $c): bool => max(
+            self::contrasteEntre($c, '#ffffff'),
+            self::contrasteEntre($c, $escuro),
+        ) >= 4.5;
+
+        if ($legivel($cor)) {
+            return $cor;
+        }
+
         $rgb = self::rgb($cor);
         $tentativas = 0;
 
@@ -177,6 +218,11 @@ class TemaMarca
             // autenticação e ajustes acompanham a marca sem refactor.
             $linhas[] = "--color-zinc-{$tom}:{$cor}";
         }
+
+        // Quem escreve sobre a primária muda com a marca: grafite sobre marca
+        // clara, branco sobre marca escura. O componente lê a variável em vez
+        // de cravar uma das duas.
+        $linhas[] = '--color-on-primary:'.self::textoSobre($this->primaria, $this->neutra);
 
         $linhas[] = '--color-accent:var(--color-graphite-900)';
         $linhas[] = '--color-accent-content:var(--color-graphite-900)';

@@ -39,15 +39,35 @@ describe('contraste', function () {
         expect(TemaMarca::contrasteComBranco('#1B8A4B'))->toBeLessThan(4.5);
     });
 
-    it('reprova cor clara demais para texto branco', function () {
+    it('mede que amarelo nao sustenta texto branco', function () {
         expect(TemaMarca::contrasteComBranco('#F5D90A'))->toBeLessThan(4.5);
     });
 
-    it('escurece automaticamente a cor que nao passa', function (string $cor) {
+    /*
+     * A garantia mudou em 11/09/2026. Antes era "escurece até o branco ler",
+     * o que reprovava cor que o sistema nunca usaria com texto branco, e
+     * chegou a acusar de defeituosa a marca do próprio produto. Agora é
+     * "sobre qualquer marca existe texto legível", e quem não tem saída é
+     * escurecido.
+     */
+    it('garante texto legivel sobre qualquer marca informada', function (string $cor) {
         $ajustada = TemaMarca::ajustarParaContraste($cor);
 
-        expect(TemaMarca::contrasteComBranco($ajustada))->toBeGreaterThanOrEqual(4.5);
-    })->with(['#F5D90A', '#1B8A4B', '#FF6B00', '#00A3FF']);
+        $melhor = max(
+            TemaMarca::contrasteEntre($ajustada, '#ffffff'),
+            TemaMarca::contrasteEntre($ajustada, TemaMarca::NEUTRA_PADRAO),
+        );
+
+        expect($melhor)->toBeGreaterThanOrEqual(4.5)
+            ->and(TemaMarca::contrasteEntre($ajustada, TemaMarca::textoSobre($ajustada)))
+            ->toBeGreaterThanOrEqual(4.5);
+    })->with(['#F5D90A', '#1B8A4B', '#FF6B00', '#00A3FF', '#e4572e', '#0b3d91', '#808080']);
+
+    it('deixa em paz a marca clara que sustenta texto escuro', function () {
+        // Amarelo tem 1,42 com branco e 15,6 com grafite. Escurecê-lo seria
+        // estragar a marca do cliente para resolver um problema inexistente.
+        expect(TemaMarca::ajustarParaContraste('#F5D90A'))->toBe('#f5d90a');
+    });
 
     it('escurece o minimo necessario', function () {
         // 4,39 vira 4,79, não 8. A marca continua reconhecível.
@@ -131,5 +151,36 @@ describe('padrão do produto', function () {
         $contraste = (max($pedra, $gerado) + 0.05) / (min($pedra, $gerado) + 0.05);
 
         expect($contraste)->toBeLessThan(1.1);
+    });
+});
+
+describe('legibilidade sobre a marca', function () {
+    it('aceita o vermelhao da marca sem escurecer, porque grafite le sobre ele', function () {
+        // 3,68 com branco, 4,77 com grafite. A regra antiga media só o branco
+        // e escurecia a cor do produto sem necessidade.
+        expect(TemaMarca::ajustarParaContraste('#e4572e'))->toBe('#e4572e');
+    });
+
+    it('escolhe grafite como texto sobre uma marca clara', function () {
+        expect(TemaMarca::textoSobre('#e4572e'))->toBe(TemaMarca::NEUTRA_PADRAO);
+    });
+
+    it('escolhe branco como texto sobre uma marca escura', function () {
+        expect(TemaMarca::textoSobre('#0b3d91'))->toBe('#ffffff');
+    });
+
+    it('escurece so quando nenhuma cor de texto le sobre a marca', function () {
+        // Cinza médio: falha contra branco e contra grafite ao mesmo tempo.
+        $antes = '#808080';
+        $depois = TemaMarca::ajustarParaContraste($antes);
+
+        expect($depois)->not->toBe($antes)
+            ->and(TemaMarca::contrasteEntre($depois, '#ffffff'))->toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('publica a cor de texto da primaria como variavel css', function () {
+        $css = TemaMarca::de('#e4572e', '#0e1b1f')->paraCss();
+
+        expect($css)->toContain('--color-on-primary:#0e1b1f');
     });
 });

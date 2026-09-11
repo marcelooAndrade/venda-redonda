@@ -45,14 +45,19 @@
 
             @if ($this->contrastePrimaria !== null)
                 <div class="flex flex-wrap items-center gap-3 border-l-2 border-graphite-200 pl-4 text-sm">
-                    <span class="text-graphite-600">Contraste com texto branco:</span>
+                    <span class="text-graphite-600">Contraste com o texto que vai sobre ela</span>
+                    <span class="inline-flex items-center gap-1.5 border border-graphite-200 px-2 py-0.5">
+                        <span class="size-3 border border-graphite-300" style="background-color: {{ $this->textoSobrePrimaria }}"></span>
+                        <span class="num text-xs text-graphite-500">{{ $this->textoSobrePrimaria }}</span>
+                    </span>
+                    <span class="text-graphite-600">:</span>
                     <span class="num font-semibold {{ $this->contrastePrimaria >= 4.5 ? 'text-success-700' : 'text-ember-700' }}">
                         {{ number_format($this->contrastePrimaria, 2, ',', '.') }}
                     </span>
                     @if ($this->contrastePrimaria >= 4.5)
                         <span class="etiqueta bg-success-100 px-2 py-1 text-success-800">Passa em WCAG AA</span>
                     @else
-                        <span class="etiqueta bg-ember-100 px-2 py-1 text-ember-800">Será escurecida ao salvar</span>
+                        <span class="etiqueta bg-ember-100 px-2 py-1 text-ember-800">Nenhum texto lê sobre ela: será escurecida ao salvar</span>
                     @endif
                 </div>
             @endif

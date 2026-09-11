@@ -133,6 +133,11 @@
     --color-zinc-900: #0e1b1f;
     --color-zinc-950: #081012;
 
+    /* Quem escreve sobre a primária. Grafite sobre o vermelhão dá 4,77;
+       branco daria 3,68. Marca escura de tenant troca isto para branco em
+       tempo de execução, via TemaMarca. */
+    --color-on-primary: #0e1b1f;
+
     --color-accent: var(--color-graphite-900);
     --color-accent-content: var(--color-graphite-900);
     --color-accent-foreground: #ffffff;

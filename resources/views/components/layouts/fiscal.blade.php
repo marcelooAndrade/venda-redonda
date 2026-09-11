@@ -46,10 +46,10 @@
                 @if ($tenant?->logo_path)
                     <img src="{{ route('marca.logo') }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
                 @else
-                    {{-- Texto grafite, não branco: branco sobre o vermelhão dá 3,68 e não
-                         passa em AA num texto miúdo. Grafite dá 4,77 e mantém a cor da
-                         marca exata, em vez de escurecê-la. --}}
-                    <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary-600 font-display text-xs font-bold text-graphite-900">
+                    {{-- A cor do texto vem da marca, não está cravada: sobre marca clara
+                         escreve-se em grafite, sobre marca escura em branco. Ver
+                         TemaMarca::textoSobre. --}}
+                    <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary-600 font-display text-xs font-bold text-on-primary">
                         {{ mb_strtoupper(mb_substr($tenant?->rotulo() ?? 'N', 0, 1)) }}
                     </span>
                     <span class="truncate font-display text-base font-bold uppercase tracking-wide text-white">
