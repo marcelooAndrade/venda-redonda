@@ -14,6 +14,7 @@ use App\Support\Documento;
 use App\Support\HostDoProduto;
 use App\Support\TenantAtual;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -108,9 +109,25 @@ class CreateNewUser implements CreatesNewUsers
         // Fora da transação de propósito: rede não participa de commit, e uma
         // falha de envio não pode desfazer a criação da empresa. O job só entra
         // na fila depois que o banco confirmou.
-        EnviarLeads::dispatch([
-            app(MontadorDeLeads::class)->paraTenant($tenant),
-        ])->afterCommit();
+        //
+        // O try/catch existe porque avisar o admin pessoal é consequência do
+        // cadastro, nunca condição dele, e essa garantia não pode depender de
+        // qual driver de fila o ambiente usa. Com fila `sync` (a da suíte de
+        // teste) o próprio dispatch() executa o job na hora, e uma falha ali
+        // levantaria e derrubaria a resposta do cadastro com ela; com fila
+        // `database` (a de produção) o dispatch() só enfileira e não lança,
+        // então este catch não é acionado e não atrapalha as tentativas: o
+        // job continua sendo repetido normalmente pela fila.
+        try {
+            EnviarLeads::dispatch([
+                app(MontadorDeLeads::class)->paraTenant($tenant),
+            ])->afterCommit();
+        } catch (\Throwable $e) {
+            Log::warning('Falha ao despachar o envio de lead do cadastro.', [
+                'tenant_id' => $tenant->getKey(),
+                'erro' => $e->getMessage(),
+            ]);
+        }
 
         return $user;
     }

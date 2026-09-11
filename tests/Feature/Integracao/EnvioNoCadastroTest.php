@@ -52,7 +52,17 @@ it('o cadastro despacha o envio do lead', function () {
 it('o cadastro sobrevive a falha no envio', function () {
     Http::fake(['exemplo.test/*' => Http::response('fora do ar', 500)]);
 
-    $this->post('http://vendaredonda.com.br/register', cadastroValido());
+    $resposta = $this->post('http://vendaredonda.com.br/register', cadastroValido());
+
+    // Com fila `sync` (a da suíte), o dispatch() roda o job na mesma
+    // requisição. Sem o try/catch em CreateNewUser, a exceção do gateway
+    // subiria e a pessoa veria uma tela de erro 500, mesmo com o tenant já
+    // criado. "/dashboard" é o redirecionamento real que o Fortify devolve
+    // num cadastro bem-sucedido (config('fortify.home')), confirmado por
+    // inspeção da resposta antes de escrever esta asserção: prova que a
+    // resposta chegou até o fim do fluxo de sucesso, e não parou no meio por
+    // causa da integração.
+    $resposta->assertRedirect('/dashboard');
 
     expect(Tenant::where('nome', 'DISTRIBUIDORA RIO CLARO LTDA')->exists())->toBeTrue();
 });
