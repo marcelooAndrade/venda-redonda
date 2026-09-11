@@ -38,3 +38,8 @@ yarn-error.log
 # fixtures de certificado, então quem clonar não recebe nenhum deles.
 *.md
 *.MD
+
+# Exceção única: este arquivo explica por que existem `.pfx` versionados ao
+# lado dele. Sem ele, quem encontrar os certificados não tem como saber que
+# são autoassinados, de CNPJ fictício e chave descartável.
+!tests/Fixtures/certificados/README.md
