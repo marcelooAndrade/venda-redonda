@@ -85,7 +85,7 @@
                      descobrir isso aqui do que depois de salvar. --}}
                 <div class="flex h-20 items-center justify-center border border-graphite-300 bg-graphite-900 px-4">
                     @if ($this->tenant?->logo_path)
-                        <img src="{{ route('marca.logo') }}" alt="Logo do sistema" class="max-h-12 w-auto object-contain">
+                        <img src="{{ route('logo') }}" alt="Logo do sistema" class="max-h-12 w-auto object-contain">
                     @else
                         <span class="text-xs text-graphite-400">Nenhuma logo enviada</span>
                     @endif

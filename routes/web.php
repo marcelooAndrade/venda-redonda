@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
+// Pública de propósito: a tela de login precisa mostrar a logo de quem está
+// entrando, e ela roda antes de haver usuário. Não é exposição nova, porque
+// quem alcança o host já alcança a tela de login. O isolamento continua vindo
+// do host resolvido, não de identificador na URL.
+Route::get('logo', LogoTenantController::class)->name('logo');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', Inicio::class)->name('dashboard');
 
@@ -21,7 +27,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('importacao', App\Livewire\Importacao\Painel::class)->name('importacao');
     Route::get('estoque', Painel::class)->name('estoque');
     Route::get('marca', Marca::class)->name('marca');
-    Route::get('marca/logo', LogoTenantController::class)->name('marca.logo');
     Route::get('produtos', App\Livewire\Produtos\Cadastro::class)->name('produtos');
     Route::get('regras-fiscais', Regras::class)->name('regras-fiscais');
     Route::get('destinatarios', Cadastro::class)->name('destinatarios');

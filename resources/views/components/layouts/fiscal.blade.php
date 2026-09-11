@@ -44,7 +44,7 @@
         <aside class="hidden w-60 shrink-0 flex-col bg-graphite-900 md:flex">
             <div class="flex h-14 items-center gap-2.5 border-b border-white/10 px-5">
                 @if ($tenant?->logo_path)
-                    <img src="{{ route('marca.logo') }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
+                    <img src="{{ route('logo') }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
                 @else
                     {{-- A cor do texto vem da marca, não está cravada: sobre marca clara
                          escreve-se em grafite, sobre marca escura em branco. Ver

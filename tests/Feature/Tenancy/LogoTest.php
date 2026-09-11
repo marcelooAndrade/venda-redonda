@@ -85,17 +85,46 @@ it('serve a logo do tenant para quem esta autenticado', function () {
         ->set('logoSistema', UploadedFile::fake()->image('logo.png'))
         ->call('salvarLogoSistema');
 
-    $this->actingAs($user)->get('/marca/logo')
+    $this->actingAs($user)->get('/logo')
         ->assertOk()
         ->assertHeader('Content-Type', 'image/png');
 });
 
-it('nega a logo a visitante', function () {
-    $this->get('/marca/logo')->assertRedirect('/login');
+/*
+ * Esta rota era autenticada até 11/09/2026. A tela de login é pública e
+ * precisa mostrar a logo de quem está entrando, então a rota abriu junto.
+ * Não é exposição nova: quem alcança o host já alcança a tela de login, e
+ * a logo dela. O isolamento continua vindo do host, não da URL.
+ */
+it('serve a logo do tenant a visitante, porque a tela de login e publica', function () {
+    $user = usuarioMarca(Perfil::Administrador->value);
+
+    Livewire::actingAs($user)->test(Marca::class)
+        ->set('logoSistema', UploadedFile::fake()->image('logo.png'))
+        ->call('salvarLogoSistema');
+
+    $this->get('/logo')->assertOk()->assertHeader('Content-Type', 'image/png');
+});
+
+it('a tela de login mostra a logo do tenant quando existe', function () {
+    // Sem autenticar: a tela de login é de visitante, e subir a logo pela
+    // tela Marca deixaria a sessão logada, que é justamente o caso errado.
+    $tenant = app(TenantAtual::class)->obter();
+    Storage::disk('fiscal')->put('marca/tenant/logo.png', 'conteudo');
+    $tenant->update(['logo_path' => 'marca/tenant/logo.png']);
+
+    $this->get('/login')->assertOk()->assertSee('src="'.route('logo').'"', false);
+});
+
+it('a tela de login cai na marca do produto quando o tenant nao tem logo', function () {
+    $this->get('/login')
+        ->assertOk()
+        ->assertSee('Venda Redonda')
+        ->assertDontSee(route('logo'));
 });
 
 it('devolve 404 quando o tenant ainda nao tem logo', function () {
-    $this->actingAs(usuarioMarca(Perfil::Administrador->value))->get('/marca/logo')->assertNotFound();
+    $this->actingAs(usuarioMarca(Perfil::Administrador->value))->get('/logo')->assertNotFound();
 });
 
 it('nunca serve a logo de outro tenant', function () {
@@ -112,7 +141,7 @@ it('nunca serve a logo de outro tenant', function () {
         ->set('logoSistema', UploadedFile::fake()->image('propria.png'))
         ->call('salvarLogoSistema');
 
-    $conteudo = $this->actingAs($user)->get('/marca/logo')->streamedContent();
+    $conteudo = $this->actingAs($user)->get('/logo')->streamedContent();
 
     expect($conteudo)->not->toBe('LOGO-DO-CONCORRENTE');
 });
@@ -124,12 +153,12 @@ it('muda o etag quando a logo e trocada, para o navegador nao servir a antiga', 
         ->set('logoSistema', UploadedFile::fake()->image('antiga.png'))
         ->call('salvarLogoSistema');
 
-    $antes = $this->actingAs($user)->get('/marca/logo')->headers->get('ETag');
+    $antes = $this->actingAs($user)->get('/logo')->headers->get('ETag');
 
     $componente->set('logoSistema', UploadedFile::fake()->image('nova.png'))
         ->call('salvarLogoSistema');
 
-    $depois = $this->actingAs($user)->get('/marca/logo')->headers->get('ETag');
+    $depois = $this->actingAs($user)->get('/logo')->headers->get('ETag');
 
     expect($antes)->not->toBeNull()->and($depois)->not->toBe($antes);
 });
@@ -141,11 +170,11 @@ it('responde 304 quando o navegador ja tem a logo', function () {
         ->set('logoSistema', UploadedFile::fake()->image('logo.png'))
         ->call('salvarLogoSistema');
 
-    $etag = $this->actingAs($user)->get('/marca/logo')->headers->get('ETag');
+    $etag = $this->actingAs($user)->get('/logo')->headers->get('ETag');
 
     $this->actingAs($user)
         ->withHeaders(['If-None-Match' => $etag])
-        ->get('/marca/logo')
+        ->get('/logo')
         ->assertStatus(304);
 });
 
@@ -157,7 +186,7 @@ it('a sidebar aponta para a rota da logo, nunca para o caminho no bucket', funct
         ->call('salvarLogoSistema');
 
     $this->actingAs($user)->get('/marca')
-        ->assertSee('src="'.route('marca.logo').'"', false)
+        ->assertSee('src="'.route('logo').'"', false)
         ->assertDontSee('marca/tenant/');
 });
 
