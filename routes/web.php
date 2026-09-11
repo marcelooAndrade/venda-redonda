@@ -31,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notas', Emissao::class)->name('notas');
     Route::get('importacao', App\Livewire\Importacao\Painel::class)->name('importacao');
     Route::get('estoque', Painel::class)->name('estoque');
+    // `Painel` já nomeia o do estoque neste arquivo, então este vai pelo
+    // nome completo em vez de um alias que confundiria os dois.
+    Route::get('financeiro', App\Livewire\Financeiro\Painel::class)->name('financeiro');
     Route::get('contas-a-pagar', ContasPagar::class)->name('contas-a-pagar');
     Route::get('contas-a-receber', ContasReceber::class)->name('contas-a-receber');
     Route::get('marca', Marca::class)->name('marca');
