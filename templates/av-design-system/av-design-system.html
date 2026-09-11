@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venda Redonda — AV Design System</title>
+<link rel="icon" type="image/png" href="./images/vr-redonda-icon-fundo-1.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+<style>
+/* ── Design Tokens ──────────────────────────────────────────────── */
+:root {
+  --ease-apple:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo:   cubic-bezier(0.19, 1, 0.22, 1);
+  --black:       #0E1B1F;
+  --black-100:   #111111;
+  --black-200:   #1A1A1A;
+  --black-300:   #242424;
+  --orange:      #E4572E;
+  --gold:        #FF7A4E;
+  --red:         #A43F21;
+  --red-hover:   #7D3019;
+  --white:       #FFFFFF;
+  --gray:        #7A7A7A;
+  --light:       #F3F3F3;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+button, input, select, textarea { font-family: inherit; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--black);
+  color: var(--white);
+  overscroll-behavior: none;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; }
+
+a { color: inherit; text-decoration: none; outline: none; }
+a, button, [role="button"] { cursor: pointer; }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 2px; }
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px;
+}
+
+/* ── Reveal ─────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(2.5rem) scale(0.98);
+  filter: blur(12px);
+  transition: opacity 1.4s var(--ease-apple), transform 1.4s var(--ease-apple), filter 1.4s var(--ease-apple);
+  will-change: opacity, transform, filter;
+}
+.reveal.in-view { opacity: 1; transform: none; filter: none; }
+.reveal-lines .line-block {
+  display: block;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(1.5rem) rotateX(15deg);
+  transform-origin: bottom center;
+  transition: opacity 1.2s var(--ease-apple), transform 1.2s var(--ease-apple), filter 1.2s var(--ease-apple);
+}
+
+/* ── 3D Tilt ────────────────────────────────────────────────────── */
+.tilt-card {
+  transition: box-shadow 0.6s var(--ease-apple), border-color 0.6s var(--ease-apple);
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+.tilt-card:hover {
+  box-shadow: 0 1.5rem 5rem -1rem rgba(0,0,0,0.95), inset 0 1px 0 rgba(228,87,46,0.06), 0 0 3rem rgba(228,87,46,0.06);
+  border-image: linear-gradient(135deg, rgba(228,87,46,0.45), rgba(164,63,33,0.28)) 1 !important;
+}
+.tilt-content { transform: translateZ(30px); transition: transform 0.6s var(--ease-apple); }
+
+/* ── Keyframes ──────────────────────────────────────────────────── */
+@keyframes fire-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+@keyframes shimmer-fire {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fire-dot { animation: fire-pulse 3s ease-in-out infinite; }
+
+.shimmer-text {
+  background: linear-gradient(90deg, #E4572E 0%, #A43F21 30%, #FF7A4E 55%, #E4572E 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-fire 4s linear infinite;
+}
+.gradient-text {
+  background: linear-gradient(90deg, #E4572E, #A43F21);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+/* Gradient icon wrapper: glow background behind iconify-icon.
+   True SVG gradient applied via JS shadow DOM injection (see script below). */
+.icon-gradient-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(228,87,46,0.12), rgba(164,63,33,0.08));
+  padding: 0.3rem;
+  box-shadow: 0 0 8px rgba(228,87,46,0.15), 0 0 1px rgba(164,63,33,0.1);
+}
+
+/* ── DS Nav ─────────────────────────────────────────────────────── */
+#ds-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  border-bottom: 1px solid transparent;
+  background: rgba(0,0,0,0.92) padding-box,
+              linear-gradient(90deg, rgba(228,87,46,0.25) 0%, rgba(164,63,33,0.15) 100%) border-box;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+.nav-link {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: color 0.3s;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.nav-link:hover {
+  background: linear-gradient(90deg, #E4572E, #A43F21);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Section Labels ─────────────────────────────────────────────── */
+.ds-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding-bottom: 0.75rem;
+  margin-bottom: 3rem;
+}
+.sub-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.22);
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+/* ── Spec Table ─────────────────────────────────────────────────── */
+.spec-row {
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 1.25rem 1.5rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-name {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  min-width: 9rem;
+  flex-shrink: 0;
+}
+.spec-meta {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.18);
+  margin-left: auto;
+  flex-shrink: 0;
+  font-feature-settings: "tnum";
+}
+
+/* ── Swatches ───────────────────────────────────────────────────── */
+.swatch { width: 100%; height: 5rem; border-radius: 2px; border: 1px solid rgba(255,255,255,0.06); }
+
+/* ── Button ─────────────────────────────────────────────────────── */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  overflow: hidden;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-apple), box-shadow 0.3s var(--ease-apple);
+}
+.btn:hover { transform: scale(1.01); }
+.btn-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transform: translateY(100%);
+  transition: transform 0.5s var(--ease-expo);
+}
+.btn:hover .btn-sweep { transform: translateY(0); }
+.btn span, .btn iconify-icon { position: relative; z-index: 1; }
+.btn:hover iconify-icon { transform: translateX(3px); }
+
+/* ── Input ──────────────────────────────────────────────────────── */
+.ds-input {
+  font-size: 0.875rem;
+  background: var(--black-100);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--white);
+  padding: 0.75rem 1rem;
+  outline: none;
+  width: 100%;
+  border-radius: 4px;
+  transition: border-color 0.3s, background 0.3s;
+  -webkit-appearance: none;
+}
+.ds-input::placeholder { color: rgba(255,255,255,0.22); }
+.ds-input:focus {
+  border-color: transparent;
+  background: linear-gradient(#111111, #111111) padding-box,
+              linear-gradient(90deg, rgba(228,87,46,0.55), rgba(164,63,33,0.4)) border-box;
+}
+select.ds-input:focus {
+  background: var(--black-100);
+  border-color: rgba(228,87,46,0.5);
+}
+label.ds-field-label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Logo tile ──────────────────────────────────────────────────── */
+.logo-tile {
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.logo-tile-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 9rem;
+}
+.logo-tile-preview img { max-height: 3.5rem; max-width: 100%; width: auto; object-fit: contain; }
+.logo-tile-meta {
+  padding: 0.875rem 1rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: #111;
+}
+.logo-tile--light .logo-tile-meta {
+  border-top: 1px solid rgba(0,0,0,0.08);
+  background: #e8e8e8;
+}
+.logo-tile--light .logo-tile-meta [style*="color:#fff"],
+.logo-tile--light .logo-tile-meta [style*="color: #fff"] {
+  color: #111 !important;
+}
+.logo-tile--light .logo-tile-meta [style*="rgba(255,255,255"] {
+  color: rgba(0,0,0,0.5) !important;
+}
+
+/* ── Extra motion keyframes ──────────────────────────────────────── */
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes rotate-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes rotate-slow-rev {
+  to { transform: rotate(-360deg); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes orbit {
+  to { transform: rotate(360deg) translateX(var(--orbit-r,2.5rem)) rotate(-360deg); }
+}
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(800%); opacity: 0; }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(2rem); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes border-glow-fire {
+  0%,100% { box-shadow: 0 0 0 0 rgba(228,87,46,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(228,87,46,0.15), 0 0 24px rgba(228,87,46,0.08); }
+}
+
+/* Motion demo helpers */
+.motion-card {
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.01);
+  padding: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+.motion-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 0.5rem;
+}
+.motion-desc {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.32);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+}
+.motion-tag {
+  display: inline-block;
+  font-size: 0.58rem;
+  color: rgba(228,87,46,0.8);
+  border: 1px solid transparent;
+  background: rgba(228,87,46,0.07) padding-box,
+              linear-gradient(90deg, rgba(228,87,46,0.25), rgba(164,63,33,0.15)) border-box;
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Layout utilities (replaces Tailwind CDN) ─────────────────── */
+.fixed{position:fixed}.absolute{position:absolute}.inset-0{inset:0}
+.-z-10{z-index:-10}.z-\[9999\]{z-index:9999}
+.overflow-hidden{overflow:hidden}.pointer-events-none{pointer-events:none}
+.rounded-full{border-radius:9999px}.flex{display:flex}.hidden{display:none}
+.mx-auto{margin-left:auto;margin-right:auto}.max-w-7xl{max-width:80rem}
+.items-center{align-items:center}.justify-between{justify-content:space-between}
+.gap-3{gap:0.75rem}.gap-6{gap:1.5rem}
+.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}
+@media(min-width:768px){.md\:flex{display:flex}.md\:block{display:block}}
+@media(min-width:1024px){.lg\:px-8{padding-left:2rem;padding-right:2rem}}
+</style>
+</head>
+<body>
+
+<!-- ── Cursor ─────────────────────────────────────────────────────── -->
+<div class="fixed inset-0 z-[9999] pointer-events-none hidden md:block" style="mix-blend-mode:screen;">
+  <div id="cursorAura" style="position:absolute;border-radius:50%;will-change:transform;
+    width:300px;height:300px;
+    background:radial-gradient(circle at center,rgba(228,87,46,0.08) 0%,rgba(228,87,46,0.03) 45%,transparent 70%);
+    filter:blur(55px);
+    transition:width 0.7s cubic-bezier(0.16,1,0.3,1),height 0.7s cubic-bezier(0.16,1,0.3,1),filter 0.7s cubic-bezier(0.16,1,0.3,1);"></div>
+  <div id="cursorGlow" style="position:absolute;border-radius:50%;will-change:transform;
+    width:80px;height:80px;
+    background:radial-gradient(circle at center,rgba(228,87,46,0.42) 0%,rgba(228,87,46,0.16) 45%,transparent 70%);
+    filter:blur(14px);
+    transition:width 0.5s cubic-bezier(0.16,1,0.3,1),height 0.5s cubic-bezier(0.16,1,0.3,1),filter 0.5s cubic-bezier(0.16,1,0.3,1);"></div>
+</div>
+
+<!-- ── Background ─────────────────────────────────────────────────── -->
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+  <div id="bgBlob1" data-speed="0.04" class="absolute rounded-full"
+       style="top:-8rem;left:-6rem;width:38rem;height:38rem;
+              background:radial-gradient(circle,rgba(228,87,46,0.08) 0%,rgba(255,122,78,0.03) 50%,transparent 100%);
+              filter:blur(90px);opacity:0.9;"></div>
+  <div id="bgBlob2" data-speed="-0.025" class="absolute rounded-full"
+       style="top:50%;right:-8rem;width:28rem;height:28rem;
+              background:radial-gradient(circle,rgba(164,63,33,0.06) 0%,transparent 70%);
+              filter:blur(80px);"></div>
+  <div class="absolute inset-0"
+       style="background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),
+                               linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);
+              background-size:5rem 5rem;"></div>
+  <div class="absolute inset-0"
+       style="background:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.6) 60%,#000 100%);"></div>
+</div>
+
+<!-- ── Nav ────────────────────────────────────────────────────────── -->
+<nav id="ds-nav">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+    <a href="#hero" class="flex items-center gap-3">
+      <img src="./images/vr-redonda-icon-fundo-2.png" alt="AV" style="height:28px;width:28px;object-fit:contain;border-radius:5px;">
+      <span style="font-size:0.6rem;font-weight:600;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">
+        AV DESIGN SYSTEM <span style="color:rgba(255,255,255,0.18);">/ Venda Redonda</span>
+      </span>
+    </a>
+    <div class="hidden items-center gap-6 md:flex">
+      <a href="#hero"        class="nav-link">Hero</a>
+      <a href="#typography"  class="nav-link">Typography</a>
+      <a href="#colors"      class="nav-link">Colors</a>
+      <a href="#components"  class="nav-link">Components</a>
+      <a href="#layout"      class="nav-link">Layout</a>
+      <a href="#motion"      class="nav-link">Motion</a>
+      <a href="#brand"       class="nav-link">Brand</a>
+      <a href="#icons"       class="nav-link">Icons</a>
+    </div>
+  </div>
+</nav>
+
+<main style="padding-top:4rem;">
+
+  <!-- ════════════════════════════════════════════════════════════════
+       0 · HERO
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="hero" style="position:relative;overflow:hidden;">
+
+    <!-- Hero ambient glow -->
+    <div style="pointer-events:none;position:absolute;inset:0;overflow:hidden;">
+      <div style="position:absolute;top:15%;left:5%;width:44vw;height:44vw;border-radius:9999px;background:radial-gradient(ellipse,rgba(228,87,46,0.09) 0%,transparent 65%);filter:blur(20px);"></div>
+      <div style="position:absolute;bottom:5%;right:0;width:36vw;height:36vw;border-radius:9999px;background:radial-gradient(ellipse,rgba(164,63,33,0.07) 0%,transparent 65%);filter:blur(20px);"></div>
+      <!-- Fine grid overlay -->
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:4rem 4rem;mask-image:radial-gradient(ellipse 70% 70% at 40% 40%,#000 10%,transparent 100%);"></div>
+    </div>
+
+    <div style="position:relative;z-index:10;width:100%;max-width:80rem;margin:0 auto;padding:7.5rem 1.5rem 6rem;">
+
+      <!-- ── Main grid ─────────────────────────────────────────────── -->
+      <div id="hero-grid" style="display:grid;grid-template-columns:1fr;gap:4rem;align-items:start;">
+
+        <!-- Left: identity + copy -->
+        <div style="max-width:52rem;">
+
+          <!-- Brand logo -->
+          <div class="reveal in-view" style="margin-bottom:1.25rem;">
+            <div style="position:relative;display:inline-block;">
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28rem;height:8rem;background:radial-gradient(ellipse,rgba(228,87,46,0.18) 0%,transparent 68%);filter:blur(28px);pointer-events:none;"></div>
+              <img src="./images/vr-redonda-horizontal-fundo-2.png" alt="Venda Redonda"
+                   style="position:relative;height:clamp(3.6rem,8.4vw,6rem);width:auto;object-fit:contain;display:block;filter:drop-shadow(0 2px 20px rgba(228,87,46,0.18));">
+            </div>
+          </div>
+
+          <!-- Eyebrow badge -->
+          <div class="reveal in-view" style="margin:2rem 0;display:flex;align-items:center;gap:1.25rem;">
+            <div style="display:inline-flex;align-items:center;gap:0.65rem;border-radius:9999px;border:1px solid transparent;background:rgba(228,87,46,0.04) padding-box,linear-gradient(90deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) border-box;padding:0.4rem 1rem;">
+              <span style="position:relative;display:flex;width:6px;height:6px;">
+                <span class="fire-dot" style="position:absolute;display:inline-flex;width:100%;height:100%;border-radius:9999px;background:#E4572E;opacity:0.55;"></span>
+                <span style="position:relative;display:inline-flex;width:6px;height:6px;border-radius:9999px;background:#E4572E;"></span>
+              </span>
+              <span class="gradient-text" style="font-size:0.58rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85;">Design System</span>
+            </div>
+            <span style="display:block;width:3.5rem;height:1px;background:linear-gradient(90deg,rgba(228,87,46,0.3),transparent);"></span>
+            <span style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.18);">v1.0 · 2026</span>
+          </div>
+
+          <!-- Headline -->
+          <div class="reveal-lines in-view" style="margin-bottom:1.75rem;overflow:hidden;">
+            <span class="line-block" style="display:block;">
+              <span style="font-weight:900;font-size:clamp(3rem,7.5vw,6rem);letter-spacing:-0.04em;line-height:0.92;color:#fff;display:block;">Design</span>
+            </span>
+            <span class="line-block" style="display:block;">
+              <span class="shimmer-text" style="font-weight:900;font-size:clamp(3rem,7.5vw,6rem);letter-spacing:-0.04em;line-height:0.92;display:block;">Standards.</span>
+            </span>
+          </div>
+
+          <!-- Sub-headline rule + copy -->
+          <div class="reveal in-view" style="margin-bottom:2.5rem;padding-left:1rem;border-left:2px solid transparent;border-image:linear-gradient(180deg,rgba(228,87,46,0.5),rgba(164,63,33,0.3)) 1;">
+            <p style="font-size:0.9375rem;line-height:1.7;color:rgba(255,255,255,0.42);max-width:38rem;">
+              O sistema visual da <span class="gradient-text" style="font-weight:600;opacity:0.9;">Venda Redonda</span>.
+              Tokens de cor, escala tipográfica, componentes e padrões de interação
+              documentados como fonte única da verdade.
+            </p>
+          </div>
+
+          <!-- CTAs -->
+          <div class="reveal in-view" style="display:flex;flex-wrap:wrap;gap:0.875rem;align-items:center;">
+            <a href="#typography" class="btn" style="background:linear-gradient(90deg,#E4572E,#A43F21);color:#fff;padding:0.85rem 1.875rem;font-size:0.875rem;font-weight:700;box-shadow:0 0 2.5rem rgba(228,87,46,0.22);">
+              <span>Explorar o sistema</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
+              <div class="btn-sweep" style="background:linear-gradient(90deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04));"></div>
+            </a>
+            <a href="#brand" class="btn" style="border:1px solid transparent;background:transparent padding-box,linear-gradient(90deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) border-box;color:rgba(228,87,46,0.65);padding:0.85rem 1.875rem;font-size:0.875rem;font-weight:600;" onmouseover="this.style.background='rgba(228,87,46,0.06) padding-box,linear-gradient(90deg,rgba(228,87,46,0.55),rgba(164,63,33,0.35)) border-box';this.style.color='#E4572E'" onmouseout="this.style.background='transparent padding-box,linear-gradient(90deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) border-box';this.style.color='rgba(228,87,46,0.65)'">
+              <span>Brand assets</span>
+            </a>
+          </div>
+
+          <!-- Stat strip -->
+          <div class="reveal in-view" style="margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.05);display:flex;flex-wrap:wrap;gap:2.25rem;align-items:center;">
+            <div>
+              <div style="font-size:1.625rem;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1;">7</div>
+              <div style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:0.3rem;">Seções</div>
+            </div>
+            <div style="width:1px;height:2.5rem;background:rgba(255,255,255,0.07);"></div>
+            <div>
+              <div class="gradient-text" style="font-size:1.625rem;font-weight:900;letter-spacing:-0.03em;line-height:1;">5</div>
+              <div style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:0.3rem;">Cores base</div>
+            </div>
+            <div style="width:1px;height:2.5rem;background:rgba(255,255,255,0.07);"></div>
+            <div>
+              <div style="font-size:1.625rem;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1;">13</div>
+              <div style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:0.3rem;">Ativos de marca</div>
+            </div>
+            <div style="width:1px;height:2.5rem;background:rgba(255,255,255,0.07);"></div>
+            <div>
+              <div style="font-size:1.625rem;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1;">1</div>
+              <div style="font-size:0.6rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:0.3rem;">Typeface</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: brand showcase card (visible lg+) -->
+        <div class="reveal in-view" style="position:relative;display:none;" id="hero-card-col">
+          <div class="tilt-card" style="border-radius:3px;border:1px solid transparent;background:rgba(10,10,10,0.8) padding-box,linear-gradient(135deg,rgba(228,87,46,0.18),rgba(164,63,33,0.1)) border-box;backdrop-filter:blur(48px);overflow:hidden;position:relative;">
+
+            <!-- Card glow -->
+            <div style="pointer-events:none;position:absolute;top:-6rem;right:-6rem;width:20rem;height:20rem;border-radius:9999px;background:radial-gradient(ellipse,rgba(228,87,46,0.12) 0%,transparent 65%);filter:blur(40px);"></div>
+            <div style="pointer-events:none;position:absolute;bottom:-4rem;left:-4rem;width:16rem;height:16rem;border-radius:9999px;background:radial-gradient(ellipse,rgba(164,63,33,0.08) 0%,transparent 65%);filter:blur(40px);"></div>
+
+            <div class="tilt-content" style="padding:2rem;display:flex;flex-direction:column;gap:0;position:relative;">
+
+              <!-- Card header -->
+              <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:1.25rem;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:1.5rem;">
+                <img src="./images/vr-redonda-icon-fundo-2.png" alt="AV" style="height:2rem;width:2rem;object-fit:contain;border-radius:50%;">
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.2rem;">
+                  <span class="gradient-text" style="font-size:0.55rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;opacity:0.7;">Venda Redonda</span>
+                  <span style="font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.2);">Brand Identity v1</span>
+                </div>
+              </div>
+
+              <!-- Color palette -->
+              <div style="margin-bottom:1.5rem;">
+                <div style="font-size:0.5rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:0.75rem;">Paleta de cores</div>
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.35rem;border-radius:2px;overflow:hidden;">
+                  <div style="aspect-ratio:1;background:#0E1B1F;border:1px solid rgba(255,255,255,0.08);border-radius:2px;"></div>
+                  <div style="aspect-ratio:1;background:#E4572E;border-radius:2px;"></div>
+                  <div style="aspect-ratio:1;background:#FF7A4E;border-radius:2px;"></div>
+                  <div style="aspect-ratio:1;background:#A43F21;border-radius:2px;"></div>
+                  <div style="aspect-ratio:1;background:#FFFFFF;border-radius:2px;border:1px solid rgba(255,255,255,0.12);"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.35rem;margin-top:0.3rem;">
+                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.25);text-align:center;">Black</div>
+                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.25);text-align:center;">Orange</div>
+                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.25);text-align:center;">Gold</div>
+                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.25);text-align:center;">Red</div>
+                  <div style="font-size:0.42rem;color:rgba(255,255,255,0.25);text-align:center;">White</div>
+                </div>
+              </div>
+
+              <!-- CTA gradient swatch -->
+              <div style="margin-bottom:1.5rem;">
+                <div style="font-size:0.5rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:0.75rem;">CTA Gradient</div>
+                <div style="height:2.75rem;border-radius:2px;background:linear-gradient(90deg,#E4572E 0%,#A43F21 100%);position:relative;overflow:hidden;">
+                  <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0.08),transparent 40%);"></div>
+                </div>
+              </div>
+
+              <!-- Type scale preview -->
+              <div style="margin-bottom:1.5rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:2px;border:1px solid rgba(255,255,255,0.04);">
+                <div style="font-size:0.5rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:0.75rem;">Typeface · Manrope</div>
+                <div class="gradient-text" style="font-weight:900;font-size:1.5rem;letter-spacing:-0.03em;line-height:1;margin-bottom:0.25rem;">Aa</div>
+                <div style="font-weight:400;font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:0.01em;">ABCDEFGHIJKLMNOPQRSTUVWXYZ</div>
+                <div style="font-weight:400;font-size:0.65rem;color:rgba(255,255,255,0.2);letter-spacing:0.01em;margin-top:0.1rem;">abcdefghijklmnopqrstuvwxyz 0-9</div>
+              </div>
+
+              <!-- Logo variants -->
+              <div style="padding-top:1.25rem;border-top:1px solid rgba(255,255,255,0.05);">
+                <div style="font-size:0.5rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:0.9rem;">Logo variants</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                  <div style="background:#fff;border-radius:2px;padding:0.75rem;display:flex;align-items:center;justify-content:center;">
+                    <img src="./images/vr-redonda-empilhada-fundo-1.png" alt="Logo Degradê Preta" style="height:1.4rem;width:auto;object-fit:contain;">
+                  </div>
+                  <div style="background:#000;border:1px solid rgba(255,255,255,0.08);border-radius:2px;padding:0.75rem;display:flex;align-items:center;justify-content:center;">
+                    <img src="./images/vr-redonda-horizontal-fundo-2.png" alt="Logo Degradê Branca" style="height:1.4rem;width:auto;object-fit:contain;">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /#hero-grid -->
+    </div>
+  </section>
+  <script>
+    (function(){
+      var card = document.getElementById('hero-card-col');
+      var grid = document.getElementById('hero-grid');
+      if (window.innerWidth >= 1024) {
+        card.style.display = 'block';
+        grid.style.gridTemplateColumns = '1fr 1fr';
+      }
+    })();
+  </script>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       1 · TYPOGRAPHY
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="typography" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+    <div class="ds-label">01 Typography · Manrope Display + Body</div>
+
+    <div class="spec-row">
+      <span class="spec-name">Display</span>
+      <h1 class="gradient-text" style="font-weight:900;font-size:clamp(2.5rem,6vw,4.5rem);line-height:1.0;letter-spacing:-0.03em;">LOREM IPSUM DOLOR.</h1>
+      <span class="spec-meta">72px / 1.0 · Manrope 900 · −0.03em · --orange</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Heading 1</span>
+      <h1 style="font-weight:900;font-size:clamp(2rem,4.5vw,3.5rem);line-height:1.05;letter-spacing:-0.025em;color:#fff;">Lorem ipsum dolor sit amet</h1>
+      <span class="spec-meta">56px / 1.05 · Manrope 900 · −0.025em</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Heading 2</span>
+      <h2 style="font-weight:700;font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.1;letter-spacing:-0.02em;color:#fff;">Lorem Ipsum Dolor Sit</h2>
+      <span class="spec-meta">40px / 1.1 · Manrope 700 · −0.02em</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Heading 3</span>
+      <h3 style="font-weight:700;font-size:1.4rem;line-height:1.2;color:#fff;">Lorem Ipsum Dolor</h3>
+      <span class="spec-meta">22px / 1.2 · Manrope 700</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Heading 4</span>
+      <h4 style="font-weight:700;font-size:1.125rem;line-height:1.3;color:#fff;">Ipsum Dolor Sit Amet</h4>
+      <span class="spec-meta">18px / 1.3 · Manrope 700</span>
+    </div>
+
+    <div class="spec-row" style="align-items:flex-start;">
+      <span class="spec-name" style="padding-top:0.25rem;">Body L</span>
+      <p style="font-size:1rem;line-height:1.8;color:rgba(255,255,255,0.55);max-width:34rem;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam quis nostrud exercitation.</p>
+      <span class="spec-meta">16px / 1.8 · Manrope 400 · white 55%</span>
+    </div>
+
+    <div class="spec-row" style="align-items:flex-start;">
+      <span class="spec-name" style="padding-top:0.25rem;">Body M</span>
+      <p style="font-size:0.875rem;line-height:1.75;color:rgba(255,255,255,0.45);max-width:34rem;">Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim.</p>
+      <span class="spec-meta">14px / 1.75 · Manrope 400 · white 45%</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Label / Overline</span>
+      <span class="gradient-text" style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.22em;">LOREM IPSUM · DOLOR SIT AMET</span>
+      <span class="spec-meta">9.6px · Manrope 700 · uppercase · 0.22em · --orange</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Label Muted</span>
+      <span style="font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.22em;color:rgba(255,255,255,0.28);">Lorem Ipsum · Dolor Sit</span>
+      <span class="spec-meta">9.6px · Manrope 600 · white 28%</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Nav Link</span>
+      <span style="font-size:0.625rem;font-weight:600;text-transform:uppercase;letter-spacing:0.14em;color:rgba(255,255,255,0.4);">Lorem Ipsum Dolor</span>
+      <span class="spec-meta">10px · Manrope 600 · 0.14em · white 40%</span>
+    </div>
+
+    <div class="spec-row" style="align-items:flex-start;">
+      <span class="spec-name" style="padding-top:0.5rem;">Pull Quote</span>
+      <blockquote style="font-style:italic;font-size:1.125rem;font-weight:500;line-height:1.65;color:rgba(255,255,255,0.65);max-width:30rem;border-left:2px solid transparent;border-image:linear-gradient(180deg,rgba(228,87,46,0.65),rgba(164,63,33,0.42)) 1;padding-left:1.25rem;">"Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore."</blockquote>
+      <span class="spec-meta">18px · Manrope 500 italic · 2px --orange border</span>
+    </div>
+
+    <div class="spec-row">
+      <span class="spec-name">Animated Shimmer</span>
+      <span class="shimmer-text" style="font-weight:900;font-size:2.5rem;letter-spacing:-0.025em;">Venda Redonda</span>
+      <span class="spec-meta">40px · Manrope 900 · fire shimmer · 4s</span>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       2 · COLORS
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="colors" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+    <div class="ds-label">02 Colors &amp; Surfaces · Venda Redonda</div>
+
+    <span class="sub-label">Core Palette</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1rem;margin-bottom:4rem;">
+      <div>
+        <div class="swatch" style="background:#0E1B1F;border-color:rgba(255,255,255,0.14);margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;letter-spacing:0.04em;">Black</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#0E1B1F · --black · BG</div>
+      </div>
+      <div>
+        <div class="swatch" style="background:#E4572E;box-shadow:0 0 2rem rgba(228,87,46,0.3);margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;">Orange</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#E4572E · --orange · Primary</div>
+      </div>
+      <div>
+        <div class="swatch" style="background:#FF7A4E;margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;">Gold</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#FF7A4E · --gold · CTA end</div>
+      </div>
+      <div>
+        <div class="swatch" style="background:#A43F21;margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;">Red</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#A43F21 · --red · CTA gradient</div>
+      </div>
+      <div>
+        <div class="swatch" style="background:#FFFFFF;margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;">White</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#FFFFFF · --white · Text</div>
+      </div>
+      <div>
+        <div class="swatch" style="background:#7A7A7A;margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;">Gray</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#7A7A7A · --gray · Body Elementor</div>
+      </div>
+      <div>
+        <div class="swatch" style="background:#F3F3F3;margin-bottom:0.75rem;"></div>
+        <div style="font-weight:700;font-size:0.75rem;color:#fff;">Light</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:2px;">#F3F3F3 · --light · Light sections</div>
+      </div>
+    </div>
+
+    <span class="sub-label">Surfaces Background Scales</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1rem;margin-bottom:4rem;">
+      <div>
+        <div style="height:5rem;border-radius:2px;overflow:hidden;margin-bottom:0.75rem;">
+          <div style="height:100%;background:linear-gradient(to bottom,#242424,#1A1A1A,#111111,#050505,#0E1B1F);"></div>
+        </div>
+        <div style="font-weight:700;font-size:0.7rem;color:#fff;">Surface Scale</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.28);margin-top:2px;">#000 base</div>
+      </div>
+      <div>
+        <div style="height:5rem;border-radius:2px;overflow:hidden;margin-bottom:0.75rem;">
+          <div style="height:100%;background:linear-gradient(to bottom,#FF6133,#FF5E30,#AA3D1E,#8D3217,#712611);"></div>
+        </div>
+        <div style="font-weight:700;font-size:0.7rem;color:#fff;">Primary Scale</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.28);margin-top:2px;">#E4572E base</div>
+      </div>
+      <div>
+        <div style="height:5rem;border-radius:2px;overflow:hidden;margin-bottom:0.75rem;">
+          <div style="height:100%;background:linear-gradient(to bottom,#E3572D,#C74A25,#6A2612,#4D1B0C,#311107);"></div>
+        </div>
+        <div style="font-weight:700;font-size:0.7rem;color:#fff;">Deep Scale</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.28);margin-top:2px;">#A43F21 base</div>
+      </div>
+    </div>
+
+    <span class="sub-label">Text White Opacity Stops</span>
+    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:4rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;background:rgba(255,255,255,0.02);padding:0.75rem 1rem;">
+        <span style="width:10px;height:10px;border-radius:9999px;background:#FFF;flex-shrink:0;"></span>
+        <span style="font-size:0.8rem;color:#fff;">100%</span>
+        <span style="font-size:0.6rem;color:rgba(255,255,255,0.22);">Headings, marks</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;background:rgba(255,255,255,0.02);padding:0.75rem 1rem;">
+        <span style="width:10px;height:10px;border-radius:9999px;background:rgba(255,255,255,0.75);flex-shrink:0;"></span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.75);">75%</span>
+        <span style="font-size:0.6rem;color:rgba(255,255,255,0.22);">Subheadings</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;background:rgba(255,255,255,0.02);padding:0.75rem 1rem;">
+        <span style="width:10px;height:10px;border-radius:9999px;background:rgba(255,255,255,0.55);flex-shrink:0;"></span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.55);">55%</span>
+        <span style="font-size:0.6rem;color:rgba(255,255,255,0.22);">Body text</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;background:rgba(255,255,255,0.02);padding:0.75rem 1rem;">
+        <span style="width:10px;height:10px;border-radius:9999px;background:rgba(255,255,255,0.35);flex-shrink:0;"></span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.35);">35%</span>
+        <span style="font-size:0.6rem;color:rgba(255,255,255,0.22);">Secondary labels</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;background:rgba(255,255,255,0.02);padding:0.75rem 1rem;">
+        <span style="width:10px;height:10px;border-radius:9999px;background:rgba(255,255,255,0.18);flex-shrink:0;"></span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.18);">18%</span>
+        <span style="font-size:0.6rem;color:rgba(255,255,255,0.22);">Ghosts / dividers</span>
+      </div>
+    </div>
+
+    <span class="sub-label">Gradients</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:1rem;">
+      <div>
+        <div style="height:5rem;border-radius:2px;background:linear-gradient(90deg,#E4572E,#A43F21);box-shadow:0 0 2rem rgba(228,87,46,0.2);margin-bottom:0.75rem;"></div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">CTA (normal)</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:2px;">#E4572E → #A43F21 · 90°</div>
+      </div>
+      <div>
+        <div style="height:5rem;border-radius:2px;background:linear-gradient(90deg,#FF754C,#7D3019);margin-bottom:0.75rem;"></div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">CTA (hover)</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:2px;">#FF754C → #7D3019 · 90°</div>
+      </div>
+      <div>
+        <div style="height:5rem;border-radius:2px;background:radial-gradient(ellipse at center,rgba(228,87,46,0.14) 0%,transparent 70%);margin-bottom:0.75rem;"></div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">Section glow</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:2px;">radial orange · 14% center</div>
+      </div>
+      <div>
+        <div style="height:5rem;border-radius:2px;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.8),#000);margin-bottom:0.75rem;"></div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">Hero overlay</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:2px;">transparent → #000 · vertical</div>
+      </div>
+      <div>
+        <div style="height:5rem;border-radius:2px;background:linear-gradient(to bottom right,rgba(228,87,46,0.04),transparent);border:1px solid rgba(255,255,255,0.06);margin-bottom:0.75rem;"></div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);">Card inner light</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:2px;">orange/4 → transparent</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       3 · COMPONENTS
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="components" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+    <div class="ds-label">03 UI Components · Interaction States</div>
+
+    <!-- Buttons -->
+    <span class="sub-label">Buttons</span>
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:2rem;margin-bottom:4rem;">
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="#" class="btn" style="background:linear-gradient(90deg,#E4572E,#A43F21);color:#fff;padding:1rem 2rem;box-shadow:0 0 2rem rgba(228,87,46,0.2);">
+          <span>Lorem Ipsum Dolor</span>
+          <iconify-icon icon="solar:arrow-right-linear" width="14" height="14"></iconify-icon>
+          <div class="btn-sweep" style="background:rgba(255,255,255,0.14);"></div>
+        </a>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Primary Fire gradient</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="#" class="btn" style="border:1px solid rgba(255,255,255,0.22);color:#fff;padding:1rem 2rem;" onmouseover="this.style.borderColor='rgba(228,87,46,0.5)';this.style.color='#E4572E'" onmouseout="this.style.borderColor='rgba(255,255,255,0.22)';this.style.color='#fff'">
+          <span>Ipsum Dolor Sit</span>
+          <div class="btn-sweep" style="background:rgba(228,87,46,0.07);"></div>
+        </a>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Secondary outlined</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="#" class="btn" style="border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:1rem 2rem;" onmouseover="this.style.color='rgba(255,255,255,0.75)';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.1)'">
+          <span>Dolor Sit Amet</span>
+        </a>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Ghost minimal</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="#" class="btn" style="background:#E4572E;color:#000;padding:1rem 2rem;">
+          <span>Lorem Ipsum</span>
+          <div class="btn-sweep" style="background:#FF7A4E;"></div>
+        </a>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Orange fill black text</span>
+      </div>
+
+    </div>
+
+    <!-- Badge -->
+    <span class="sub-label">Badges</span>
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:4rem;">
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="display:inline-flex;align-items:center;gap:0.75rem;border-radius:9999px;border:1px solid transparent;background:rgba(20,20,20,0.8) padding-box,linear-gradient(90deg,rgba(228,87,46,0.26),rgba(164,63,33,0.16)) border-box;padding:0.5rem 1rem;backdrop-filter:blur(12px);">
+          <span style="position:relative;display:flex;width:8px;height:8px;">
+            <span class="fire-dot" style="position:absolute;width:100%;height:100%;border-radius:9999px;background:#E4572E;opacity:0.5;"></span>
+            <span style="position:relative;width:8px;height:8px;border-radius:9999px;background:#E4572E;display:inline-block;"></span>
+          </span>
+          <span style="font-size:0.65rem;font-weight:600;letter-spacing:0.06em;color:rgba(255,255,255,0.65);">Lorem Ipsum · Dolor Sit Amet</span>
+        </div>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Live badge fire dot pulse</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="display:inline-flex;align-items:center;gap:0.5rem;border-radius:2px;border:1px solid transparent;border-image:linear-gradient(90deg,rgba(228,87,46,0.4),rgba(164,63,33,0.25)) 1;background:rgba(228,87,46,0.08);padding:0.375rem 0.75rem;">
+          <span class="gradient-text" style="font-size:0.55rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;">Lorem Ipsum Dolor</span>
+        </div>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Status tag orange tinted</span>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <span class="sub-label">Service Cards 3-col, tilt-card</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1.5rem;margin-bottom:4rem;">
+
+      <div class="tilt-card" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(17,17,17,0.85);padding:2rem;cursor:pointer;backdrop-filter:blur(12px);">
+        <div class="tilt-content">
+          <div style="margin-bottom:1.75rem;display:inline-flex;width:2.75rem;height:2.75rem;align-items:center;justify-content:center;border-radius:2px;border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) 1;background:rgba(228,87,46,0.06);transition:all 0.4s;">
+            <span class="icon-gradient-wrap"><iconify-icon icon="solar:chart-line-duotone" width="20" height="20" style="color:#E4572E;"></iconify-icon></span>
+          </div>
+          <h3 style="font-weight:700;font-size:1.05rem;color:#fff;">Lorem Ipsum Dolor</h3>
+          <p style="font-size:0.78rem;line-height:1.75;color:rgba(255,255,255,0.42);margin-top:0.6rem;">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt.</p>
+        </div>
+      </div>
+
+      <div class="tilt-card" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(17,17,17,0.85);padding:2rem;cursor:pointer;backdrop-filter:blur(12px);">
+        <div class="tilt-content">
+          <div style="margin-bottom:1.75rem;display:inline-flex;width:2.75rem;height:2.75rem;align-items:center;justify-content:center;border-radius:2px;border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) 1;background:rgba(228,87,46,0.06);">
+            <span class="icon-gradient-wrap"><iconify-icon icon="solar:users-group-rounded-linear" width="20" height="20" style="color:#E4572E;"></iconify-icon></span>
+          </div>
+          <h3 style="font-weight:700;font-size:1.05rem;color:#fff;">Ipsum Dolor Sit Amet</h3>
+          <p style="font-size:0.78rem;line-height:1.75;color:rgba(255,255,255,0.42);margin-top:0.6rem;">Ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore.</p>
+        </div>
+      </div>
+
+      <div class="tilt-card" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(17,17,17,0.85);padding:2rem;cursor:pointer;backdrop-filter:blur(12px);">
+        <div class="tilt-content">
+          <div style="margin-bottom:1.75rem;display:inline-flex;width:2.75rem;height:2.75rem;align-items:center;justify-content:center;border-radius:2px;border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) 1;background:rgba(228,87,46,0.06);">
+            <span class="icon-gradient-wrap"><iconify-icon icon="solar:rocket-linear" width="20" height="20" style="color:#E4572E;"></iconify-icon></span>
+          </div>
+          <h3 style="font-weight:700;font-size:1.05rem;color:#fff;">Dolor Sit Amet</h3>
+          <p style="font-size:0.78rem;line-height:1.75;color:rgba(255,255,255,0.42);margin-top:0.6rem;">Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore dolore.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Metric nodes -->
+    <span class="sub-label">Metric Nodes progress reveal on hover</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1.25rem;margin-bottom:4rem;">
+      <div class="metric-node" style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:#111111;padding:1.5rem;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#1A1A1A';this.querySelector('.bar-fill').style.transform='scaleX(1)'" onmouseout="this.style.background='#111111';this.querySelector('.bar-fill').style.transform='scaleX(0)'">
+        <div style="font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:0.875rem;">Lorem Ipsum</div>
+        <div style="display:flex;align-items:flex-end;gap:0.5rem;">
+          <span style="font-weight:900;font-size:2.25rem;color:#fff;letter-spacing:-0.03em;line-height:1;">1.2K</span>
+          <span class="gradient-text" style="font-size:0.65rem;margin-bottom:0.3rem;">+</span>
+        </div>
+        <div style="margin-top:1.25rem;height:1px;background:rgba(255,255,255,0.06);overflow:hidden;border-radius:9999px;">
+          <div class="bar-fill" style="height:100%;width:88%;background:linear-gradient(to right,#E4572E,#FF7A4E);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(0.16,1,0.3,1);border-radius:9999px;"></div>
+        </div>
+      </div>
+      <div class="metric-node" style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:#111111;padding:1.5rem;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#1A1A1A';this.querySelector('.bar-fill').style.transform='scaleX(1)'" onmouseout="this.style.background='#111111';this.querySelector('.bar-fill').style.transform='scaleX(0)'">
+        <div style="font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:0.875rem;">Dolor Sit</div>
+        <div style="display:flex;align-items:flex-end;gap:0.5rem;">
+          <span style="font-weight:900;font-size:2.25rem;color:#fff;letter-spacing:-0.03em;line-height:1;">99%</span>
+        </div>
+        <div style="margin-top:1.25rem;height:1px;background:rgba(255,255,255,0.06);overflow:hidden;border-radius:9999px;">
+          <div class="bar-fill" style="height:100%;width:75%;background:linear-gradient(to right,#E4572E,#A43F21);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(0.16,1,0.3,1);border-radius:9999px;"></div>
+        </div>
+      </div>
+      <div class="metric-node" style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:#111111;padding:1.5rem;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#1A1A1A';this.querySelector('.bar-fill').style.transform='scaleX(1)'" onmouseout="this.style.background='#111111';this.querySelector('.bar-fill').style.transform='scaleX(0)'">
+        <div style="font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:0.875rem;">Amet</div>
+        <div style="display:flex;align-items:flex-end;gap:0.5rem;">
+          <span style="font-weight:900;font-size:2.25rem;color:#fff;letter-spacing:-0.03em;line-height:1;">12mo</span>
+        </div>
+        <div style="margin-top:1.25rem;height:1px;background:rgba(255,255,255,0.06);overflow:hidden;border-radius:9999px;">
+          <div class="bar-fill" style="height:100%;width:60%;background:linear-gradient(to right,#E4572E,#A43F21);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(0.16,1,0.3,1);border-radius:9999px;"></div>
+        </div>
+      </div>
+      <div class="metric-node" style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:#111111;padding:1.5rem;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#1A1A1A';this.querySelector('.bar-fill').style.transform='scaleX(1)'" onmouseout="this.style.background='#111111';this.querySelector('.bar-fill').style.transform='scaleX(0)'">
+        <div style="font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:0.875rem;">Ipsum Dolor</div>
+        <div style="display:flex;align-items:flex-end;gap:0.5rem;">
+          <span style="font-weight:900;font-size:2.25rem;color:#fff;letter-spacing:-0.03em;line-height:1;">500+</span>
+          <span class="gradient-text" style="font-size:0.65rem;margin-bottom:0.3rem;">+</span>
+        </div>
+        <div style="margin-top:1.25rem;height:1px;background:rgba(255,255,255,0.06);overflow:hidden;border-radius:9999px;">
+          <div class="bar-fill" style="height:100%;width:80%;background:linear-gradient(to right,#FF7A4E,#A43F21);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(0.16,1,0.3,1);border-radius:9999px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form controls -->
+    <span class="sub-label">Form Controls</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1.25rem;max-width:42rem;">
+      <div>
+        <label class="ds-field-label">Lorem Ipsum</label>
+        <input class="ds-input" type="text" placeholder="Lorem ipsum dolor sit amet...">
+      </div>
+      <div>
+        <label class="ds-field-label">Dolor Sit Amet</label>
+        <input class="ds-input" type="text" placeholder="Lorem ipsum dolor...">
+      </div>
+      <div>
+        <label class="ds-field-label">Ipsum</label>
+        <select class="ds-input">
+          <option>Lorem Ipsum Dolor</option>
+          <option>Sit Amet Consectetur</option>
+          <option>Adipiscing Elit</option>
+        </select>
+      </div>
+      <div>
+        <label class="ds-field-label">Lorem Ipsum</label>
+        <div style="position:relative;">
+          <iconify-icon icon="solar:magnifer-linear" width="14" height="14" style="position:absolute;left:0.875rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.28);pointer-events:none;"></iconify-icon>
+          <input class="ds-input" type="search" placeholder="Buscar" style="padding-left:2.5rem;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       4 · LAYOUT
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="layout" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+    <div class="ds-label">04 Layout &amp; Spacing · Elementor 4 Grid</div>
+
+    <div style="margin-bottom:4rem;">
+      <div class="spec-row"><span class="spec-name">Max width</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">1140px · Elementor default container (.e-con-boxed .e-con-inner)</span></div>
+      <div class="spec-row"><span class="spec-name">Section padding</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">60–80px top/bottom · Hero: 60px 60px 100px 60px</span></div>
+      <div class="spec-row"><span class="spec-name">Section divider</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">alternating black / black-100 per section (no border)</span></div>
+      <div class="spec-row"><span class="spec-name">Button radius</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">6px (Elementor default) · DS tokens use 4px</span></div>
+      <div class="spec-row"><span class="spec-name">Hero columns</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">50 / 50 · gap 40px · text + photo</span></div>
+      <div class="spec-row"><span class="spec-name">Icon grid</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">3 × 3 (Como Funciona) · 2 × 6 (Premium inline-start)</span></div>
+      <div class="spec-row"><span class="spec-name">Mobile breakpoint</span><span style="font-size:0.875rem;color:rgba(255,255,255,0.5);">767px · Elementor responsive stacks to single column</span></div>
+    </div>
+
+    <!-- Pattern A -->
+    <span class="sub-label" style="margin-bottom:1rem;">Pattern A Hero 2-col (text + image)</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-bottom:4rem;border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.01);padding:2rem;">
+      <div>
+        <div class="gradient-text" style="font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.75rem;">Overline · Lorem Ipsum</div>
+        <h2 style="font-weight:900;font-size:1.75rem;color:#fff;letter-spacing:-0.02em;line-height:1.1;">logo → H2 → body → CTA row</h2>
+        <p style="font-size:0.75rem;color:rgba(255,255,255,0.38);line-height:1.75;margin-top:0.6rem;">flex col · gap 40px · reveal-lines · padding 60px</p>
+      </div>
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(17,17,17,0.6);height:10rem;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.22);">photo overlay · bg-image lazy</span>
+      </div>
+    </div>
+
+    <!-- Pattern B -->
+    <span class="sub-label" style="margin-bottom:1rem;">Pattern B Icon Box 3-col (Como Funciona)</span>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:4rem;">
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:rgba(17,17,17,0.6);height:6rem;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);">icon + title + body</span></div>
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:rgba(17,17,17,0.6);height:6rem;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);">inline-start icon</span></div>
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:rgba(17,17,17,0.6);height:6rem;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);">circle border icon</span></div>
+    </div>
+
+    <!-- Pattern C -->
+    <span class="sub-label" style="margin-bottom:1rem;">Pattern C Sticky Premium (left fixed, right scrolls)</span>
+    <div class="tilt-card" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(17,17,17,0.7);padding:8px;backdrop-filter:blur(40px);">
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.05);background:#000;padding:2rem;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;right:0;width:18rem;height:18rem;background:rgba(228,87,46,0.05);filter:blur(80px);pointer-events:none;"></div>
+        <div style="display:grid;grid-template-columns:2fr 3fr;gap:2rem;">
+          <div style="border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) 1;border-radius:2px;padding:1rem;">
+            <div class="gradient-text" style="font-weight:700;font-size:0.8rem;">STICKY</div>
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.32);margin-top:0.25rem;">position: sticky · top: 80px · left column text + CTA</div>
+          </div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.22);">right col scrolls · 6 inline-start icon boxes stacked</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       5 · MOTION
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="motion" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+
+    <!-- Header -->
+    <div class="ds-label">05 Motion &amp; Interaction · Fire Pace</div>
+    <h2 style="font-weight:900;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-0.035em;line-height:1.0;color:#fff;margin:1.5rem 0 0.75rem;">Motion<span class="gradient-text">.</span></h2>
+    <p style="font-size:0.875rem;color:rgba(255,255,255,0.4);max-width:40rem;line-height:1.75;margin-bottom:4rem;">Cada transição comunica intenção com precisão. Sem frescura só velocidade bem desenhada. As curvas, durações e padrões documentados aqui formam a identidade cinética do sistema.</p>
+
+    <!-- ── Easing Curves ── -->
+    <p class="motion-label" style="margin-bottom:1.5rem;">Curvas de Easing</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1rem;margin-bottom:4rem;">
+
+      <div class="motion-card">
+        <div class="motion-label">ease-apple</div>
+        <div style="font-size:0.7rem;color:rgba(228,87,46,0.8);margin-bottom:0.75rem;">cubic-bezier(0.16, 1, 0.3, 1)</div>
+        <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden;margin-bottom:1rem;">
+          <div style="height:100%;background:linear-gradient(90deg,#E4572E,#A43F21,#FF7A4E);animation:shimmer-fire 2s ease-in-out infinite;background-size:200%;"></div>
+        </div>
+        <svg viewBox="0 0 80 40" style="width:100%;height:2.5rem;display:block;" fill="none">
+          <path d="M4 36 C10 36 12 4 76 4" stroke="rgba(228,87,46,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="4" cy="36" r="2" fill="#E4572E" opacity="0.6"/>
+          <circle cx="76" cy="4" r="2" fill="#fff" opacity="0.5"/>
+        </svg>
+        <div class="motion-desc" style="margin-top:0.75rem;margin-bottom:0;">Entradas de hero, reveals, tilt sai devagar, chega com impacto.</div>
+      </div>
+
+      <div class="motion-card">
+        <div class="motion-label">ease-expo</div>
+        <div style="font-size:0.7rem;color:rgba(228,87,46,0.8);margin-bottom:0.75rem;">cubic-bezier(0.19, 1, 0.22, 1)</div>
+        <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden;margin-bottom:1rem;">
+          <div style="height:100%;background:linear-gradient(90deg,#A43F21,#E4572E,#FF7A4E);animation:shimmer-fire 2.6s ease-in-out infinite;background-size:200%;"></div>
+        </div>
+        <svg viewBox="0 0 80 40" style="width:100%;height:2.5rem;display:block;" fill="none">
+          <path d="M4 36 C4 36 8 4 76 4" stroke="rgba(228,87,46,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="4" cy="36" r="2" fill="#E4572E" opacity="0.6"/>
+          <circle cx="76" cy="4" r="2" fill="#fff" opacity="0.5"/>
+        </svg>
+        <div class="motion-desc" style="margin-top:0.75rem;margin-bottom:0;">Button sweep, transições de nav explosiva no início, aterrissa suave.</div>
+      </div>
+
+      <div class="motion-card">
+        <div class="motion-label">ease-back</div>
+        <div style="font-size:0.7rem;color:rgba(228,87,46,0.8);margin-bottom:0.75rem;">cubic-bezier(0.34, 1.56, 0.64, 1)</div>
+        <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden;margin-bottom:1rem;">
+          <div style="height:100%;background:linear-gradient(90deg,#FF7A4E,#A43F21,#E4572E);animation:shimmer-fire 3.2s ease-in-out infinite;background-size:200%;"></div>
+        </div>
+        <svg viewBox="0 0 80 40" style="width:100%;height:2.5rem;display:block;" fill="none">
+          <path d="M4 36 C20 36 30 -4 76 4" stroke="rgba(228,87,46,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="4" cy="36" r="2" fill="#E4572E" opacity="0.6"/>
+          <circle cx="76" cy="4" r="2" fill="#fff" opacity="0.5"/>
+        </svg>
+        <div class="motion-desc" style="margin-top:0.75rem;margin-bottom:0;">Tooltips, badge pop, hover scale ultrapassa, recua, confirma presença.</div>
+      </div>
+
+    </div>
+
+    <!-- ── Durations ── -->
+    <p class="motion-label" style="margin-bottom:1rem;">Escala de Duração</p>
+    <div style="background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:4rem;">
+      <div style="display:grid;grid-template-columns:9rem 7rem 1fr 8rem;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <span class="motion-label" style="margin-bottom:0;">Token</span>
+        <span class="motion-label" style="margin-bottom:0;">Duração</span>
+        <span class="motion-label" style="margin-bottom:0;">Uso principal</span>
+        <span class="motion-label" style="margin-bottom:0;">Easing</span>
+      </div>
+      <div class="spec-row"><code style="font-size:0.7rem;color:rgba(228,87,46,0.7);">--dur-micro</code><span>100–150ms</span><span>Hover color, icon swap, focus ring</span><span style="color:rgba(255,255,255,0.25);font-size:0.7rem;">linear</span></div>
+      <div class="spec-row"><code style="font-size:0.7rem;color:rgba(228,87,46,0.7);">--dur-ui</code><span>250–350ms</span><span>Button scale, border, tooltip appear</span><span style="color:rgba(255,255,255,0.25);font-size:0.7rem;">ease-back</span></div>
+      <div class="spec-row"><code style="font-size:0.7rem;color:rgba(228,87,46,0.7);">--dur-enter</code><span>500–700ms</span><span>Card entrada, modal open, scroll reveal</span><span style="color:rgba(255,255,255,0.25);font-size:0.7rem;">ease-apple</span></div>
+      <div class="spec-row"><code style="font-size:0.7rem;color:rgba(228,87,46,0.7);">--dur-cinematic</code><span>900–1400ms</span><span>Hero, section transitions, staggered text</span><span style="color:rgba(255,255,255,0.25);font-size:0.7rem;">ease-expo</span></div>
+      <div class="spec-row"><code style="font-size:0.7rem;color:rgba(228,87,46,0.7);">--dur-ambient</code><span>3s – 8s</span><span>Pulse, float, shimmer, orbit loops ociosos</span><span style="color:rgba(255,255,255,0.25);font-size:0.7rem;">ease-in-out</span></div>
+    </div>
+
+    <!-- ── Keyframe Catalogue ── -->
+    <p class="motion-label" style="margin-bottom:1.5rem;">Catálogo de Keyframes</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(18rem,1fr));gap:1.25rem;">
+
+      <!-- 1. Scroll Reveal -->
+      <div class="motion-card">
+        <div class="motion-label">Scroll Reveal .reveal</div>
+        <div class="motion-tag">IntersectionObserver · 15% threshold</div>
+        <div class="motion-desc">Entra de <code style="color:rgba(255,255,255,0.5);">opacity:0 · Y+2.5rem · scale(0.98) · blur(12px)</code>. 1.4s ease-apple. Uma vez por elemento.</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div class="reveal in-view" style="display:inline-flex;align-items:center;gap:0.75rem;border-radius:9999px;border:1px solid transparent;background:rgba(20,20,20,0.8) padding-box,linear-gradient(90deg,rgba(228,87,46,0.26),rgba(164,63,33,0.16)) border-box;padding:0.5rem 1rem;">
+            <span style="position:relative;display:flex;width:8px;height:8px;">
+              <span class="fire-dot" style="position:absolute;width:100%;height:100%;border-radius:9999px;background:#E4572E;opacity:0.5;"></span>
+              <span style="position:relative;width:8px;height:8px;border-radius:9999px;background:#E4572E;display:inline-block;"></span>
+            </span>
+            <span style="font-size:0.65rem;color:rgba(255,255,255,0.55);">.reveal.in-view ativo</span>
+          </div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.2);padding-left:0.25rem;">classe adicionada pelo IntersectionObserver</div>
+        </div>
+      </div>
+
+      <!-- 2. Staggered Lines -->
+      <div class="motion-card">
+        <div class="motion-label">Staggered Lines .reveal-lines</div>
+        <div class="motion-tag">70ms × index · rotateX + blur</div>
+        <div class="motion-desc">Cada <code style="color:rgba(255,255,255,0.5)">.line-block</code> entra com delay escalonado. Tipo digitado com intenção.</div>
+        <div style="border-left:2px solid transparent;border-image:linear-gradient(180deg,rgba(228,87,46,0.28),rgba(164,63,33,0.16)) 1;padding-left:1rem;">
+          <h2 style="font-weight:900;font-size:1.65rem;color:#fff;letter-spacing:-0.03em;line-height:1.1;">
+            <span class="line-block" style="display:block;opacity:1;transform:none;filter:none;">Lorem ipsum</span>
+            <span class="line-block gradient-text" style="display:block;opacity:1;transform:none;filter:none;">dolor sit.</span>
+            <span class="line-block" style="display:block;opacity:1;transform:none;filter:none;">Amet elit.</span>
+          </h2>
+        </div>
+      </div>
+
+      <!-- 3. 3D Tilt -->
+      <div class="motion-card">
+        <div class="motion-label">3D Tilt .tilt-card</div>
+        <div class="motion-tag">mousemove · perspective(1000px)</div>
+        <div class="motion-desc"><code style="color:rgba(255,255,255,0.5);">rotateX(±8°) rotateY(±8°)</code> relativo ao centro do card. Conteúdo flutua com <code style="color:rgba(255,255,255,0.5);">translateZ(20px)</code>.</div>
+        <div class="tilt-card" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(17,17,17,0.85);padding:1.5rem;cursor:pointer;">
+          <div class="tilt-content" style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:2.5rem;height:2.5rem;border-radius:9999px;border:1px solid transparent;background:transparent padding-box,linear-gradient(135deg,rgba(228,87,46,0.38),rgba(164,63,33,0.22)) border-box;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="icon-gradient-wrap"><iconify-icon icon="solar:rocket-bold-duotone" width="14" style="color:#E4572E;"></iconify-icon></span>
+            </div>
+            <div>
+              <h3 style="font-weight:700;font-size:0.9rem;color:#fff;">Mova o mouse aqui</h3>
+              <p style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.2rem;">Perspectiva 3D · restrito e preciso</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Button Sweep -->
+      <div class="motion-card">
+        <div class="motion-label">Button Fill Sweep .btn-sweep</div>
+        <div class="motion-tag">translateY(-100%) → 0 · ease-expo · 500ms</div>
+        <div class="motion-desc">Overlay de cor sobe de baixo no hover. Layer separado do texto sem quebrar o layout.</div>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <a href="#" class="btn" style="background:linear-gradient(90deg,#E4572E,#A43F21);color:#fff;padding:0.75rem 1.5rem;">
+            <span>Fire → Glow</span>
+            <div class="btn-sweep" style="background:rgba(255,255,255,0.15);"></div>
+          </a>
+          <a href="#" class="btn" style="border:1px solid rgba(255,255,255,0.18);color:#fff;padding:0.75rem 1.5rem;">
+            <span>Outlined → Filled</span>
+            <div class="btn-sweep" style="background:rgba(228,87,46,0.08);"></div>
+          </a>
+        </div>
+      </div>
+
+      <!-- 5. Fire Pulse + Pulse Ring -->
+      <div class="motion-card">
+        <div class="motion-label">Fire Pulse + Pulse Ring</div>
+        <div class="motion-tag">infinite · 3s · ease-in-out</div>
+        <div class="motion-desc">Ponto de status com dois anéis em expansão. Urgência viva sem parecer alarme.</div>
+        <div style="display:flex;align-items:center;gap:1.5rem;padding:1rem 0;">
+          <div style="position:relative;width:3rem;height:3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="position:absolute;width:3rem;height:3rem;border-radius:9999px;background:rgba(228,87,46,0.12);animation:pulse-ring 2.5s ease-out infinite;"></span>
+            <span style="position:absolute;width:3rem;height:3rem;border-radius:9999px;background:rgba(228,87,46,0.07);animation:pulse-ring 2.5s ease-out infinite 0.8s;"></span>
+            <span style="position:relative;display:flex;width:10px;height:10px;">
+              <span class="fire-dot" style="position:absolute;width:100%;height:100%;border-radius:9999px;background:#E4572E;opacity:0.5;"></span>
+              <span style="position:relative;width:10px;height:10px;border-radius:9999px;background:#E4572E;display:inline-block;"></span>
+            </span>
+          </div>
+          <div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);font-weight:600;">Fire · live</div>
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.2);margin-top:0.2rem;">pulse-ring @ 0s + 0.8s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Fire Shimmer -->
+      <div class="motion-card">
+        <div class="motion-label">Fire Shimmer</div>
+        <div class="motion-tag">bg-size:200% · bg-pos -200%→200% · 4s linear</div>
+        <div class="motion-desc">Gradiente de texto que percorre branco → laranja → branco. Energia constante, sem piscar.</div>
+        <span class="shimmer-text" style="font-weight:900;font-size:3rem;letter-spacing:-0.04em;line-height:1;">LOREM</span>
+        <div style="margin-top:1rem;font-weight:800;font-size:1.1rem;letter-spacing:-0.02em;">
+          <span class="shimmer-text">Lorem ipsum dolor sit amet.</span>
+        </div>
+      </div>
+
+      <!-- 7. Float -->
+      <div class="motion-card" style="display:flex;flex-direction:column;">
+        <div class="motion-label">Float</div>
+        <div class="motion-tag">translateY 0 → -10px → 0 · 4s · ease-in-out</div>
+        <div class="motion-desc">Levitação suave para ícones decorativos em hero e landing pages. Não usar em UI funcional.</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:1rem 0;">
+          <div style="position:relative;">
+            <div style="width:4rem;height:4rem;border-radius:9999px;border:1px solid transparent;background:rgba(228,87,46,0.06) padding-box,linear-gradient(135deg,rgba(228,87,46,0.28),rgba(164,63,33,0.16)) border-box;display:flex;align-items:center;justify-content:center;animation:float 4s ease-in-out infinite;">
+              <span class="icon-gradient-wrap"><iconify-icon icon="solar:rocket-bold-duotone" width="28" style="color:#E4572E;"></iconify-icon></span>
+            </div>
+            <div style="position:absolute;bottom:-0.75rem;left:50%;transform:translateX(-50%);width:2.5rem;height:0.5rem;background:rgba(228,87,46,0.07);border-radius:9999px;filter:blur(4px);animation:float 4s ease-in-out infinite reverse;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Orbital Ring -->
+      <div class="motion-card" style="display:flex;flex-direction:column;">
+        <div class="motion-label">Orbit</div>
+        <div class="motion-tag">rotate(360deg) translateX(--orbit-r) · 6s linear</div>
+        <div class="motion-desc">Ponto orbitando núcleo central. Dois anéis em sentidos opostos geram tensão visual dinâmica.</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:1.5rem 0;">
+          <div style="position:relative;width:5.5rem;height:5.5rem;">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+              <div style="width:0.6rem;height:0.6rem;border-radius:9999px;background:#E4572E;box-shadow:0 0 8px rgba(228,87,46,0.6);"></div>
+            </div>
+            <div style="position:absolute;inset:0.4rem;border-radius:9999px;border:1px solid transparent;background:transparent padding-box,linear-gradient(135deg,rgba(228,87,46,0.28),rgba(164,63,33,0.16)) border-box;"></div>
+            <div style="position:absolute;inset:0;border-radius:9999px;border:1px dashed rgba(255,255,255,0.08);"></div>
+            <div style="position:absolute;top:50%;left:50%;width:0.5rem;height:0.5rem;margin:-0.25rem;border-radius:9999px;background:#fff;--orbit-r:2.35rem;animation:orbit 6s linear infinite;"></div>
+            <div style="position:absolute;top:50%;left:50%;width:0.35rem;height:0.35rem;margin:-0.175rem;border-radius:9999px;background:rgba(228,87,46,0.7);--orbit-r:1.5rem;animation:orbit 4s linear infinite reverse;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Rotate Slow -->
+      <div class="motion-card" style="display:flex;flex-direction:column;">
+        <div class="motion-label">Rotate Slow / Reverse</div>
+        <div class="motion-tag">rotate(360deg) · 8s linear infinite</div>
+        <div class="motion-desc">Dois anéis concêntricos girando em direções opostas. Profundidade sem peso visual excessivo.</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:1.5rem 0;">
+          <div style="position:relative;width:5rem;height:5rem;">
+            <div style="position:absolute;inset:0;border-radius:9999px;border:1px solid rgba(228,87,46,0.35);border-top-color:transparent;animation:rotate-slow 8s linear infinite;"></div>
+            <div style="position:absolute;inset:0.7rem;border-radius:9999px;border:1px dashed rgba(255,255,255,0.15);border-bottom-color:transparent;animation:rotate-slow-rev 5s linear infinite;"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+              <span class="icon-gradient-wrap"><iconify-icon icon="solar:medal-ribbons-star-bold" width="16" style="color:#E4572E;"></iconify-icon></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Scan Line -->
+      <div class="motion-card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="motion-label">Scan Line</div>
+        <div class="motion-tag">translateY(-100%) → 800% · 3.5s ease-in-out infinite</div>
+        <div class="motion-desc">Linha de varredura sobre superfícies de dados. Evoca precisão e processo em andamento.</div>
+        <div style="flex:1;position:relative;background:rgba(228,87,46,0.02);border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.14),rgba(164,63,33,0.08)) 1;border-radius:2px;padding:1.25rem;margin-top:0.5rem;overflow:hidden;min-height:6rem;">
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <div style="height:0.5rem;width:70%;background:rgba(255,255,255,0.07);border-radius:9999px;"></div>
+            <div style="height:0.5rem;width:50%;background:rgba(255,255,255,0.04);border-radius:9999px;"></div>
+            <div style="height:0.5rem;width:85%;background:rgba(255,255,255,0.07);border-radius:9999px;"></div>
+            <div style="height:0.5rem;width:40%;background:rgba(255,255,255,0.04);border-radius:9999px;"></div>
+          </div>
+          <div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(228,87,46,0.7),transparent);animation:scan-line 3.5s ease-in-out infinite;top:0.5rem;pointer-events:none;"></div>
+          <div style="position:absolute;left:0;right:0;height:0.5rem;background:linear-gradient(180deg,rgba(228,87,46,0.07),transparent);animation:scan-line 3.5s ease-in-out infinite;top:0.5rem;pointer-events:none;"></div>
+        </div>
+      </div>
+
+      <!-- 11. Slide In Right -->
+      <div class="motion-card">
+        <div class="motion-label">Slide-In Right stagger</div>
+        <div class="motion-tag">translateX(2rem) → 0 · opacity 0→1 · 0.6s ease-apple</div>
+        <div class="motion-desc">Itens de lista entrando da direita com delay escalonado. Features, resultados de busca, bullets.</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;opacity:0;animation:slide-in-right 0.6s var(--ease-apple) 0.1s forwards;">
+            <span class="icon-gradient-wrap" style="flex-shrink:0;"><iconify-icon icon="solar:check-circle-bold-duotone" width="14" style="color:#E4572E;"></iconify-icon></span>
+            <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Lorem ipsum dolor sit amet</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;opacity:0;animation:slide-in-right 0.6s var(--ease-apple) 0.22s forwards;">
+            <span class="icon-gradient-wrap" style="flex-shrink:0;"><iconify-icon icon="solar:check-circle-bold-duotone" width="14" style="color:#E4572E;"></iconify-icon></span>
+            <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Consectetur adipiscing elit</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;opacity:0;animation:slide-in-right 0.6s var(--ease-apple) 0.34s forwards;">
+            <span class="icon-gradient-wrap" style="flex-shrink:0;"><iconify-icon icon="solar:check-circle-bold-duotone" width="14" style="color:#E4572E;"></iconify-icon></span>
+            <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Sed do eiusmod tempor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. Border Glow Fire -->
+      <div class="motion-card" style="display:flex;flex-direction:column;">
+        <div class="motion-label">Border Glow</div>
+        <div class="motion-tag">box-shadow 0 → fire halo → 0 · 3s infinite</div>
+        <div class="motion-desc">Halo pulsante em cards de destaque. Comunica relevância sem gritar.</div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:1.25rem 0;">
+          <div style="border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.45),rgba(164,63,33,0.28)) 1;border-radius:2px;padding:1.25rem 1.75rem;animation:border-glow-fire 3s ease-in-out infinite;text-align:center;">
+            <div style="font-weight:700;font-size:0.85rem;color:#fff;">Destaque</div>
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.2rem;">Glow · 3s · ease-in-out</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       6 · BRAND ASSETS
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="brand" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+    <div class="ds-label">06 Brand Assets · Sistema de Logo</div>
+
+    <p style="font-size:0.8rem;line-height:1.8;color:rgba(255,255,255,0.45);max-width:40rem;margin-bottom:4rem;">
+      O sistema de logo da Venda Redonda inclui wordmarks, landscapes, ícones e marcas. Cada asset tem contexto de uso definido. Nunca distorça, recolora ou aplique efeitos além do documentado aqui.
+    </p>
+
+    <!-- ── 6A · Agência de Valor ─────────────────────────────────── -->
+    <span class="sub-label">Venda Redonda</span>
+    <p style="font-size:0.8rem;line-height:1.8;color:rgba(255,255,255,0.45);max-width:44rem;margin-bottom:2.5rem;">
+      Todas as versões da marca principal. As versões coloridas são as <strong style="color:rgba(255,255,255,0.7);">oficiais para uso digital</strong> hero, redes sociais, apresentações e peças visuais. As versões monocromáticas ficam reservadas para impressão, bordado e serigrafia.
+    </p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1.25rem;margin-bottom:5rem;">
+      <div class="logo-tile" style="background:#000;">
+        <div class="logo-tile-preview" style="background:#000;">
+          <img src="./images/vr-redonda-empilhada-fundo-1.png" alt="vr-redonda-empilhada-fundo-1" style="">
+        </div>
+        <div class="logo-tile-meta">
+          <div style="font-weight:700;font-size:0.75rem;color:#fff;">vr-redonda-empilhada-fundo-1</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:3px;">Asset de marca</div>
+        </div>
+      </div>
+      <div class="logo-tile" style="background:#000;">
+        <div class="logo-tile-preview" style="background:#000;">
+          <img src="./images/vr-redonda-empilhada-fundo-2.png" alt="vr-redonda-empilhada-fundo-2" style="">
+        </div>
+        <div class="logo-tile-meta">
+          <div style="font-weight:700;font-size:0.75rem;color:#fff;">vr-redonda-empilhada-fundo-2</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:3px;">Asset de marca</div>
+        </div>
+      </div>
+      <div class="logo-tile" style="background:#000;">
+        <div class="logo-tile-preview" style="background:#000;">
+          <img src="./images/vr-redonda-horizontal-fundo-1.png" alt="vr-redonda-horizontal-fundo-1" style="">
+        </div>
+        <div class="logo-tile-meta">
+          <div style="font-weight:700;font-size:0.75rem;color:#fff;">vr-redonda-horizontal-fundo-1</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:3px;">Asset de marca</div>
+        </div>
+      </div>
+      <div class="logo-tile" style="background:#000;">
+        <div class="logo-tile-preview" style="background:#000;">
+          <img src="./images/vr-redonda-horizontal-fundo-2.png" alt="vr-redonda-horizontal-fundo-2" style="">
+        </div>
+        <div class="logo-tile-meta">
+          <div style="font-weight:700;font-size:0.75rem;color:#fff;">vr-redonda-horizontal-fundo-2</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:3px;">Asset de marca</div>
+        </div>
+      </div>
+      <div class="logo-tile" style="background:#000;">
+        <div class="logo-tile-preview" style="background:#000;">
+          <img src="./images/vr-redonda-icon-fundo-1.png" alt="Ícone · Escuro" style="max-height:5rem;max-width:5rem;">
+        </div>
+        <div class="logo-tile-meta">
+          <div style="font-weight:700;font-size:0.75rem;color:#fff;">Ícone · Escuro</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:3px;">Fundos escuros · favicon · avatar</div>
+        </div>
+      </div>
+      <div class="logo-tile" style="background:#000;">
+        <div class="logo-tile-preview" style="background:#000;">
+          <img src="./images/vr-redonda-icon-fundo-2.png" alt="Ícone · Escuro" style="max-height:5rem;max-width:5rem;">
+        </div>
+        <div class="logo-tile-meta">
+          <div style="font-weight:700;font-size:0.75rem;color:#fff;">Ícone · Escuro</div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.35);margin-top:3px;">Fundos escuros · favicon · avatar</div>
+        </div>
+      </div>
+    </div>
+    <span class="sub-label">Regras de Uso</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem;">
+      <div style="border-radius:2px;border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.22),rgba(164,63,33,0.14)) 1;background:rgba(228,87,46,0.04);padding:1.25rem;">
+        <div class="gradient-text" style="font-weight:700;font-size:0.75rem;margin-bottom:0.5rem;">✓ Use</div>
+        <ul style="font-size:0.7rem;color:rgba(255,255,255,0.5);line-height:2;">
+          <li>Degradê em todos os contextos digitais</li>
+          <li>Monocromático apenas para impressão e bordado</li>
+          <li>Espaço de respiro adequado ao contexto</li>
+          <li>Circle degradê para favicon, avatar e perfil</li>
+        </ul>
+      </div>
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.01);padding:1.25rem;">
+        <div style="font-weight:700;font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">✗ Nunca</div>
+        <ul style="font-size:0.7rem;color:rgba(255,255,255,0.35);line-height:2;">
+          <li>Recolorir para cores fora da paleta</li>
+          <li>Aplicar sombras ou efeitos extras além do degradê oficial</li>
+          <li>Esticar, distorcer ou girar</li>
+          <li>Colocar sobre fundos complexos ou barulhentos</li>
+        </ul>
+      </div>
+      <div style="border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.01);padding:1.25rem;">
+        <div style="font-weight:700;font-size:0.75rem;color:rgba(255,255,255,0.45);margin-bottom:0.5rem;">Arquivos</div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;">
+          <code style="font-size:0.6rem;color:rgba(255,255,255,0.35);">Logo Branco · Logo Preto</code>
+          <code style="font-size:0.6rem;color:rgba(255,255,255,0.35);">Landscape Brnaca · Landscape Preta</code>
+          <code style="font-size:0.6rem;color:rgba(255,255,255,0.35);">Circle AV Branco · Circle AV Laranja</code>
+          <code style="font-size:0.6rem;color:rgba(255,255,255,0.35);">Icon AV Branco · Icon AV Branco Laranja</code>
+          <code style="font-size:0.6rem;color:rgba(255,255,255,0.35);">Logo Mentoria Branco · Logo AV Branco</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════════════════════════════
+       7 · ICONS
+  ═══════════════════════════════════════════════════════════════════ -->
+  <section id="icons" style="max-width:80rem;margin:0 auto;padding:8rem 1.5rem 10rem;border-top:1px solid rgba(255,255,255,0.04);">
+    <div class="ds-label">07 Icons · Iconify Solar Linear</div>
+
+    <p style="font-size:0.75rem;line-height:1.8;color:rgba(255,255,255,0.38);max-width:36rem;margin-bottom:3rem;">
+      Sistema DS: <span style="color:rgba(255,255,255,0.6);">Iconify · Solar Linear</span> via web component <code style="color:rgba(255,255,255,0.5);">iconify-icon</code>. A landing page pode usar <span style="color:#E4572E;">FontAwesome 5 Free</span> (local). Ambos documentados aqui.
+    </p>
+
+    <!-- Icon grid JS generated -->
+    <div id="av-icon-gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(7rem,1fr));gap:0.875rem;margin-bottom:4rem;"></div>
+    <script>
+    (function(){
+      var icons = [
+        /* Conversion & Sales */
+        ['solar:dollar-minimalistic-linear','dollar'],
+        ['solar:hand-money-linear','hand-money'],
+        ['solar:wallet-linear','wallet'],
+        ['solar:chart-line-duotone','chart-line'],
+        ['solar:graph-new-up-linear','graph-up'],
+        ['solar:pie-chart-2-linear','pie-chart'],
+        /* People & Relationships */
+        ['solar:users-group-rounded-linear','users-group'],
+        ['solar:user-linear','user'],
+        ['solar:hand-heart-linear','hand-heart'],
+        ['solar:chat-round-dots-linear','chat'],
+        ['solar:phone-linear','phone'],
+        ['solar:letter-linear','letter'],
+        /* Growth & Execution */
+        ['solar:rocket-linear','rocket'],
+        ['solar:bolt-linear','bolt'],
+        ['solar:target-linear','target'],
+        ['solar:flag-linear','flag'],
+        ['solar:cup-star-linear','cup-star'],
+        ['solar:medal-ribbons-star-bold-duotone','medal'],
+        /* Learning */
+        ['solar:diploma-linear','diploma'],
+        ['solar:book-linear','book'],
+        ['solar:book-2-linear','book-2'],
+        ['solar:document-linear','document'],
+        ['solar:clipboard-list-linear','clipboard'],
+        ['solar:pen-new-square-linear','pen'],
+        /* Trust & Security */
+        ['solar:shield-check-linear','shield-check'],
+        ['solar:lock-linear','lock'],
+        ['solar:verified-check-linear','verified'],
+        ['solar:star-linear','star'],
+        ['solar:check-circle-linear','check'],
+        ['solar:info-circle-linear','info'],
+        /* Media & Social */
+        ['mdi:instagram','instagram'],
+        ['solar:play-circle-linear','play'],
+        ['solar:videocamera-record-linear','video'],
+        ['solar:microphone-linear','microphone'],
+        ['solar:gallery-linear','gallery'],
+        /* Navigation */
+        ['solar:arrow-right-linear','arrow-right'],
+        ['solar:alt-arrow-left-linear','arrow-left'],
+        ['solar:home-linear','home'],
+        ['solar:magnifer-linear','magnifer'],
+        ['solar:calendar-mark-linear','calendar'],
+        /* Misc */
+        ['solar:settings-linear','settings'],
+        ['solar:magic-stick-3-linear','magic-stick'],
+        ['solar:map-point-linear','map-point'],
+        ['solar:link-linear','link'],
+        ['solar:share-linear','share'],
+        ['solar:download-minimalistic-linear','download'],
+        /* Achievement */
+        ['solar:crown-linear','crown'],
+        ['solar:fire-linear','fire'],
+        ['solar:gift-linear','gift'],
+        /* Extra */
+        ['solar:bag-4-linear','bag'],
+        ['solar:tag-linear','tag'],
+        ['solar:filter-linear','filter'],
+        ['solar:layers-minimalistic-linear','layers'],
+        ['solar:bell-linear','bell'],
+      ];
+      var gallery = document.getElementById('av-icon-gallery');
+      icons.forEach(function(ic){
+        var div = document.createElement('div');
+        div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:0.75rem;border-radius:2px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.015);padding:1.25rem 0.75rem;cursor:pointer;transition:all 0.25s;';
+        div.onmouseover = function(){ this.style.borderColor='rgba(228,87,46,0.25)';this.style.background='rgba(228,87,46,0.04)'; };
+        div.onmouseout = function(){ this.style.borderColor='rgba(255,255,255,0.06)';this.style.background='rgba(255,255,255,0.015)'; };
+        div.innerHTML = '<iconify-icon icon="'+ic[0]+'" width="24" height="24" style="color:#E4572E;"></iconify-icon><span style="font-size:0.5rem;color:rgba(255,255,255,0.28);text-align:center;line-height:1.5;">'+ic[1]+'</span>';
+        gallery.appendChild(div);
+      });
+    })();
+    </script>
+
+    <span class="sub-label">FA5 usado no site · referência</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem;margin-bottom:4rem;">
+      <div class="spec-row" style="border-top:1px solid rgba(255,255,255,0.04);">
+        <span class="spec-name">Lib</span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">FontAwesome 5 Free local ./Site_files/</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-name">Sets usados</span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">.fas (solid) · .fab (brands)</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-name">Icons chave</span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">fa-check-circle · fa-chart-line · fa-users · fa-file-contract · fa-handshake · fa-trophy · fa-rocket · fa-dollar-sign · fa-cogs · fa-bullseye · fa-lightbulb · fa-graduation-cap · fa-shield-alt · fa-video · fa-star</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-name">Brands</span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">fa-youtube · fa-instagram · fa-whatsapp · fa-facebook-f</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-name">Cor</span>
+        <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);">currentColor herda do pai → --orange nas icon boxes</span>
+      </div>
+    </div>
+
+    <span class="sub-label">Size Scale</span>
+    <div style="display:flex;align-items:flex-end;gap:2rem;margin-bottom:4rem;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+        <iconify-icon icon="solar:bolt-linear" width="14" height="14" style="color:rgba(255,255,255,0.3);"></iconify-icon>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">14px</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+        <iconify-icon icon="solar:bolt-linear" width="16" height="16" style="color:rgba(255,255,255,0.4);"></iconify-icon>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">16px</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+        <iconify-icon icon="solar:bolt-linear" width="20" height="20" style="color:#E4572E;"></iconify-icon>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">20px · card</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+        <iconify-icon icon="solar:bolt-linear" width="24" height="24" style="color:#E4572E;"></iconify-icon>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">24px · default</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+        <iconify-icon icon="solar:bolt-linear" width="32" height="32" style="color:#E4572E;"></iconify-icon>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">32px · hero</span>
+      </div>
+    </div>
+
+    <span class="sub-label">Icons in Context</span>
+    <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-end;">
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="#" class="btn" style="background:linear-gradient(90deg,#E4572E,#A43F21);color:#fff;padding:0.875rem 1.75rem;">
+          <span>Lorem ipsum dolor</span>
+          <iconify-icon icon="solar:arrow-right-linear" width="15" height="15"></iconify-icon>
+          <div class="btn-sweep" style="background:rgba(255,255,255,0.14);"></div>
+        </a>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">translate-x 3px on hover · 15px</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="display:inline-flex;width:2.75rem;height:2.75rem;align-items:center;justify-content:center;border-radius:2px;border:1px solid transparent;border-image:linear-gradient(135deg,rgba(228,87,46,0.3),rgba(164,63,33,0.18)) 1;background:rgba(228,87,46,0.06);cursor:pointer;transition:all 0.4s;" onmouseover="this.style.background='rgba(228,87,46,0.15)';this.style.borderColor='rgba(228,87,46,0.4)'" onmouseout="this.style.background='rgba(228,87,46,0.06)';this.style.borderColor='rgba(228,87,46,0.2)'">
+          <span class="icon-gradient-wrap"><iconify-icon icon="solar:chart-line-duotone" width="20" height="20" style="color:#E4572E;"></iconify-icon></span>
+        </div>
+        <span style="font-size:0.55rem;color:rgba(255,255,255,0.22);">Card icon · hover bright</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ── Footer ──────────────────────────────────────────────────────── -->
+<footer style="border-top:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(228,87,46,0.25) 25%,rgba(164,63,33,0.18) 75%,transparent) 1;background:#000;">
+  <div style="max-width:80rem;margin:0 auto;padding:3rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+    <img src="./images/vr-redonda-horizontal-fundo-2.png" alt="Venda Redonda" style="height:1.75rem;width:auto;object-fit:contain;opacity:0.55;">
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.25rem;">
+      <span style="font-size:0.55rem;color:rgba(255,255,255,0.2);letter-spacing:0.1em;text-transform:uppercase;">Design System · Venda Redonda · v1.0 · 2026</span>
+      <span style="font-size:0.55rem;color:rgba(255,255,255,0.12);letter-spacing:0.06em;">AV DESIGN SYSTEM BY <a href="https://agenciadevalor.com" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:1px;transition:color 0.3s;" onmouseover="this.style.color='rgba(255,255,255,0.4)'" onmouseout="this.style.color='inherit'">AG&Ecirc;NCIA DE VALOR&#174;</a></span>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ── Scripts ─────────────────────────────────────────────────────── -->
+<script>
+  // Cursor halo
+  const glow = document.getElementById('cursorGlow');
+  const aura = document.getElementById('cursorAura');
+  let m = { x: innerWidth/2, y: innerHeight/2 };
+  let gp = { x: innerWidth/2, y: innerHeight/2 };
+  let ap = { x: innerWidth/2, y: innerHeight/2 };
+
+  addEventListener('mousemove', e => { m.x = e.clientX; m.y = e.clientY; });
+
+  (function render() {
+    gp.x += (m.x - gp.x) * 0.14;
+    gp.y += (m.y - gp.y) * 0.14;
+    ap.x += (m.x - ap.x) * 0.04;
+    ap.y += (m.y - ap.y) * 0.04;
+    glow.style.transform = `translate3d(${gp.x}px,${gp.y}px,0) translate(-50%,-50%)`;
+    aura.style.transform = `translate3d(${ap.x}px,${ap.y}px,0) translate(-50%,-50%)`;
+    requestAnimationFrame(render);
+  })();
+
+  document.querySelectorAll('a,button,[role="button"],.tilt-card,.motion-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      glow.style.width = '110px'; glow.style.height = '110px';
+      glow.style.filter = 'blur(18px) brightness(1.5)';
+      aura.style.width = '420px'; aura.style.height = '420px';
+      aura.style.filter = 'blur(70px) brightness(1.4)';
+    });
+    el.addEventListener('mouseleave', () => {
+      glow.style.width = '80px'; glow.style.height = '80px';
+      glow.style.filter = 'blur(14px)';
+      aura.style.width = '300px'; aura.style.height = '300px';
+      aura.style.filter = 'blur(55px)';
+    });
+  });
+
+  // Parallax blobs
+  addEventListener('scroll', () => {
+    const sy = scrollY;
+    requestAnimationFrame(() => {
+      document.querySelectorAll('[data-speed]').forEach(el => {
+        const sp = parseFloat(el.dataset.speed);
+        const xp = el.id?.includes('bgBlob') ? (m.x - innerWidth/2) * sp * 0.4 : 0;
+        el.style.transform = `translate3d(${xp}px,${-(sy * sp)}px,0)`;
+      });
+    });
+  }, { passive: true });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in-view');
+      e.target.querySelectorAll('.line-block').forEach((l, i) =>
+        setTimeout(() => { l.style.opacity='1'; l.style.transform='none'; l.style.filter='none'; }, i * 150)
+      );
+      observer.unobserve(e.target);
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal, .reveal-lines').forEach(el => observer.observe(el));
+
+  // 3D Tilt
+  document.querySelectorAll('.tilt-card').forEach(card => {
+    const content = card.querySelector('.tilt-content');
+    card.addEventListener('mousemove', e => {
+      const r  = card.getBoundingClientRect();
+      const rx = ((e.clientY - r.top  - r.height/2) / r.height * 2) * -3;
+      const ry = ((e.clientX - r.left - r.width /2) / r.width  * 2) *  3;
+      card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.01,1.01,1.01)`;
+      if (content) content.style.transform = 'translateZ(20px)';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+      if (content) content.style.transform = 'translateZ(0)';
+    });
+  });
+
+  // ── Gradient Icons (SVG shadow DOM injection) ──────────────────
+  let iconObsActive = true;
+  function applyIconGradients() {
+    let pending = 0;
+    document.querySelectorAll('iconify-icon').forEach((icon, i) => {
+      const shadow = icon.shadowRoot;
+      if (!shadow) { pending++; return; }
+      const svg = shadow.querySelector('svg');
+      if (!svg) { pending++; return; }
+      if (svg.dataset.grad) return;
+      const id = 'ig' + i;
+      let defs = svg.querySelector('defs');
+      if (!defs) {
+        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        svg.insertBefore(defs, svg.firstChild);
+      }
+      defs.innerHTML = `<linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E4572E"/><stop offset="100%" stop-color="#A43F21"/></linearGradient>`;
+      svg.querySelectorAll('[fill="currentColor"]').forEach(p => p.setAttribute('fill', `url(#${id})`));
+      svg.querySelectorAll('[stroke="currentColor"]').forEach(p => p.setAttribute('stroke', `url(#${id})`));
+      svg.dataset.grad = '1';
+    });
+    if (pending === 0 && iconObsActive) { iconObs.disconnect(); iconObsActive = false; }
+  }
+  const iconObs = new MutationObserver(() => { applyIconGradients(); });
+  iconObs.observe(document.body, { subtree: true, childList: true });
+  setTimeout(applyIconGradients, 200);
+  setTimeout(applyIconGradients, 800);
+
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (scrollY >= s.offsetTop - 120) current = s.id; });
+    navLinks.forEach(a => {
+      const active = a.getAttribute('href') === '#' + current;
+      if (active) {
+        a.classList.add('gradient-text');
+        a.style.color = '';
+      } else {
+        a.classList.remove('gradient-text');
+        a.style.color = 'rgba(255,255,255,0.3)';
+      }
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
