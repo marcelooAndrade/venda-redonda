@@ -83,6 +83,7 @@ class User extends Authenticatable implements PasskeyUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'ultimo_acesso_em' => 'datetime',
             'password' => 'hashed',
         ];
     }
