@@ -12,3 +12,10 @@ Schedule::command('fiscal:alertar-certificados')
     ->dailyAt('07:00')
     ->timezone('America/Sao_Paulo')
     ->withoutOverlapping();
+
+// O último acesso muda todo dia. Sem este reenvio a lista de leads do admin
+// pessoal congelaria no dia do cadastro.
+Schedule::command('produto:sincronizar-leads')
+    ->dailyAt('06:30')
+    ->timezone('America/Sao_Paulo')
+    ->withoutOverlapping();
