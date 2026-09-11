@@ -6,6 +6,8 @@ use App\Services\Fiscal\ConversorLegado;
 use App\Services\Fiscal\ConversorLegadoOpenssl;
 use App\Services\Fiscal\NfephpSefazGateway;
 use App\Services\Fiscal\SefazGateway;
+use App\Services\Integrations\AdminPessoalGateway;
+use App\Services\Integrations\GatewayDeLeads;
 use App\Support\TenantAtual;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -22,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(ConversorLegado::class, ConversorLegadoOpenssl::class);
         $this->app->bind(SefazGateway::class, NfephpSefazGateway::class);
+        $this->app->bind(GatewayDeLeads::class, AdminPessoalGateway::class);
         $this->app->singleton(TenantAtual::class);
 
         //
