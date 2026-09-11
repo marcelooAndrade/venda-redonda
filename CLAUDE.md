@@ -6,10 +6,11 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 10, parte 1 (painel), upload de logo e a troca da paleta para a marca Venda Redonda.** 434 testes passando, Pint limpo.
+**Módulo 10, parte 1 (painel), upload de logo, a troca da paleta e o roteamento por host.** 456 testes passando, Pint limpo.
 A revisão trocou o raio zero por uma escala contida, tirou o `max-w-6xl` de cada página, corrigiu a colisão do utilitário `overline` e resolveu a rolagem horizontal no celular. Ver a Decisão 3 revista em `docs/design-system.md`.
 A vitrine `/design-system` saiu: era ferramenta de construção. Os tokens e os componentes `x-ui.*` continuam, e a tela Marca agora recebe as duas logos, a do sistema e a do DANFE.
 O padrão do produto deixou de ser a marca da RCM e passou a ser a da Venda Redonda. A RCM virou tenant, que é o mecanismo que já existia.
+O host passou a decidir também a superfície: domínio nu mostra a apresentação, todo o resto é aplicação. A apresentação em si é provisória.
 Falta a parte 2 do Módulo 10, os relatórios. Seguem pendentes a contingência SVC e a distribuição DF-e.
 
 | Fase | Entrega | Status |
@@ -140,6 +141,12 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-11 | Ação primária segue grafite, agora por medição refeita | Primário contra perigo era 1,43 com o vermelho antigo e é 1,77 com o vermelhão: melhora e continua longe de 3. O grafite separa a 2,69 |
 | 2026-09-11 | Cinza-pedra do briefing não ganhou token | A rampa do grafite-petróleo entrega `#848b8d` no tom 400, e `#7F8E8B` contra ele dá 1,01: é a mesma cor. Coberto por teste |
 | 2026-09-11 | Inicial do tenant escreve em grafite sobre o vermelhão | Branco sobre `#E4572E` dá 3,68 e não passa em AA num texto miúdo. Grafite dá 4,77 e mantém a cor da marca exata, em vez de escurecê-la |
+| 2026-09-11 | Contraste mede se existe texto legível, não se o branco lê | Medir só contra o branco reprovava cor que o sistema nunca usaria com texto branco, e a tela Marca passou a acusar de defeituosa a cor do próprio produto. Quem escreve sobre a primária virou `--color-on-primary` |
+| 2026-09-11 | Rota da logo é pública, em `/logo` | A tela de login roda antes de existir usuário e precisa da logo de quem está entrando. Não é exposição nova: quem alcança o host já alcança a tela de login |
+| 2026-09-11 | `app` é prefixo do produto, nunca slug de tenant | Medido: com um tenant de slug `app`, `app.<dominio>` resolvia para ele e capturava o login do próprio produto. O model recusa a lista de slugs reservados |
+| 2026-09-11 | Apresentação é a exceção, aplicação é o padrão | Só o domínio nu e o `www` mostram a apresentação. Acertar uma exceção é mais fácil do que manter uma lista delas |
+| 2026-09-11 | Domínio do produto vem de `config/produto.php` | Homologação e produção respondem em domínios diferentes, e cravar no código exigiria builds distintos |
+| 2026-09-11 | Tela de login segue clara | Escurecer só o fundo deixou todo o texto ilegível: o `class="dark"` do starter kit está inerte e os componentes do Flux resolvem em modo claro. A logo vai sobre placa grafite, porque o arquivo do tenant foi enviado para viver na barra lateral escura |
 | 2026-09-10 | Sistema renomeado para `venda-redonda` | O nome anterior descrevia um módulo, não o produto. A troca alcança o `verProc` gravado no XML, então nota nova sai identificada pelo nome novo e nota antiga continua com o antigo, que é o correto |
 | 2026-09-10 | Vitrine `/design-system` retirada, tokens mantidos | Era andaime de construção, não tela de operação. O que sustenta a identidade são os tokens e os componentes `x-ui.*`, que ficam |
 | 2026-09-10 | Logo servida por rota autenticada, não por URL pública | O arquivo vive no disco privado como o resto do acervo. Como o `TenantAtual` vem do host e não há identificador na URL, não existe pedido possível para a logo de outro cliente |

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LogoTenantController;
+use App\Http\Controllers\RaizController;
 use App\Livewire\Certificados\Gerenciar;
 use App\Livewire\Contador\Exportacao;
 use App\Livewire\Estoque\Painel;
@@ -11,7 +12,9 @@ use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+// A raiz muda de superfície conforme o host: apresentação no domínio nu
+// do produto, aplicação em todo o resto.
+Route::get('/', RaizController::class)->name('home');
 
 // Pública de propósito: a tela de login precisa mostrar a logo de quem está
 // entrando, e ela roda antes de haver usuário. Não é exposição nova, porque

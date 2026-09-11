@@ -4,7 +4,7 @@ Inventário do venda-redonda: o que está pronto, o que ficou de fora de propós
 
 Este é o documento para responder "o sistema já faz X?". Para **por que** cada coisa é como é, veja `decisoes-fiscais.md` (regra fiscal), `design-system.md` (visual) e o registro de decisões no `CLAUDE.md`.
 
-> Atualizado em 10/09/2026. 431 testes passando, Pint limpo.
+> Atualizado em 11/09/2026. 456 testes passando, Pint limpo.
 
 ## Em uma frase
 
@@ -77,6 +77,8 @@ Emissor de NF-e modelo 55, layout 4.00, multiempresa, com a marca trocando pela 
 
 - O **host identifica o tenant**: domínio próprio vence subdomínio.
 - Sem tenant resolvido, a consulta não devolve nada. Isolamento por escopo global.
+- **O host decide duas coisas**: qual tenant, e qual superfície. Domínio nu do produto mostra a apresentação; todo o resto é aplicação. `app.` é prefixo do produto e nunca slug de cliente, o que o model recusa.
+- A **tela de login já mostra a marca de quem está entrando**, porque o tenant é resolvido pelo host antes de existir usuário. Sem logo de tenant, entra a marca do produto.
 - Cores trocam por **sobrescrita de variável CSS**, sem recompilar.
 - Rampa de 11 tons gerada a partir de uma cor, com **ajuste automático de contraste** para WCAG AA.
 - **Duas logos, enviadas na tela Marca.** A do sistema aparece na barra lateral; a do DANFE sai impressa na via auxiliar. São separadas porque matriz e filial dividem o sistema e têm CNPJs distintos.
@@ -113,6 +115,7 @@ Emissor de NF-e modelo 55, layout 4.00, multiempresa, com a marca trocando pela 
 
 ## O que falta construir
 
+- **Página de apresentação de verdade.** O roteamento por host está pronto e a página é provisória. Ela depende de decidir o que a marca promete: a assinatura da marca diz FISCAL · ESTOQUE · FINANCEIRO e o financeiro não existe
 - **Relatórios** (Módulo 10, parte 2)
 - **Distribuição DF-e** e manifestação do destinatário: buscar na SEFAZ as notas emitidas contra a RCM
 - **Contingência SVC** e o botão de testar comunicação com a SEFAZ
@@ -157,11 +160,11 @@ As correções que mais mudaram o rumo, e que valem lembrar:
 
 ## Cobertura de teste
 
-431 testes executados. A contagem por área abaixo é de testes **declarados**, e soma 417: a diferença são testes parametrizados, que expandem em vários na execução.
+456 testes executados. A contagem por área abaixo é de testes **declarados**, e soma 435: a diferença são testes parametrizados, que expandem em vários na execução.
 
 | Área | Testes | Área | Testes |
 |---|---|---|---|
-| Emissão | 41 | Tenancy | 36 |
+| Emissão | 41 | Tenancy | 46 |
 | Tributação | 38 | Emitentes | 19 |
 | Importação | 28 | Pessoas | 19 |
 | Estoque | 27 | Eventos | 18 |
@@ -170,7 +173,7 @@ As correções que mais mudaram o rumo, e que valem lembrar:
 | Integrações | 12 | Settings | 11 |
 | Painel | 10 | Produtos | 10 |
 | Contador | 6 | Auditoria | 4 |
-| Unitários | 66 | Raiz | 6 |
+| Unitários | 75 | Raiz | 5 |
 
 ## Os outros documentos
 
