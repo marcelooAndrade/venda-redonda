@@ -56,6 +56,31 @@ it('a raiz mostra a apresentacao no dominio do produto', function () {
     $this->get('http://vendaredonda.com.br/')->assertOk()->assertSee('Venda Redonda');
 });
 
+it('a apresentacao nao depende de APP_NAME para dizer o nome do produto', function () {
+    // Página pública: erro de configuração não pode mostrar a marca errada.
+    config(['app.name' => 'Nome Errado']);
+
+    $this->get('http://vendaredonda.com.br/')
+        ->assertOk()
+        ->assertSee('<title>', false)
+        ->assertDontSee('Nome Errado')
+        ->assertDontSee('Venda Redonda - Venda Redonda');
+});
+
+it('a apresentacao publica descricao e dados estruturados', function () {
+    $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
+
+    expect($html)->toContain('name="description"')
+        ->and($html)->toContain('property="og:title"')
+        ->and($html)->toContain('application/ld+json');
+
+    preg_match('~<script type="application/ld\+json">(.*?)</script>~s', $html, $m);
+
+    expect(json_decode($m[1], true))
+        ->toHaveKey('@type', 'SoftwareApplication')
+        ->toHaveKey('name', 'Venda Redonda');
+});
+
 it('a raiz manda para o login em host de aplicacao', function () {
     $this->get('http://app.vendaredonda.com.br/')->assertRedirect('/login');
 });

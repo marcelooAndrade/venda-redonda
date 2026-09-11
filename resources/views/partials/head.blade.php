@@ -5,7 +5,11 @@
     // A aba do navegador é parte da marca. Num sistema que serve várias
     // empresas, o nome do tenant vale mais que o nome do produto. Fora de
     // uma requisição com host resolvido, cai no nome do sistema.
-    $marca = app(\App\Support\TenantAtual::class)->obter()?->nome
+    // `marca` pode vir injetada por quem inclui. A apresentação usa isso: o
+    // nome do produto numa página pública não pode depender de variável de
+    // ambiente, senão um erro de configuração mostra a marca errada ao mercado.
+    $marca = $marca
+        ?? app(\App\Support\TenantAtual::class)->obter()?->nome
         ?? config('app.name', 'Laravel');
 @endphp
 
