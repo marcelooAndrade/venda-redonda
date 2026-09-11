@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PlanoTenant;
 use App\Models\Emitente;
 use App\Models\Pessoa;
 use App\Models\Tenant;
@@ -33,7 +34,8 @@ it('resolve o tenant pelo subdominio', function () {
 });
 
 it('resolve o tenant por dominio proprio', function () {
-    $this->rcm->update(['dominio' => 'sistema.rcmdobrasil.com.br']);
+    // Domínio próprio é benefício de plano, então vem com o plano junto.
+    $this->rcm->update(['plano' => PlanoTenant::Avancado, 'dominio' => 'sistema.rcmdobrasil.com.br']);
 
     app(TenantAtual::class)->definirPorHost('sistema.rcmdobrasil.com.br');
 

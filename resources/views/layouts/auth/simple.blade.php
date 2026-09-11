@@ -24,7 +24,13 @@
                          ele foi enviado para viver na barra lateral, que é
                          escura. Sobre branco, logo clara desapareceria. --}}
                     <span class="flex items-center justify-center rounded-md bg-graphite-900 px-5 py-4">
-                        @if ($tenant?->logo_path)
+                        {{-- Marca do cliente na porta é benefício de plano. Hoje a
+                             condição do plano é redundante, porque só o plano
+                             avançado pode ter domínio próprio, e só por domínio
+                             próprio o host resolve um tenant. Fica explícita
+                             porque é regra de negócio, e regra que vive só em
+                             comentário some na primeira refatoração. --}}
+                        @if ($tenant?->logo_path && $tenant->plano->permiteMarcaPropria())
                             <img src="{{ route('logo') }}" alt="{{ $tenant->nome }}"
                                  class="h-9 w-auto max-w-[12rem] object-contain">
                         @else

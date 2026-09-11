@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Enums\Perfil;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Concerns\Auditavel;
-use App\Models\Concerns\DoTenant;
+use App\Support\TenantAtual;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -40,12 +41,38 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
+    use Auditavel, HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
     /**
-     * DoTenant não é só isolamento de listagem: ele escopa também a busca do
-     * provider de autenticação. Sem isso, a credencial de um tenant autentica
-     * no host de outro, que é uma falha de segurança, não de usabilidade.
+     * Escopo próprio, e não o `DoTenant` comum, porque o `User` tem uma regra
+     * a mais: ele é consultado pelo provider de autenticação, antes de existir
+     * sessão.
+     *
+     * Com tenant resolvido pelo host, a busca fica restrita a ele. É o que
+     * impede a credencial de um cliente de entrar no domínio próprio de outro,
+     * e continua coberto por LoginEntreTenantsTest.
+     *
+     * Sem tenant no host, que é o caso do domínio do produto, a busca é global.
+     * É assim que todo cliente entra pela mesma porta. Depois da autenticação
+     * o `DefinirTenantDoUsuario` fixa o tenant a partir do próprio usuário, e
+     * daí em diante todo dado volta a ser escopado normalmente.
      */
-    use Auditavel, DoTenant, HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+    protected static function booted(): void
+    {
+        static::addGlobalScope('tenant', function (Builder $query): void {
+            $id = app(TenantAtual::class)->id();
+
+            if ($id !== null) {
+                $query->where($query->getModel()->getTable().'.tenant_id', $id);
+            }
+        });
+
+        static::creating(function (self $user): void {
+            if ($user->getAttribute('tenant_id') === null) {
+                $user->setAttribute('tenant_id', app(TenantAtual::class)->id());
+            }
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

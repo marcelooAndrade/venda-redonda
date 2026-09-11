@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PlanoTenant;
 use App\Models\Concerns\Auditavel;
 use App\Support\HostDoProduto;
 use App\Support\TemaMarca;
@@ -20,13 +21,14 @@ class Tenant extends Model
      */
     protected $attributes = [
         'ativo' => true,
+        'plano' => PlanoTenant::Gratuito->value,
     ];
 
-    protected $fillable = ['nome', 'nome_curto', 'slug', 'dominio', 'logo_path', 'tema', 'ativo'];
+    protected $fillable = ['nome', 'nome_curto', 'slug', 'dominio', 'logo_path', 'tema', 'ativo', 'plano'];
 
     protected function casts(): array
     {
-        return ['tema' => 'array', 'ativo' => 'boolean'];
+        return ['tema' => 'array', 'ativo' => 'boolean', 'plano' => PlanoTenant::class];
     }
 
     /**
@@ -45,6 +47,15 @@ class Tenant extends Model
             if (in_array($slug, HostDoProduto::slugsReservados(), true)) {
                 throw new InvalidArgumentException(
                     "O slug \"{$slug}\" é reservado: ele capturaria um host do próprio produto."
+                );
+            }
+
+            // Domínio próprio é benefício de plano. Guardar a regra aqui, e não
+            // só na tela, impede que um rebaixamento deixe o cliente com o que
+            // ele deixou de pagar.
+            if (filled($tenant->dominio) && ! $tenant->plano->permiteMarcaPropria()) {
+                throw new InvalidArgumentException(
+                    'Domínio próprio exige o plano avançado. Retire o domínio antes de rebaixar o plano.'
                 );
             }
         });

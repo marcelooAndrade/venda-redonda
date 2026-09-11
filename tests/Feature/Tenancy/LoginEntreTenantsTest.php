@@ -1,11 +1,13 @@
 <?php
 
+use App\Enums\PlanoTenant;
 use App\Models\Tenant;
 use App\Models\User;
 
 function tenantHost(string $slug, string $host): Tenant
 {
-    return Tenant::create(['nome' => ucfirst($slug), 'slug' => $slug, 'dominio' => $host]);
+    return Tenant::create(['nome' => ucfirst($slug), 'slug' => $slug, 'dominio' => $host,
+        'plano' => PlanoTenant::Avancado]);
 }
 
 it('guarda o tenant do usuario', function () {

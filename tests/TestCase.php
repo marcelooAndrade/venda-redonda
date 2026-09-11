@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Enums\PlanoTenant;
 use App\Models\Tenant;
 use App\Support\TenantAtual;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -34,7 +35,8 @@ abstract class TestCase extends BaseTestCase
         // resolva o mesmo tenant que os testes de unidade usam.
         $tenant = Tenant::query()->firstOrCreate(
             ['slug' => 'teste'],
-            ['nome' => 'Tenant de teste', 'dominio' => 'localhost'],
+            // Tem domínio, então precisa do plano que permite domínio próprio.
+            ['nome' => 'Tenant de teste', 'dominio' => 'localhost', 'plano' => PlanoTenant::Avancado],
         );
 
         app(TenantAtual::class)->definir($tenant);

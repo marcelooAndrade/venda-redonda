@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\DefinirEmitenteDoContexto;
+use App\Http\Middleware\DefinirTenantDoUsuario;
 use App\Http\Middleware\ResolverTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            // A ordem importa: o tenant do usuário vence o do host, e o
+            // emitente é resolvido já dentro do tenant certo.
+            DefinirTenantDoUsuario::class,
             DefinirEmitenteDoContexto::class,
         ]);
     })
