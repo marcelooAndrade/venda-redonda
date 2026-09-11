@@ -36,6 +36,31 @@ it('envia todos os tenants de uma vez', function () {
     Queue::assertPushed(EnviarLeads::class, fn (EnviarLeads $job) => count($job->leads) === 2);
 });
 
+/**
+ * O comando roda pelo agendador, fora de qualquer requisição HTTP: não há
+ * host, logo não há tenant resolvido no contêiner. O `limpar()` simula
+ * exatamente essa condição de produção, para que nenhuma dependência
+ * implícita de `TenantAtual` dentro do `handle()` passe despercebida.
+ */
+it('roda no agendador, sem tenant resolvido no contexto', function () {
+    Queue::fake();
+
+    emitenteCompleto();
+    $primeiro = app(TenantAtual::class)->obter();
+    User::factory()->create(['tenant_id' => $primeiro->id]);
+
+    $segundo = Tenant::create(['nome' => 'SEGUNDA EMPRESA LTDA', 'slug' => 'segunda-empresa']);
+    app(TenantAtual::class)->definir($segundo);
+    Emitente::factory()->create(['cnpj' => '11444777000161']);
+    User::factory()->create(['tenant_id' => $segundo->id]);
+
+    app(TenantAtual::class)->limpar();
+
+    $this->artisan('produto:sincronizar-leads')->assertSuccessful();
+
+    Queue::assertPushed(EnviarLeads::class, fn (EnviarLeads $job) => count($job->leads) === 2);
+});
+
 /** Tenant sem emitente e sem usuário não tem lead nenhum a mandar. */
 it('nao despacha nada quando nenhum tenant esta completo', function () {
     Queue::fake();
