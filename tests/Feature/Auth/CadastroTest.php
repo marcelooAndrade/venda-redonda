@@ -31,6 +31,7 @@ function dadosDeCadastro(array $extra = []): array
         'cnpj' => '11222333000181',
         'inscricao_estadual' => '123456789012',
         'crt' => '3',
+        'telefone' => '1930960072',
     ], $extra);
 }
 
@@ -111,4 +112,20 @@ it('gera slug do nome da empresa, sem colidir com reservado', function () {
 
     // `app` é reservado: capturaria o host do próprio produto.
     expect($tenant->slug)->not->toBe('app');
+});
+
+it('exige telefone no cadastro', function () {
+    $dados = dadosDeCadastro();
+    unset($dados['telefone']);
+
+    $this->post('http://vendaredonda.com.br/register', $dados)
+        ->assertSessionHasErrors('telefone');
+
+    expect(Tenant::count())->toBe(0);
+});
+
+it('grava o telefone no emitente', function () {
+    $this->post('http://vendaredonda.com.br/register', dadosDeCadastro(['telefone' => '(19) 99999-8888']));
+
+    expect(Emitente::first()->telefone)->toBe('(19) 99999-8888');
 });

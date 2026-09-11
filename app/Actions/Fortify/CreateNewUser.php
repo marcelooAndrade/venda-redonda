@@ -53,12 +53,14 @@ class CreateNewUser implements CreatesNewUsers
             ],
             'inscricao_estadual' => ['required', 'string', 'max:20'],
             'crt' => ['required', 'string', Rule::in(['1', '2', '3'])],
+            'telefone' => ['required', 'string', 'max:20'],
         ], [
             'razao_social.required' => 'Informe a razão social da empresa.',
             'cnpj.required' => 'Informe o CNPJ da empresa.',
             'cnpj.unique' => 'Este CNPJ já está cadastrado.',
             'inscricao_estadual.required' => 'Informe a inscrição estadual, ou ISENTO.',
             'crt.required' => 'Informe o regime tributário.',
+            'telefone.required' => 'Informe um telefone para contato.',
         ])->validate();
 
         return DB::transaction(function () use ($input): User {
@@ -78,6 +80,7 @@ class CreateNewUser implements CreatesNewUsers
                 'cnpj' => Documento::normalizarCnpj($input['cnpj']),
                 'inscricao_estadual' => $input['inscricao_estadual'],
                 'crt' => $input['crt'],
+                'telefone' => $input['telefone'],
             ]);
 
             $user = User::create([

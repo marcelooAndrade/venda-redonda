@@ -98,6 +98,18 @@
                 <flux:select.option value="3">Regime normal, presumido ou real</flux:select.option>
             </flux:select>
 
+            <flux:input
+                name="telefone"
+                label="Telefone"
+                :value="old('telefone')"
+                type="text"
+                required
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="(19) 99999-8888"
+                description="É por onde a gente fala com você sobre a sua conta."
+            />
+
             <div class="flex items-center justify-end">
                 <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
                     {{ __('Create account') }}
