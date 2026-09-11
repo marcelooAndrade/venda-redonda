@@ -118,13 +118,25 @@ class CreateNewUser implements CreatesNewUsers
         // `database` (a de produção) o dispatch() só enfileira e não lança,
         // então este catch não é acionado e não atrapalha as tentativas: o
         // job continua sendo repetido normalmente pela fila.
+        //
+        // O catch continua largo de propósito, e mesmo assim reportamos:
+        // engolir aqui vale tanto para "o admin pessoal está fora do ar"
+        // quanto para um bug de programação (um TypeError dentro do
+        // MontadorDeLeads, uma classe errada num refactor futuro). O
+        // report($e) manda a exceção para o rastreador de erros sem
+        // interromper o cadastro, e a classe da exceção vai junto no log:
+        // sem isso, ninguém consegue distinguir depois o que é falha normal
+        // de rede do que é bug nosso escondido atrás da mesma mensagem.
         try {
             EnviarLeads::dispatch([
                 app(MontadorDeLeads::class)->paraTenant($tenant),
             ])->afterCommit();
         } catch (\Throwable $e) {
+            report($e);
+
             Log::warning('Falha ao despachar o envio de lead do cadastro.', [
                 'tenant_id' => $tenant->getKey(),
+                'excecao' => $e::class,
                 'erro' => $e->getMessage(),
             ]);
         }

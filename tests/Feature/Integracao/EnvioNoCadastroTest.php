@@ -4,6 +4,7 @@ use App\Jobs\EnviarLeads;
 use App\Models\Tenant;
 use Database\Seeders\PerfilSeeder;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
@@ -65,4 +66,22 @@ it('o cadastro sobrevive a falha no envio', function () {
     $resposta->assertRedirect('/dashboard');
 
     expect(Tenant::where('nome', 'DISTRIBUIDORA RIO CLARO LTDA')->exists())->toBeTrue();
+});
+
+/**
+ * O catch em CreateNewUser é largo de propósito (o cadastro não pode
+ * depender do outro sistema, nem do driver de fila). Por isso a exceção
+ * também precisa ser reportada e logada com a própria classe: sem isso,
+ * "o admin pessoal está fora do ar" (normal, a fila tenta de novo) e "alguém
+ * quebrou o montador" (bug de programação) ficariam indistinguíveis no log.
+ */
+it('reporta a excecao quando o envio falha', function () {
+    Log::spy();
+    Http::fake(['exemplo.test/*' => Http::response('fora do ar', 500)]);
+
+    $this->post('http://vendaredonda.com.br/register', cadastroValido());
+
+    Log::shouldHaveReceived('warning')
+        ->once()
+        ->withArgs(fn (string $mensagem, array $contexto) => $contexto['excecao'] === RuntimeException::class);
 });
