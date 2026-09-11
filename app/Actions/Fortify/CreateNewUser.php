@@ -5,9 +5,11 @@ namespace App\Actions\Fortify;
 use App\Concerns\PasswordValidationRules;
 use App\Enums\Perfil;
 use App\Enums\PlanoTenant;
+use App\Jobs\EnviarLeads;
 use App\Models\Emitente;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\Integrations\MontadorDeLeads;
 use App\Support\Documento;
 use App\Support\HostDoProduto;
 use App\Support\TenantAtual;
@@ -63,7 +65,8 @@ class CreateNewUser implements CreatesNewUsers
             'telefone.required' => 'Informe um telefone para contato.',
         ])->validate();
 
-        return DB::transaction(function () use ($input): User {
+        /** @var array{0: User, 1: Tenant} $criados */
+        $criados = DB::transaction(function () use ($input): array {
             $tenant = Tenant::create([
                 'nome' => $input['razao_social'],
                 'slug' => $this->slugLivre($input['razao_social']),
@@ -97,8 +100,19 @@ class CreateNewUser implements CreatesNewUsers
             app(PermissionRegistrar::class)->setPermissionsTeamId($emitente->getKey());
             $user->assignRole(Perfil::Administrador->value);
 
-            return $user;
+            return [$user, $tenant];
         });
+
+        [$user, $tenant] = $criados;
+
+        // Fora da transação de propósito: rede não participa de commit, e uma
+        // falha de envio não pode desfazer a criação da empresa. O job só entra
+        // na fila depois que o banco confirmou.
+        EnviarLeads::dispatch([
+            app(MontadorDeLeads::class)->paraTenant($tenant),
+        ])->afterCommit();
+
+        return $user;
     }
 
     /**
