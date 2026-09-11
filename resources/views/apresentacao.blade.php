@@ -65,7 +65,7 @@
             </span>
         </span>
 
-        <a href="https://app.{{ config('produto.dominio') }}"
+        <a href="{{ route('login') }}"
            class="inline-flex min-h-10 items-center rounded-md border border-white/20 px-4 text-[13px] font-semibold text-graphite-100 transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
             Entrar no sistema
         </a>
@@ -95,7 +95,7 @@
                 </p>
 
                 <div class="mt-9 flex flex-wrap items-center gap-3">
-                    <a href="https://app.{{ config('produto.dominio') }}"
+                    <a href="{{ route('login') }}"
                        class="inline-flex min-h-12 items-center rounded-md bg-graphite-50 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-graphite-900 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                         Entrar no sistema
                     </a>
@@ -270,7 +270,7 @@
                 </h2>
                 <p class="mt-2 text-graphite-400">Já tem acesso? Entre pelo sistema.</p>
             </div>
-            <a href="https://app.{{ config('produto.dominio') }}"
+            <a href="{{ route('login') }}"
                class="inline-flex min-h-12 items-center rounded-md bg-graphite-50 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-graphite-900 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                 Entrar no sistema
             </a>

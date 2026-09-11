@@ -67,6 +67,15 @@ it('a apresentacao nao depende de APP_NAME para dizer o nome do produto', functi
         ->assertDontSee('Venda Redonda - Venda Redonda');
 });
 
+it('a apresentacao manda para o login do mesmo dominio, nao para um subdominio app', function () {
+    // O sistema mora no mesmo host, por caminho: /login e /dashboard. O `app.`
+    // existe só para cliente com domínio próprio, e nunca para o produto.
+    $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
+
+    expect($html)->toContain('href="http://vendaredonda.com.br/login"')
+        ->and($html)->not->toContain('app.vendaredonda.com.br');
+});
+
 it('a apresentacao publica descricao e dados estruturados', function () {
     $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
 
