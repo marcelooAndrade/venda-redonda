@@ -19,6 +19,9 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- Fixo aqui para o teste não depender do .env da máquina: em
+             desenvolvimento o domínio do produto é localhost. -->
+        <env name="PRODUTO_DOMINIO" value="vendaredonda.com.br"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

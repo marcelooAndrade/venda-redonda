@@ -19,7 +19,7 @@
                 required
                 autofocus
                 autocomplete="email"
-                placeholder="email@example.com"
+                placeholder="seu@email.com.br"
             />
 
             <!-- Password -->
@@ -50,10 +50,15 @@
                 </flux:button>
             </div>
         </form>
+        {{-- Só no domínio do produto: em domínio de cliente a rota de
+             cadastro não existe, e convidar para uma porta fechada é pior
+             do que não convidar. --}}
+        @if (app(\App\Support\TenantAtual::class)->id() === null)
 
         <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
             <span>{{ __('Don\'t have an account?') }}</span>
             <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
         </div>
+        @endif
     </div>
 </x-layouts::auth>

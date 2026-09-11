@@ -27,7 +27,7 @@
                 type="email"
                 required
                 autocomplete="email"
-                placeholder="email@example.com"
+                placeholder="seu@email.com.br"
             />
 
             <!-- Password -->
@@ -53,6 +53,50 @@
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable
             />
+
+            {{-- Dados da empresa. Não são burocracia de formulário: sem
+                 emitente não existe permissão neste sistema, e razão social,
+                 CNPJ, inscrição estadual e regime são o mínimo que a SEFAZ
+                 exige para um emitente existir. --}}
+            <flux:separator :text="__('Sua empresa')" />
+
+            <flux:input
+                name="razao_social"
+                label="Razão social"
+                :value="old('razao_social')"
+                type="text"
+                required
+                autocomplete="organization"
+                placeholder="Como está no cartão CNPJ"
+            />
+
+            <div class="grid gap-6 sm:grid-cols-2">
+                <flux:input
+                    name="cnpj"
+                    label="CNPJ"
+                    :value="old('cnpj')"
+                    type="text"
+                    required
+                    inputmode="text"
+                    placeholder="00.000.000/0000-00"
+                />
+
+                <flux:input
+                    name="inscricao_estadual"
+                    label="Inscrição estadual"
+                    :value="old('inscricao_estadual')"
+                    type="text"
+                    required
+                    placeholder="Ou ISENTO"
+                />
+            </div>
+
+            <flux:select name="crt" label="Regime tributário" required :value="old('crt')">
+                <flux:select.option value="">Selecione</flux:select.option>
+                <flux:select.option value="1">Simples Nacional</flux:select.option>
+                <flux:select.option value="2">Simples Nacional, excesso de sublimite</flux:select.option>
+                <flux:select.option value="3">Regime normal, presumido ou real</flux:select.option>
+            </flux:select>
 
             <div class="flex items-center justify-end">
                 <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">

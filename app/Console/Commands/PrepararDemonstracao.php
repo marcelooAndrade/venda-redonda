@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\Fiscal\NFeStatus;
 use App\Enums\Perfil;
+use App\Enums\PlanoTenant;
 use App\Models\Emitente;
 use App\Models\NaturezaOperacao;
 use App\Models\Nota;
@@ -61,15 +62,17 @@ class PrepararDemonstracao extends Command
         $this->table(
             ['Acesso', 'URL', 'E-mail', 'Senha'],
             [
-                ['RCM, administrador', 'http://rcm.localhost:8000', 'admin@rcm.test', self::SENHA],
-                ['RCM, contador', 'http://rcm.localhost:8000', 'contador@rcm.test', self::SENHA],
-                ['RCM, faturamento', 'http://rcm.localhost:8000', 'faturamento@rcm.test', self::SENHA],
-                ['Leme, administrador', 'http://leme.localhost:8000', 'admin@leme.test', self::SENHA],
+                ['Apresentação', 'http://localhost:8000', '', ''],
+                ['RCM, administrador', 'http://rcm.localhost:8000/login', 'admin@rcm.test', self::SENHA],
+                ['RCM, contador', 'http://rcm.localhost:8000/login', 'contador@rcm.test', self::SENHA],
+                ['RCM, faturamento', 'http://rcm.localhost:8000/login', 'faturamento@rcm.test', self::SENHA],
+                ['Leme, administrador', 'http://localhost:8000/login', 'admin@leme.test', self::SENHA],
             ],
         );
 
         $this->newLine();
-        $this->components->warn('Os dois endereços servem o MESMO sistema, com marcas diferentes.');
+        $this->components->warn('A RCM está no plano avançado: domínio próprio e marca já no login.');
+        $this->components->warn('A Leme está no gratuito: entra por localhost, com a porta da Venda Redonda.');
         $this->components->warn('Rode com: php artisan serve --host=0.0.0.0');
 
         return self::SUCCESS;
@@ -95,7 +98,8 @@ class PrepararDemonstracao extends Command
     {
         $tenant = Tenant::create([
             'nome' => 'RCM do Brasil', 'nome_curto' => 'RCM',
-            'slug' => 'rcm', 'dominio' => 'rcm.localhost',
+            // Plano avançado: domínio próprio e marca já na tela de login.
+            'slug' => 'rcm', 'dominio' => 'rcm.localhost', 'plano' => PlanoTenant::Avancado,
             'tema' => ['primaria' => '#E8192C', 'neutra' => '#1A1A1A'],
         ]);
 
@@ -249,7 +253,8 @@ class PrepararDemonstracao extends Command
     {
         $tenant = Tenant::create([
             'nome' => 'Transportes Leme', 'nome_curto' => 'Transportes Leme',
-            'slug' => 'leme', 'dominio' => 'leme.localhost',
+            // Plano gratuito: sem domínio próprio, entra pela porta do produto.
+            'slug' => 'leme',
             'tema' => ['primaria' => '#146B3A', 'neutra' => '#0E0E0E'],
         ]);
 
