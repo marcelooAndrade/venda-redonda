@@ -31,3 +31,10 @@ yarn-error.log
 /storage/app/fiscal
 /storage/app/private/fiscal
 /docs/design/referencia/*.png
+
+# Documentação fica fora do repositório por decisão de 11/09/2026.
+# Os arquivos continuam em disco: o que saiu foi o versionamento, não o
+# conteúdo. Isso inclui CLAUDE.md, docs/decisoes-fiscais.md e o README das
+# fixtures de certificado, então quem clonar não recebe nenhum deles.
+*.md
+*.MD
