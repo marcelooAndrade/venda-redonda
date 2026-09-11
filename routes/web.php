@@ -5,6 +5,8 @@ use App\Http\Controllers\RaizController;
 use App\Livewire\Certificados\Gerenciar;
 use App\Livewire\Contador\Exportacao;
 use App\Livewire\Estoque\Painel;
+use App\Livewire\Financeiro\ContasPagar;
+use App\Livewire\Financeiro\ContasReceber;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
@@ -29,6 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notas', Emissao::class)->name('notas');
     Route::get('importacao', App\Livewire\Importacao\Painel::class)->name('importacao');
     Route::get('estoque', Painel::class)->name('estoque');
+    Route::get('contas-a-pagar', ContasPagar::class)->name('contas-a-pagar');
+    Route::get('contas-a-receber', ContasReceber::class)->name('contas-a-receber');
     Route::get('marca', Marca::class)->name('marca');
     Route::get('produtos', App\Livewire\Produtos\Cadastro::class)->name('produtos');
     Route::get('regras-fiscais', Regras::class)->name('regras-fiscais');

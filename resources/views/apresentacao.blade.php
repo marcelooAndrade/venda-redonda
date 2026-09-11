@@ -239,8 +239,8 @@
 
             <ul class="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-2">
                 @foreach ([
-                    'Contas a pagar e a receber',
-                    'DRE e fechamento financeiro',
+                    'DRE e fechamento do mês',
+                    'Fluxo de caixa projetado',
                     'Distribuição DF-e e manifestação do destinatário',
                     'Relatórios gerenciais',
                     'Cálculo de DIFAL',
@@ -254,9 +254,9 @@
             </ul>
 
             <p class="mt-8 max-w-[58ch] text-sm leading-relaxed text-graphite-300">
-                A parte fiscal e o estoque estão de pé e em uso. O financeiro é o
-                próximo, e até ele existir a assinatura da marca diz o que o sistema
-                entrega hoje: fiscal e estoque.
+                Contas a pagar e a receber já funcionam, com baixa lançada no caixa.
+                O que falta é a leitura do resultado: DRE e projeção. Até ela existir a
+                assinatura da marca diz o que o sistema entrega hoje.
             </p>
         </div>
     </section>

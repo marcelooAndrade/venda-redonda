@@ -25,6 +25,7 @@ class PerfilSeeder extends Seeder
         'nota.inutilizar', 'nota.carta-correcao',
         'importacao.ver', 'importacao.processar',
         'relatorio.ver', 'contador.exportar',
+        'financeiro.ver', 'financeiro.gerenciar',
     ];
 
     public function run(): void
@@ -50,6 +51,7 @@ class PerfilSeeder extends Seeder
                 'nota.ver', 'nota.criar', 'nota.emitir', 'nota.cancelar',
                 'nota.inutilizar', 'nota.carta-correcao',
                 'importacao.ver', 'relatorio.ver', 'contador.exportar',
+                'financeiro.ver',
             ],
 
             Perfil::Estoque->value => [
@@ -67,6 +69,7 @@ class PerfilSeeder extends Seeder
                 'tributacao.gerenciar',
                 'nota.ver', 'importacao.ver',
                 'relatorio.ver', 'contador.exportar',
+                'financeiro.ver', 'financeiro.gerenciar',
                 'auditoria.ver',
             ],
 

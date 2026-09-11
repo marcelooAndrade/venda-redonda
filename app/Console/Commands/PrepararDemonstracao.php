@@ -5,7 +5,12 @@ namespace App\Console\Commands;
 use App\Enums\Fiscal\NFeStatus;
 use App\Enums\Perfil;
 use App\Enums\PlanoTenant;
+use App\Models\CentroCusto;
+use App\Models\ContaFinanceira;
+use App\Models\ContaPagar;
 use App\Models\Emitente;
+use App\Models\Fatura;
+use App\Models\FaturaParcela;
 use App\Models\NaturezaOperacao;
 use App\Models\Nota;
 use App\Models\NotaEvento;
@@ -15,6 +20,7 @@ use App\Models\Pessoa;
 use App\Models\Produto;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\Financeiro\BaixaService;
 use App\Services\Fiscal\CalcularNota;
 use App\Services\Stock\StockService;
 use App\Support\TenantAtual;
@@ -246,7 +252,72 @@ class PrepararDemonstracao extends Command
             'x_motivo' => 'Evento registrado e vinculado a NF-e', 'homologado_em' => now()->subDay(),
         ]);
 
+        $this->criarFinanceiro($emitente, $destinatarios[1]);
+
         return $emitente;
+    }
+
+    /**
+     * Financeiro de exemplo: um vencido, um a vencer, um pago e uma venda
+     * parcelada. É o suficiente para a tela mostrar o que ela faz.
+     */
+    private function criarFinanceiro(Emitente $emitente, Pessoa $cliente): void
+    {
+        $conta = ContaFinanceira::create([
+            'emitente_id' => $emitente->id,
+            'nome' => 'Conta movimento',
+            'banco' => 'Banco do Brasil',
+            'saldo_inicial_centavos' => 4_200_000,
+            'padrao' => true,
+        ]);
+
+        $despesas = CentroCusto::create([
+            'emitente_id' => $emitente->id, 'codigo' => '021', 'nome' => 'Despesas',
+            'natureza' => 'despesa', 'grupo' => true, 'essencial' => true,
+        ]);
+
+        $centros = [];
+        foreach ([['021.001', 'Energia', true], ['021.002', 'Frete', true], ['021.003', 'Confraternização', false]] as [$codigo, $nome, $essencial]) {
+            $centros[$nome] = CentroCusto::create([
+                'emitente_id' => $emitente->id, 'pai_id' => $despesas->id,
+                'codigo' => $codigo, 'nome' => $nome, 'natureza' => 'despesa',
+                'essencial' => $essencial,
+            ]);
+        }
+
+        foreach ([
+            ['Energia de agosto', 'CPFL Paulista', 384_512, -6, $centros['Energia'], null],
+            ['Frete da coleta 8821', 'Transportes Leme', 127_000, 3, $centros['Frete'], null],
+            ['Energia de julho', 'CPFL Paulista', 351_990, -38, $centros['Energia'], $conta],
+        ] as [$descricao, $fornecedor, $centavos, $dias, $centro, $contaBaixa]) {
+            $titulo = ContaPagar::create([
+                'emitente_id' => $emitente->id,
+                'centro_custo_id' => $centro->id,
+                'descricao' => $descricao,
+                'fornecedor' => $fornecedor,
+                'valor_centavos' => $centavos,
+                'vencimento' => now()->addDays($dias),
+            ]);
+
+            if ($contaBaixa !== null) {
+                app(BaixaService::class)->pagar($titulo, $contaBaixa, now()->addDays($dias));
+            }
+        }
+
+        $fatura = Fatura::create([
+            'emitente_id' => $emitente->id,
+            'pessoa_id' => $cliente->id,
+            'titulo' => 'Venda 1480',
+        ]);
+
+        foreach ([[1, 130_200, -4], [2, 130_200, 26], [3, 130_200, 56]] as [$numero, $centavos, $dias]) {
+            FaturaParcela::create([
+                'fatura_id' => $fatura->id, 'numero' => $numero,
+                'descricao' => "Venda 1480, parcela {$numero} de 3",
+                'valor_centavos' => $centavos,
+                'vencimento' => now()->addDays($dias),
+            ]);
+        }
     }
 
     private function criarLeme(): bool
