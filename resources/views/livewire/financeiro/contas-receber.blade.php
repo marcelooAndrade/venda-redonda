@@ -34,6 +34,18 @@
     </div>
 
     @can('financeiro.gerenciar')
+        <x-ui.card title="Cobrança Pix"
+            subtitle="Com a chave preenchida, cada parcela lançada sai com código de pagamento.">
+            <form wire:submit="salvarChavePix" class="flex flex-wrap items-end gap-3">
+                <x-ui.field label="Chave Pix do emitente" for="cr-chave" class="min-w-0 flex-1"
+                    :error="$errors->first('chavePix')"
+                    hint="CNPJ, e-mail, telefone ou chave aleatória. O recebedor sai da razão social e do município.">
+                    <x-ui.input id="cr-chave" wire:model="chavePix" maxlength="77" placeholder="Deixe vazio para desligar" />
+                </x-ui.field>
+                <x-ui.button type="submit" variant="secondary">Salvar chave</x-ui.button>
+            </form>
+        </x-ui.card>
+
         <x-ui.card title="Lançar fatura"
             subtitle="O valor é o total. Dividido em parcelas, a sobra de centavo vai para a primeira.">
             <form wire:submit="lancar" class="grid gap-5">
@@ -113,6 +125,7 @@
                         <th class="etiqueta px-2 py-2 text-left text-graphite-500">Cliente</th>
                         <th class="etiqueta px-2 py-2 text-right text-graphite-500">Parcela</th>
                         <th class="etiqueta px-2 py-2 text-right text-graphite-500">Valor</th>
+                        <th class="etiqueta px-2 py-2 text-center text-graphite-500">Cobrança</th>
                         <th class="etiqueta px-2 py-2 text-right text-graphite-500">Situação</th>
                     </tr>
                 </thead>
@@ -130,6 +143,21 @@
                             <td class="num px-2 py-2 text-right text-graphite-600">{{ $parcela->numero }}</td>
                             <td class="num px-2 py-2 text-right font-semibold text-graphite-900">
                                 {{ App\Support\Dinheiro::formatar($parcela->valor_centavos) }}
+                            </td>
+                            <td class="px-2 py-2 text-center">
+                                @if (filled($parcela->pix_payload))
+                                    {{-- Copia e cola: é assim que o cliente paga no aplicativo
+                                         do banco dele, sem precisar de câmera. --}}
+                                    <button type="button"
+                                        x-data="{ copiado: false }"
+                                        @click="navigator.clipboard.writeText(@js($parcela->pix_payload)); copiado = true; setTimeout(() => copiado = false, 2000)"
+                                        class="inline-flex min-h-8 items-center rounded-md border border-graphite-300 px-3 text-xs font-semibold text-graphite-700 transition-colors hover:bg-graphite-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                                        <span x-show="!copiado">Copiar Pix</span>
+                                        <span x-show="copiado" x-cloak class="text-success-700">Copiado</span>
+                                    </button>
+                                @else
+                                    <span class="text-xs text-graphite-400">—</span>
+                                @endif
                             </td>
                             <td class="px-2 py-2 text-right">
                                 @if ($parcela->status === 'pago')

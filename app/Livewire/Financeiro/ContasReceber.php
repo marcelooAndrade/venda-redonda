@@ -37,6 +37,15 @@ class ContasReceber extends Component
 
     public ?int $contaBaixaId = null;
 
+    /**
+     * A chave é do emitente, e é editada aqui porque é aqui que ela serve.
+     *
+     * O lugar definitivo é a tela de cadastro de emitente, que ainda não
+     * existe. Enquanto isso, deixar o recurso inalcançável seria pior do que
+     * abrigá-lo na tela que o usa.
+     */
+    public string $chavePix = '';
+
     public function mount(): void
     {
         abort_unless($this->emitente !== null, 404, 'Nenhum emitente vinculado a este usuário.');
@@ -44,6 +53,7 @@ class ContasReceber extends Component
 
         $this->primeiroVencimento = today()->toDateString();
         $this->contaBaixaId = $this->contas->first()?->getKey();
+        $this->chavePix = (string) ($this->emitente->chave_pix ?? '');
     }
 
     #[Computed]
@@ -128,7 +138,7 @@ class ContasReceber extends Component
             $vencimento = Carbon::parse($this->primeiroVencimento);
 
             foreach ($this->dividir($centavos, $this->parcelas) as $i => $valorParcela) {
-                FaturaParcela::create([
+                $parcela = FaturaParcela::create([
                     'fatura_id' => $fatura->getKey(),
                     'numero' => $i + 1,
                     'descricao' => $this->parcelas > 1
@@ -137,6 +147,8 @@ class ContasReceber extends Component
                     'valor_centavos' => $valorParcela,
                     'vencimento' => $vencimento->copy()->addMonthsNoOverflow($i),
                 ]);
+
+                $parcela->setRelation('fatura', $fatura)->gerarCobrancaPix();
             }
         });
 
@@ -146,6 +158,21 @@ class ContasReceber extends Component
         $this->esquecerTotais();
 
         session()->flash('sucesso', 'Fatura lançada.');
+    }
+
+    public function salvarChavePix(): void
+    {
+        $this->authorize('financeiro.gerenciar');
+
+        $this->validate(['chavePix' => ['nullable', 'string', 'max:77']], [], ['chavePix' => 'chave Pix']);
+
+        $this->emitente->forceFill(['chave_pix' => $this->chavePix ?: null])->save();
+
+        unset($this->emitente);
+
+        session()->flash('sucesso', $this->chavePix === ''
+            ? 'Chave Pix removida. As próximas parcelas saem sem cobrança.'
+            : 'Chave Pix salva. Vale para as próximas parcelas lançadas.');
     }
 
     public function baixar(int $id): void

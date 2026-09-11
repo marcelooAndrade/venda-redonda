@@ -45,6 +45,7 @@ class Emitente extends Model
         'cep',
         'telefone',
         'email',
+        'chave_pix',
         'logo_path',
         'serie_padrao',
         'aliquota_credito_simples',

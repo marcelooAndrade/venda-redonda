@@ -119,6 +119,7 @@ class PrepararDemonstracao extends Command
             'bairro' => 'Distrito Industrial II', 'codigo_municipio' => '3503307',
             'municipio' => 'Araras', 'uf' => 'SP', 'cep' => '13602200',
             'telefone' => '1930960072', 'email' => 'adm@rcmdobrasil.com.br',
+            'chave_pix' => '11222333000181',
             'serie_padrao' => 1,
         ]);
 
@@ -316,7 +317,7 @@ class PrepararDemonstracao extends Command
                 'descricao' => "Venda 1480, parcela {$numero} de 3",
                 'valor_centavos' => $centavos,
                 'vencimento' => now()->addDays($dias),
-            ]);
+            ])->setRelation('fatura', $fatura)->gerarCobrancaPix();
         }
     }
 
