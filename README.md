@@ -1,4 +1,4 @@
-# emissor-nfe
+# venda-redonda
 
 Sistema emissor de NF-e modelo 55, layout 4.00, multiempresa e com marca dinâmica por URL.
 
@@ -21,11 +21,11 @@ O banco é **SQLite** em desenvolvimento, então não precisa subir MySQL.
 ### Três comandos
 
 ```bash
-cd ~/Projetos/emissor-nfe
+cd ~/Projetos/venda-redonda
 
 composer install && npm install && npm run build
 
-php artisan emissor:demo --fresh
+php artisan venda:demo --fresh
 ```
 
 O último comando recria o banco e popula tudo: dois tenants com marcas diferentes, quatro perfis de usuário, produtos com estoque, regras fiscais com vigência, notas em rascunho e uma autorizada com carta de correção.
@@ -79,7 +79,7 @@ A nota 1.480 da demonstração aparece autorizada porque foi marcada assim no se
 ```bash
 php artisan test                          # 417 testes
 ./vendor/bin/pint                         # formatação
-php artisan emissor:demo --fresh          # recomeça do zero
+php artisan venda:demo --fresh          # recomeça do zero
 
 php artisan fiscal:importar-municipios    # IBGE: 27 UFs e 5.571 municípios
 php artisan fiscal:importar-ncm           # Siscomex: tabela NCM vigente

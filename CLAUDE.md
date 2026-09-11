@@ -1,4 +1,4 @@
-# emissor-nfe
+# venda-redonda
 
 Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável entre empresas clientes.
 
@@ -42,7 +42,7 @@ Divergências deliberadas em relação ao `app-transm`, ambas justificadas em `d
 | Variável | Valor |
 |---|---|
 | Caminho do projeto de referência | `/Users/marceloandrade/Projetos/app-transm` (somente leitura) |
-| Nome do sistema | `emissor-nfe` (assumido a partir do exemplo do prompt, confirmar) |
+| Nome do sistema | `venda-redonda`. Confirmado em 10/09/2026 |
 | Dados do responsável técnico (`infRespTec`) | Em `config/fiscal.php` via `.env`, vazio. `AtivarProducao` recusa a virada enquanto faltar. Ver DF-006 |
 | CRT da RCM do Brasil | **Pendente.** Define se IBS/CBS é exigência de hoje ou de abr/2027 |
 | Banco de produção no Laravel Cloud | **Pendente.** MySQL 8 ou PostgreSQL |
@@ -75,7 +75,7 @@ Adotadas por consistência entre os sistemas:
 
 | Data | Decisão | Motivo |
 |---|---|---|
-| 2026-09-10 | Projeto novo, não fork do `app-transm` | O `app-transm` resolve entrada de notas e é acoplado ao domínio de transportadora. O `emissor-nfe` resolve saída, que não existe lá |
+| 2026-09-10 | Projeto novo, não fork do `app-transm` | O `app-transm` resolve entrada de notas e é acoplado ao domínio de transportadora. O `venda-redonda` resolve saída, que não existe lá |
 | 2026-09-10 | Reaproveitar o controle de Distribuição DF-e do `app-transm` | Locks por empresa, NSU, cooldown e tratamento de cStat 656 são conhecimento caro e já validado em produção |
 | 2026-09-10 | Reescrever o armazenamento do certificado | A origem grava o `.pfx` sem criptografia em repouso e em disco local, incompatível com Laravel Cloud |
 | 2026-09-10 | Extrair o parser de XML para classe pura | Na origem ele vive dentro de um God class de 1474 linhas com string de domínio cravada |
@@ -134,6 +134,7 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Estoque conferido antes de transmitir, tolerado depois | Barrar cedo evita queimar número; depois da autorização a nota é fato e não se desfaz. Ver DF-021 |
 | 2026-09-10 | Schema do leiaute vem da configuração | `new Make()` assume PL_009 e descarta os grupos da Reforma em silêncio. Ver DF-016 |
 | 2026-09-10 | Helpers de teste no `Pest.php` | Assim cada arquivo de teste roda isoladamente |
+| 2026-09-10 | Sistema renomeado para `venda-redonda` | O nome anterior descrevia um módulo, não o produto. A troca alcança o `verProc` gravado no XML, então nota nova sai identificada pelo nome novo e nota antiga continua com o antigo, que é o correto |
 | 2026-09-10 | Vitrine `/design-system` retirada, tokens mantidos | Era andaime de construção, não tela de operação. O que sustenta a identidade são os tokens e os componentes `x-ui.*`, que ficam |
 | 2026-09-10 | Logo servida por rota autenticada, não por URL pública | O arquivo vive no disco privado como o resto do acervo. Como o `TenantAtual` vem do host e não há identificador na URL, não existe pedido possível para a logo de outro cliente |
 | 2026-09-10 | Logo do sistema e logo do DANFE são separadas | O tenant é a empresa que assina o sistema, o emitente é o CNPJ que assina a nota. Matriz e filial dividem a primeira e podem imprimir logos diferentes na segunda |
@@ -165,7 +166,7 @@ php artisan fiscal:importar-municipios    # IBGE: 27 UFs e 5.571 municípios
 php artisan fiscal:importar-ncm           # Siscomex: tabela NCM vigente
 php artisan fiscal:alertar-certificados   # marcos de 30, 15 e 7 dias
 npm run build                             # assets
-php artisan emissor:demo --fresh          # dois tenants, quatro perfis, dados de exemplo
+php artisan venda:demo --fresh          # dois tenants, quatro perfis, dados de exemplo
 php artisan serve --host=0.0.0.0          # o host importa: sem ele *.localhost não resolve
 ```
 

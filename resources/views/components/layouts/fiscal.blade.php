@@ -50,7 +50,7 @@
                         {{ mb_strtoupper(mb_substr($tenant?->rotulo() ?? 'N', 0, 1)) }}
                     </span>
                     <span class="truncate font-display text-base font-bold uppercase tracking-wide text-white">
-                        {{ $tenant?->rotulo() ?? 'Emissor NF-e' }}
+                        {{ $tenant?->rotulo() ?? 'Venda Redonda' }}
                     </span>
                 @endif
             </div>

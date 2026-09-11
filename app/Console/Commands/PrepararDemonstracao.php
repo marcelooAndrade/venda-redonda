@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PrepararDemonstracao extends Command
 {
-    protected $signature = 'emissor:demo {--fresh : Recria o banco do zero}';
+    protected $signature = 'venda:demo {--fresh : Recria o banco do zero}';
 
     protected $description = 'Popula o sistema com dados de demonstração';
 

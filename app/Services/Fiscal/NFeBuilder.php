@@ -95,7 +95,7 @@ class NFeBuilder
             'indFinal' => $nota->consumidor_final ? 1 : 0,
             'indPres' => $nota->ind_pres,
             'procEmi' => 0,
-            'verProc' => 'emissor-nfe 1.0',
+            'verProc' => 'venda-redonda 1.0',
             // Contingência exige data e justificativa.
             'dhCont' => $nota->tp_emis !== '1' ? $nota->contingencia_em?->format('Y-m-d\TH:i:sP') : null,
             'xJust' => $nota->tp_emis !== '1' ? $nota->justificativa_contingencia : null,

@@ -1,4 +1,4 @@
-# Arquitetura do emissor-nfe
+# Arquitetura do venda-redonda
 
 > Fase 2. Escrito em 2026-09-10.
 > Base de referência: `docs/analise-app-transm.md`. Regras fiscais em `docs/decisoes-fiscais.md`.

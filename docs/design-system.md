@@ -1,4 +1,4 @@
-# Design System do emissor-nfe
+# Design System do venda-redonda
 
 > Fase 1. Extraído de https://rcmdobrasil.com.br/ em 2026-09-10, por renderização real com Playwright (Chromium headless, `getComputedStyle`), com conferência cruzada no código-fonte do site em `/Users/marceloandrade/Projetos/rcmdobrasil`.
 > Referências visuais em `docs/design/referencia/`.
@@ -287,7 +287,7 @@ O `overline` reduz o tracking de 0.28em do site para 0.16em. A 11px, 0.28em queb
 
 O site respira porque é institucional, com `py-20` e `py-24`, ou seja, 80 a 96px por seção. Um admin com tabela de itens de nota precisa do oposto.
 
-| Medida | Site | emissor-nfe | Motivo |
+| Medida | Site | venda-redonda | Motivo |
 |---|---|---|---|
 | Base tipográfica | 16px | **14px** | Mais linhas úteis por tela |
 | Altura de botão | 48px | 40px padrão, 32px compacto, **48px na ação principal** | A ação principal mantém a presença do site |

@@ -1,6 +1,6 @@
 # Análise do projeto APP - transm
 
-> Fase 0 do projeto `emissor-nfe`.
+> Fase 0 do projeto `venda-redonda`.
 > Origem analisada: `/Users/marceloandrade/Projetos/app-transm` (somente leitura, nada foi alterado).
 > Arquivos `.env`, certificados e tokens não foram abertos, conforme a regra 1 do `CONTEXT.md`.
 > Data da análise: 2026-09-10.
@@ -52,7 +52,7 @@ Versões reais, lidas do `composer.lock`:
 | `nfephp-org/sped-gtin` | v1.1.2 |
 | `nfephp-org/sped-da` | **dev-master** |
 
-`sped-da` sem versão fixa é um risco de build não reprodutível. No `emissor-nfe` isso precisa ser travado.
+`sped-da` sem versão fixa é um risco de build não reprodutível. No `venda-redonda` isso precisa ser travado.
 
 ### Como o `Tools` é construído
 
@@ -235,7 +235,7 @@ tests/Unit/ e tests/Feature/Fiscal/
 | Extração de titular, serial, fingerprint e validade | **Reaproveitar** | Útil para a tela e para auditoria |
 | Cast `SafeEncrypted` | **Reaproveitar com mudança** | Manter para campos tolerantes, mas a senha do certificado precisa falhar de forma explícita, nunca virar `null` em silêncio |
 | Gravação do `.pfx` | **Reescrever** | Precisa de `Crypt` em repouso e object storage privado, não disco local |
-| Troca de certificado | **Reescrever** | Hoje apaga o anterior. O `emissor-nfe` exige histórico com um ativo por emitente |
+| Troca de certificado | **Reescrever** | Hoje apaga o anterior. O `venda-redonda` exige histórico com um ativo por emitente |
 | Erro de OpenSSL 3 legado | **Novo** | Detectar o algoritmo legado, tentar o provider `legacy` e, se falhar, dar mensagem que explique a causa |
 | Alerta de vencimento | **Novo** | Job agendado em 30, 15 e 7 dias, com notificação e card no dashboard |
 | Botão testar comunicação | **Novo** | `sefazStatus` da UF usando o certificado ativo |
@@ -247,7 +247,7 @@ tests/Unit/ e tests/Feature/Fiscal/
 | `parseNFeXml` | **Reaproveitar, extraindo** | Melhor código do projeto. Vira `Services/Import/NFeXmlParser`, puro, sem tocar em banco e sem string de domínio |
 | Detecção de CT-e | **Reaproveitar** | Barato e evita importar documento errado |
 | Extratores de ICMS, IPI, PIS e COFINS | **Reaproveitar** | Prontos e testados |
-| Exigir `protNFe` | **Melhorar** | O `emissor-nfe` só aceita nota autorizada, conforme o requisito |
+| Exigir `protNFe` | **Melhorar** | O `venda-redonda` só aceita nota autorizada, conforme o requisito |
 | `SefazDfeGateway` e implementação | **Reaproveitar quase intacto** | Interface limpa, fácil de mockar |
 | `SefazDfeResponseParser` | **Reaproveitar** | Já trata a resposta compactada da SEFAZ |
 | Controle de NSU, locks, 656, 137, 138 e cooldown | **Reaproveitar a arquitetura** | É o ativo mais valioso do módulo. Erra pouco e respeita os limites da SEFAZ |
@@ -255,7 +255,7 @@ tests/Unit/ e tests/Feature/Fiscal/
 | Dedup por NSU e SHA-256 | **Reaproveitar** | Sólido. Somar dedup por chave de acesso |
 | `persistNotaNosPedidos` e afins | **Descartar** | Domínio de transportadora, sem uso aqui |
 | Merge NSDocs | **Descartar** | Dependência de terceiro que não entra no escopo |
-| Upload múltiplo e ZIP | **Novo** | Requisito do `emissor-nfe`, inexistente na origem |
+| Upload múltiplo e ZIP | **Novo** | Requisito do `venda-redonda`, inexistente na origem |
 | Conciliação de itens e vínculo fornecedor x produto | **Novo** | Núcleo da importação para estoque, inexistente na origem |
 | Conversão de unidade | **Novo** | Idem |
 | CFOP de entrada a partir do CFOP de saída | **Novo** | Idem |
@@ -277,11 +277,11 @@ tests/Unit/ e tests/Feature/Fiscal/
 | 9 | **Média** | `sped-da` em `dev-master`, sem versão travada |
 | 10 | **Baixa** | Parser aceita `NFe` sem `protNFe`, permitindo importar nota não autorizada |
 | 11 | **Baixa** | `authorize()` sempre `true` nos Form Requests. Funciona, mas deixa a autorização longe da regra |
-| 12 | **Baixa** | Emissão travada em `homologacao` por `Rule::in`, enquanto a distribuição roda em produção. Correto para a transportadora, mas no `emissor-nfe` a virada para produção precisa ser um fluxo explícito e auditado |
+| 12 | **Baixa** | Emissão travada em `homologacao` por `Rule::in`, enquanto a distribuição roda em produção. Correto para a transportadora, mas no `venda-redonda` a virada para produção precisa ser um fluxo explícito e auditado |
 
 ## 7. Conclusão
 
-O `app-transm` entrega três ativos reais para o `emissor-nfe`:
+O `app-transm` entrega três ativos reais para o `venda-redonda`:
 
 1. **O controle de consumo da Distribuição DF-e.** Locks, NSU, cooldown e tratamento de 656 são conhecimento caro de adquirir e estão prontos.
 2. **O parser de XML da NF-e.** Robusto, defensivo e testado. Precisa apenas ser extraído do God class.
@@ -289,4 +289,4 @@ O `app-transm` entrega três ativos reais para o `emissor-nfe`:
 
 O que **não** vem junto é justamente o coração do novo sistema: não há emissão de NF-e 55 (existem `CteXmlBuilder` e `MdfeXmlBuilder`, mas nenhum `NfeXmlBuilder`), não há produtos, não há estoque e não há cálculo de tributos de saída. O `NfephpToolsFactory::nfe()` existe, porém só para distribuição.
 
-Em resumo: o `app-transm` resolve **entrada** de notas. O `emissor-nfe` precisa resolver **saída**, e essa parte nasce do zero, tendo o `CteXmlBuilder` como referência de estilo.
+Em resumo: o `app-transm` resolve **entrada** de notas. O `venda-redonda` precisa resolver **saída**, e essa parte nasce do zero, tendo o `CteXmlBuilder` como referência de estilo.

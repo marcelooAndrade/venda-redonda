@@ -1,6 +1,6 @@
 # O que o sistema faz
 
-Inventário do emissor-nfe: o que está pronto, o que ficou de fora de propósito, o que falta e o que depende de decisão sua.
+Inventário do venda-redonda: o que está pronto, o que ficou de fora de propósito, o que falta e o que depende de decisão sua.
 
 Este é o documento para responder "o sistema já faz X?". Para **por que** cada coisa é como é, veja `decisoes-fiscais.md` (regra fiscal), `design-system.md` (visual) e o registro de decisões no `CLAUDE.md`.
 
