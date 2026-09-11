@@ -43,3 +43,6 @@ yarn-error.log
 # lado dele. Sem ele, quem encontrar os certificados não tem como saber que
 # são autoassinados, de CNPJ fictício e chave descartável.
 !tests/Fixtures/certificados/README.md
+
+# Andaime do desenvolvimento por subagentes. Rascunho, nunca versionado.
+.superpowers/
