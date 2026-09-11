@@ -1,5 +1,36 @@
 # Design System do venda-redonda
 
+> **Nota de 11/09/2026 — a paleta mudou de marca.**
+>
+> Este documento descreve a extração feita em rcmdobrasil.com.br, e é essa medição
+> que continua calibrando a curva das escalas. O que mudou é a **âncora**: o padrão
+> do produto deixou de ser o vermelho e o grafite da RCM e passou a ser o vermelhão
+> carimbo `#E4572E` e o grafite-petróleo `#0E1B1F` da Venda Redonda, com Manrope no
+> lugar de Barlow Condensed e Inter.
+>
+> A RCM não sumiu: virou tenant, com a marca dela salva em `tenants.tema`, que é
+> exatamente o mecanismo que esta fase construiu. O que estava errado era tratar a
+> marca de um cliente como padrão do produto.
+>
+> As rampas em `@theme static` não são mais escritas à mão: saem de
+> `TemaMarca::escalaDe` e `escalaNeutraDe`, as mesmas funções que geram a marca de
+> um tenant em runtime, para que o padrão compilado e o padrão do código não possam
+> divergir.
+>
+> Três consequências medidas, e não estimadas:
+>
+> - **A ação primária continua grafite.** O motivo original era o contraste de 1,43
+>   entre primário e perigo. Com o vermelhão ele sobe para 1,77, ainda longe de 3.
+>   O grafite separa a 2,69.
+> - **O cinza-pedra `#7F8E8B` do briefing não ganhou token.** A rampa do
+>   grafite-petróleo entrega `#848b8d` no tom 400: 1,01 de contraste entre os dois,
+>   ou seja, a mesma cor. Está coberto por teste.
+> - **O vermelhão tem 3,68 contra branco.** Serve para borda, anel de foco, barra e
+>   elemento gráfico, que pedem 3:1. Não serve para texto miúdo sobre ele, e por
+>   isso o quadrado da inicial do tenant passou a escrever em grafite, com 4,77.
+
+
+
 > Fase 1. Extraído de https://rcmdobrasil.com.br/ em 2026-09-10, por renderização real com Playwright (Chromium headless, `getComputedStyle`), com conferência cruzada no código-fonte do site em `/Users/marceloandrade/Projetos/rcmdobrasil`.
 > Referências visuais em `docs/design/referencia/`.
 

@@ -104,3 +104,32 @@ describe('variáveis CSS', function () {
         expect(TemaMarca::deArray(['primaria' => '#146B3A']))->not->toBeNull();
     });
 });
+
+describe('padrão do produto', function () {
+    it('nasce com a marca da venda redonda, nao com a de um cliente', function () {
+        expect(TemaMarca::PRIMARIA_PADRAO)->toBe('#e4572e')
+            ->and(TemaMarca::NEUTRA_PADRAO)->toBe('#0e1b1f');
+    });
+
+    it('ancora o grafite-petroleo no tom 900 da neutra padrao', function () {
+        expect(TemaMarca::escalaNeutraDe(TemaMarca::NEUTRA_PADRAO)[900])->toBe('#0e1b1f');
+    });
+
+    it('o cinza-pedra da marca ja vive na escala, sem token proprio', function () {
+        // O briefing define #7F8E8B como tom de apoio. A rampa gerada a partir
+        // do grafite-petróleo entrega #848b8d no tom 400: 1,01 de contraste
+        // entre os dois, ou seja, a mesma cor. Por isso a paleta não ganha um
+        // quinto token só para ele.
+        $tom400 = TemaMarca::escalaNeutraDe(TemaMarca::NEUTRA_PADRAO)[400];
+
+        // Fixa o tom, senão dois cinzas médios quaisquer passariam e o teste
+        // não guardaria nada.
+        expect($tom400)->toBe('#848b8d');
+
+        $pedra = TemaMarca::luminancia('#7f8e8b');
+        $gerado = TemaMarca::luminancia($tom400);
+        $contraste = (max($pedra, $gerado) + 0.05) / (min($pedra, $gerado) + 0.05);
+
+        expect($contraste)->toBeLessThan(1.1);
+    });
+});

@@ -6,9 +6,10 @@ Sistema emissor de NF-e modelo 55 (layout 4.00), parametrizável e reutilizável
 
 ## Situação atual
 
-**Módulo 10, parte 1 (painel), uma revisão de UI e o upload de logo.** 431 testes passando, Pint limpo.
+**Módulo 10, parte 1 (painel), upload de logo e a troca da paleta para a marca Venda Redonda.** 434 testes passando, Pint limpo.
 A revisão trocou o raio zero por uma escala contida, tirou o `max-w-6xl` de cada página, corrigiu a colisão do utilitário `overline` e resolveu a rolagem horizontal no celular. Ver a Decisão 3 revista em `docs/design-system.md`.
 A vitrine `/design-system` saiu: era ferramenta de construção. Os tokens e os componentes `x-ui.*` continuam, e a tela Marca agora recebe as duas logos, a do sistema e a do DANFE.
+O padrão do produto deixou de ser a marca da RCM e passou a ser a da Venda Redonda. A RCM virou tenant, que é o mecanismo que já existia.
 Falta a parte 2 do Módulo 10, os relatórios. Seguem pendentes a contingência SVC e a distribuição DF-e.
 
 | Fase | Entrega | Status |
@@ -134,6 +135,11 @@ Adotadas por consistência entre os sistemas:
 | 2026-09-10 | Estoque conferido antes de transmitir, tolerado depois | Barrar cedo evita queimar número; depois da autorização a nota é fato e não se desfaz. Ver DF-021 |
 | 2026-09-10 | Schema do leiaute vem da configuração | `new Make()` assume PL_009 e descarta os grupos da Reforma em silêncio. Ver DF-016 |
 | 2026-09-10 | Helpers de teste no `Pest.php` | Assim cada arquivo de teste roda isoladamente |
+| 2026-09-11 | Padrão do produto é a marca da Venda Redonda, não a da RCM | Tratar a marca de um cliente como padrão do sistema era erro de categoria. A RCM é tenant, e o mecanismo de marca por tenant já existia |
+| 2026-09-11 | Rampas do `@theme` geradas pelo `TemaMarca`, não escritas à mão | Se o padrão compilado e o padrão do código divergirem, o sistema diz duas cores diferentes para a mesma marca |
+| 2026-09-11 | Ação primária segue grafite, agora por medição refeita | Primário contra perigo era 1,43 com o vermelho antigo e é 1,77 com o vermelhão: melhora e continua longe de 3. O grafite separa a 2,69 |
+| 2026-09-11 | Cinza-pedra do briefing não ganhou token | A rampa do grafite-petróleo entrega `#848b8d` no tom 400, e `#7F8E8B` contra ele dá 1,01: é a mesma cor. Coberto por teste |
+| 2026-09-11 | Inicial do tenant escreve em grafite sobre o vermelhão | Branco sobre `#E4572E` dá 3,68 e não passa em AA num texto miúdo. Grafite dá 4,77 e mantém a cor da marca exata, em vez de escurecê-la |
 | 2026-09-10 | Sistema renomeado para `venda-redonda` | O nome anterior descrevia um módulo, não o produto. A troca alcança o `verProc` gravado no XML, então nota nova sai identificada pelo nome novo e nota antiga continua com o antigo, que é o correto |
 | 2026-09-10 | Vitrine `/design-system` retirada, tokens mantidos | Era andaime de construção, não tela de operação. O que sustenta a identidade são os tokens e os componentes `x-ui.*`, que ficam |
 | 2026-09-10 | Logo servida por rota autenticada, não por URL pública | O arquivo vive no disco privado como o resto do acervo. Como o `TenantAtual` vem do host e não há identificador na URL, não existe pedido possível para a logo de outro cliente |

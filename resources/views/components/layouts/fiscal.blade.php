@@ -46,7 +46,10 @@
                 @if ($tenant?->logo_path)
                     <img src="{{ route('marca.logo') }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
                 @else
-                    <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary-600 font-display text-xs font-bold text-white">
+                    {{-- Texto grafite, não branco: branco sobre o vermelhão dá 3,68 e não
+                         passa em AA num texto miúdo. Grafite dá 4,77 e mantém a cor da
+                         marca exata, em vez de escurecê-la. --}}
+                    <span class="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary-600 font-display text-xs font-bold text-graphite-900">
                         {{ mb_strtoupper(mb_substr($tenant?->rotulo() ?? 'N', 0, 1)) }}
                     </span>
                     <span class="truncate font-display text-base font-bold uppercase tracking-wide text-white">
@@ -81,7 +84,7 @@
                                           'bg-primary-600' => $ativo,
                                           'bg-transparent' => ! $ativo,
                                       ])></span>
-                                <svg class="size-[18px] shrink-0 {{ $ativo ? 'text-primary-500' : 'text-graphite-500 group-hover:text-graphite-300' }}"
+                                <svg class="size-[18px] shrink-0 {{ $ativo ? 'text-primary-600' : 'text-graphite-500 group-hover:text-graphite-300' }}"
                                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="{{ $icone }}" />
                                 </svg>

@@ -10,14 +10,21 @@ use InvalidArgumentException;
  * Todo utilitário do Tailwind 4 compila para `var(--color-*)`, então trocar
  * a marca é sobrescrever as variáveis em tempo de execução. Não há CSS
  * recompilado por tenant nem classe condicional: uma transportadora verde e
- * preta recebe o mesmo bundle que a RCM vermelha e grafite.
+ * preta recebe o mesmo bundle que o padrão vermelhão e grafite do produto.
  */
 class TemaMarca
 {
-    /** Vermelho e grafite da RCM, usados quando o tenant não define marca. */
-    public const PRIMARIA_PADRAO = '#e8192c';
+    /**
+     * Marca do produto, usada quando o tenant não define a dele.
+     *
+     * Vermelhão carimbo e grafite-petróleo da Venda Redonda. O vermelhão tem
+     * 3,68 de contraste com branco, o que serve para borda, anel de foco e
+     * elemento gráfico, mas não para texto miúdo sobre ele. Por isso nenhum
+     * componente escreve em branco sobre o tom 600.
+     */
+    public const PRIMARIA_PADRAO = '#e4572e';
 
-    public const NEUTRA_PADRAO = '#1a1a1a';
+    public const NEUTRA_PADRAO = '#0e1b1f';
 
     /**
      * Curva de luminosidade da escala, em porcentagem. O tom 600 é a cor da
@@ -34,8 +41,10 @@ class TemaMarca
      * Curva da neutra, ancorada no 900. O "preto" de uma marca é o tom mais
      * escuro utilizável, não o do meio.
      *
-     * Os fatores foram extraídos da escala grafite medida no site da RCM, de
-     * modo que informar #1A1A1A reproduz exatamente a paleta do design system.
+     * Os fatores foram extraídos de uma escala grafite medida por renderização
+     * real, e continuam calibrados por teste contra aqueles valores. Aplicada
+     * ao grafite-petróleo, a mesma curva entrega no tom 400 a cor de apoio da
+     * marca, o que dispensa um token só para ela.
      *
      * @var array<int, float>
      */
