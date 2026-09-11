@@ -35,6 +35,17 @@ class ContasReceber extends Component
 
     public string $primeiroVencimento = '';
 
+    /**
+     * As parcelas, uma por linha, com valor e vencimento próprios.
+     *
+     * É assim que a origem trabalha, e é assim que negociação funciona: entrada
+     * de R$ 500 e o saldo em duas, com datas que não caem de mês em mês. A
+     * divisão automática é atalho para o caso comum, não a única forma.
+     *
+     * @var array<int, array{descricao: string, valor: string, vencimento: string}>
+     */
+    public array $linhas = [];
+
     public ?int $contaBaixaId = null;
 
     /**
@@ -88,7 +99,8 @@ class ContasReceber extends Component
             ->when($this->situacao === 'pendentes', fn ($q) => $q->where('status', 'pendente'))
             ->when($this->situacao === 'recebidos', fn ($q) => $q->where('status', 'pago'))
             ->with('fatura.destinatario')
-            ->orderBy('vencimento')
+            // Não é "por vencimento": são seis faixas, portadas da origem.
+            ->emOrdemDeCobranca()
             ->limit(300)
             ->get();
     }
@@ -109,6 +121,51 @@ class ContasReceber extends Component
             ->where('status', 'pendente')->whereDate('vencimento', '<', today())->sum('valor_centavos');
     }
 
+    /** Preenche as linhas a partir do total, do número de parcelas e da data. */
+    public function gerarLinhas(): void
+    {
+        $centavos = Dinheiro::emCentavos($this->valor);
+
+        if ($centavos <= 0 || $this->parcelas < 1) {
+            $this->addError('valor', 'Informe o total e o número de parcelas.');
+
+            return;
+        }
+
+        $primeiro = Carbon::parse($this->primeiroVencimento ?: today()->toDateString());
+
+        $this->linhas = [];
+
+        foreach ($this->dividir($centavos, $this->parcelas) as $i => $valorParcela) {
+            $this->linhas[] = [
+                'descricao' => $this->parcelas > 1
+                    ? sprintf('%s, parcela %d de %d', $this->titulo ?: 'Parcela', $i + 1, $this->parcelas)
+                    : ($this->titulo ?: 'Parcela'),
+                'valor' => Dinheiro::formatar($valorParcela),
+                'vencimento' => $primeiro->copy()->addMonthsNoOverflow($i)->toDateString(),
+            ];
+        }
+    }
+
+    public function adicionarLinha(): void
+    {
+        $ultima = end($this->linhas) ?: null;
+
+        $this->linhas[] = [
+            'descricao' => $this->titulo ?: 'Parcela',
+            'valor' => '',
+            'vencimento' => $ultima
+                ? Carbon::parse($ultima['vencimento'])->addMonthNoOverflow()->toDateString()
+                : today()->toDateString(),
+        ];
+    }
+
+    public function removerLinha(int $indice): void
+    {
+        unset($this->linhas[$indice]);
+        $this->linhas = array_values($this->linhas);
+    }
+
     public function lancar(): void
     {
         $this->authorize('financeiro.gerenciar');
@@ -116,43 +173,39 @@ class ContasReceber extends Component
         $this->validate([
             'titulo' => ['required', 'string', 'max:160'],
             'pessoaId' => ['nullable', 'integer'],
-            'parcelas' => ['required', 'integer', 'min:1', 'max:120'],
-            'primeiroVencimento' => ['required', 'date'],
-        ], [], ['titulo' => 'título', 'parcelas' => 'número de parcelas']);
+        ], [], ['titulo' => 'título']);
 
-        $centavos = Dinheiro::emCentavos($this->valor);
+        // Caminho rápido: quem preencheu total e parcelas e mandou lançar não
+        // precisa passar pelo botão de gerar.
+        if ($this->linhas === []) {
+            $this->gerarLinhas();
+        }
 
-        if ($centavos <= 0) {
-            $this->addError('valor', 'Informe um valor maior que zero.');
+        $parcelas = $this->parcelasValidadas();
 
+        if ($parcelas === null) {
             return;
         }
 
-        DB::transaction(function () use ($centavos): void {
+        DB::transaction(function () use ($parcelas): void {
             $fatura = Fatura::create([
                 'emitente_id' => $this->emitente->getKey(),
                 'pessoa_id' => $this->pessoaId,
                 'titulo' => $this->titulo,
             ]);
 
-            $vencimento = Carbon::parse($this->primeiroVencimento);
-
-            foreach ($this->dividir($centavos, $this->parcelas) as $i => $valorParcela) {
-                $parcela = FaturaParcela::create([
+            foreach ($parcelas as $i => $linha) {
+                FaturaParcela::create([
                     'fatura_id' => $fatura->getKey(),
                     'numero' => $i + 1,
-                    'descricao' => $this->parcelas > 1
-                        ? sprintf('%s, parcela %d de %d', $this->titulo, $i + 1, $this->parcelas)
-                        : $this->titulo,
-                    'valor_centavos' => $valorParcela,
-                    'vencimento' => $vencimento->copy()->addMonthsNoOverflow($i),
-                ]);
-
-                $parcela->setRelation('fatura', $fatura)->gerarCobrancaPix();
+                    'descricao' => $linha['descricao'],
+                    'valor_centavos' => $linha['centavos'],
+                    'vencimento' => $linha['vencimento'],
+                ])->setRelation('fatura', $fatura)->gerarCobrancaPix();
             }
         });
 
-        $this->reset(['titulo', 'valor', 'pessoaId']);
+        $this->reset(['titulo', 'valor', 'pessoaId', 'linhas']);
         $this->parcelas = 1;
         $this->primeiroVencimento = today()->toDateString();
         $this->esquecerTotais();
@@ -160,19 +213,44 @@ class ContasReceber extends Component
         session()->flash('sucesso', 'Fatura lançada.');
     }
 
-    public function salvarChavePix(): void
+    /**
+     * Valida linha a linha antes de abrir transação.
+     *
+     * Uma linha ruim reprova a fatura inteira: meia fatura gravada é pior do
+     * que nenhuma, porque o cliente recebe cobrança de parte do combinado.
+     *
+     * @return array<int, array{descricao: string, centavos: int, vencimento: string}>|null
+     */
+    private function parcelasValidadas(): ?array
     {
-        $this->authorize('financeiro.gerenciar');
+        if ($this->linhas === []) {
+            $this->addError('linhas', 'Informe ao menos uma parcela.');
 
-        $this->validate(['chavePix' => ['nullable', 'string', 'max:77']], [], ['chavePix' => 'chave Pix']);
+            return null;
+        }
 
-        $this->emitente->forceFill(['chave_pix' => $this->chavePix ?: null])->save();
+        $parcelas = [];
 
-        unset($this->emitente);
+        foreach (array_values($this->linhas) as $i => $linha) {
+            $centavos = Dinheiro::emCentavos((string) ($linha['valor'] ?? ''));
+            $vencimento = trim((string) ($linha['vencimento'] ?? ''));
 
-        session()->flash('sucesso', $this->chavePix === ''
-            ? 'Chave Pix removida. As próximas parcelas saem sem cobrança.'
-            : 'Chave Pix salva. Vale para as próximas parcelas lançadas.');
+            if ($centavos <= 0) {
+                $this->addError("linhas.{$i}.valor", 'Valor da parcela precisa ser maior que zero.');
+            }
+
+            if ($vencimento === '' || strtotime($vencimento) === false) {
+                $this->addError("linhas.{$i}.vencimento", 'Informe o vencimento da parcela.');
+            }
+
+            $parcelas[] = [
+                'descricao' => trim((string) ($linha['descricao'] ?? '')) ?: $this->titulo,
+                'centavos' => $centavos,
+                'vencimento' => $vencimento,
+            ];
+        }
+
+        return $this->getErrorBag()->isEmpty() ? $parcelas : null;
     }
 
     public function baixar(int $id): void

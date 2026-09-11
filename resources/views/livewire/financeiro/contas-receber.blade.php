@@ -47,7 +47,7 @@
         </x-ui.card>
 
         <x-ui.card title="Lançar fatura"
-            subtitle="O valor é o total. Dividido em parcelas, a sobra de centavo vai para a primeira.">
+            subtitle="Gere as parcelas a partir do total, e ajuste linha a linha se a negociação foi outra.">
             <form wire:submit="lancar" class="grid gap-5">
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <x-ui.field label="Título" for="cr-titulo" required :error="$errors->first('titulo')">
@@ -79,7 +79,56 @@
                     </x-ui.field>
                 @endif
 
-                <div><x-ui.button type="submit">Lançar</x-ui.button></div>
+                <div class="flex flex-wrap gap-2">
+                    <x-ui.button type="button" variant="secondary" wire:click="gerarLinhas">
+                        Gerar parcelas
+                    </x-ui.button>
+                    <x-ui.button type="submit">Lançar</x-ui.button>
+                </div>
+
+                {{-- As parcelas viram linhas editáveis. É aqui que negociação de
+                     verdade cabe: entrada maior, saldo em datas irregulares. --}}
+                @if ($linhas !== [])
+                    <div class="border-t border-graphite-200 pt-5">
+                        <p class="etiqueta mb-3 text-graphite-500">
+                            Parcelas · total {{ App\Support\Dinheiro::formatar(collect($linhas)->sum(fn ($l) => App\Support\Dinheiro::emCentavos((string) ($l['valor'] ?? '')))) }}
+                        </p>
+
+                        <div class="grid gap-3">
+                            @foreach ($linhas as $i => $linha)
+                                <div class="grid min-w-0 gap-3 sm:grid-cols-[1fr_9rem_10rem_auto] sm:items-start">
+                                    <x-ui.field :label="$i === 0 ? 'Descrição' : null" :error="$errors->first('linhas.'.$i.'.descricao')">
+                                        <x-ui.input wire:model="linhas.{{ $i }}.descricao" maxlength="160" />
+                                    </x-ui.field>
+
+                                    <x-ui.field :label="$i === 0 ? 'Valor' : null" :error="$errors->first('linhas.'.$i.'.valor')">
+                                        <x-ui.input wire:model="linhas.{{ $i }}.valor" placeholder="R$ 0,00" />
+                                    </x-ui.field>
+
+                                    <x-ui.field :label="$i === 0 ? 'Vencimento' : null" :error="$errors->first('linhas.'.$i.'.vencimento')">
+                                        <x-ui.input type="date" wire:model="linhas.{{ $i }}.vencimento" />
+                                    </x-ui.field>
+
+                                    <div class="{{ $i === 0 ? 'sm:mt-6' : '' }}">
+                                        <x-ui.button type="button" variant="ghost" size="sm"
+                                            wire:click="removerLinha({{ $i }})"
+                                            aria-label="Remover parcela {{ $i + 1 }}">Remover</x-ui.button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-3">
+                            <x-ui.button type="button" variant="ghost" size="sm" wire:click="adicionarLinha">
+                                Acrescentar parcela
+                            </x-ui.button>
+                        </div>
+                    </div>
+                @endif
+
+                @error('linhas')
+                    <p class="text-xs text-danger-700">{{ $message }}</p>
+                @enderror
             </form>
         </x-ui.card>
     @endcan
