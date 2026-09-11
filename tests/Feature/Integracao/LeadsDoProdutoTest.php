@@ -124,7 +124,11 @@ it('paraTodos traz outro tenant, mesmo sem ser o tenant corrente do container', 
 
     app(TenantAtual::class)->definir($outro);
     Emitente::factory()->create(['cnpj' => '22333444000199', 'telefone' => '1140028922']);
-    User::factory()->create(['tenant_id' => $outro->id]);
+    User::factory()->create([
+        'tenant_id' => $outro->id,
+        'name' => 'Fernanda Lima',
+        'email' => 'fernanda@outradistribuidora.com.br',
+    ]);
 
     // Volta o container para o tenant que estava corrente, simulando uma
     // chamada feita de dentro de uma requisição comum.
@@ -136,6 +140,8 @@ it('paraTodos traz outro tenant, mesmo sem ser o tenant corrente do container', 
     expect($leads)->toHaveCount(2)
         ->and($leadDoOutro)->not->toBeNull()
         ->and($leadDoOutro['cnpj'])->toBe('22333444000199')
+        ->and($leadDoOutro['nome'])->toBe('Fernanda Lima')
+        ->and($leadDoOutro['email'])->toBe('fernanda@outradistribuidora.com.br')
         ->and($leadDoOutro['plano'])->toBe('gratuito');
 });
 
