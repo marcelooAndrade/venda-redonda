@@ -122,7 +122,8 @@
 
     {{-- ------------------------------------------------------------ herói --}}
     <section class="relative isolate overflow-hidden">
-        <div aria-hidden="true" class="deriva-um pointer-events-none absolute -top-32 right-[-10%] size-[34rem] rounded-full bg-primary-200/40 blur-3xl"></div>
+        <div aria-hidden="true" class="deriva-um pointer-events-none absolute -top-32 right-[-15%] size-[40rem] rounded-full bg-primary-300/50 blur-3xl"></div>
+        <div aria-hidden="true" class="deriva-dois pointer-events-none absolute -top-10 right-[5%] size-[24rem] rounded-full bg-ember-200/40 blur-3xl"></div>
         <div aria-hidden="true" class="deriva-dois pointer-events-none absolute top-64 -left-40 size-[26rem] rounded-full bg-graphite-100 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-6xl px-6 py-16 md:py-24">
@@ -183,48 +184,75 @@
                 {{-- A conferência. Cartão flutuante, com uma etiqueta solta por
                      cima para reforçar a leitura, do jeito que o resto da
                      página também usa cartão com sombra. --}}
-                <div class="relative min-w-0">
-                    <span aria-hidden="true" data-entra="6" class="flutua absolute -top-4 -left-4 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
+                <div class="relative min-w-0 pb-4 pl-4 pt-6">
+                    {{-- Cartão fantasma atrás, só para dar profundidade de pilha:
+                         decorativo, sem conteúdo lido por leitor de tela. --}}
+                    <div aria-hidden="true" data-entra="5" class="absolute inset-0 -rotate-2 rounded-3xl border border-graphite-100 bg-white/70 shadow-lg"></div>
+
+                    <span aria-hidden="true" data-entra="6" class="flutua absolute -top-2 left-2 z-10 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary-600">{!! $icones['upload'] !!}</svg>
                         Baixa automática
                     </span>
 
-                    <figure data-entra="5" class="rounded-3xl border border-graphite-100 bg-white p-6 shadow-xl shadow-graphite-200/50 sm:p-7">
-                        <figcaption class="text-sm text-graphite-500">
-                            Conferência de estoque, exemplo
-                            <span class="mt-1 block font-semibold text-graphite-700">Cerveja 600&nbsp;ml, caixa com 12</span>
-                        </figcaption>
+                    <figure data-entra="5" class="relative rounded-3xl border border-graphite-100 bg-white shadow-xl shadow-graphite-200/60 sm:p-1">
+                        <div class="flex items-center gap-1.5 border-b border-graphite-100 px-6 py-3.5">
+                            <span aria-hidden="true" class="size-2.5 rounded-full bg-danger-300"></span>
+                            <span aria-hidden="true" class="size-2.5 rounded-full bg-ember-300"></span>
+                            <span aria-hidden="true" class="size-2.5 rounded-full bg-success-300"></span>
+                            <span class="ml-2 text-xs font-semibold uppercase tracking-[0.08em] text-graphite-500">Painel de estoque</span>
+                        </div>
 
-                        <dl class="mt-6 divide-y divide-graphite-100 border-y border-graphite-100">
-                            <div class="flex items-baseline justify-between gap-4 py-3">
-                                <dt class="text-graphite-500">O sistema diz</dt>
-                                <dd class="num text-lg font-semibold text-graphite-800">200</dd>
-                            </div>
-                            <div class="flex items-baseline justify-between gap-4 py-3">
-                                <dt class="text-graphite-500">O galpão tem</dt>
-                                <dd class="num text-lg font-semibold text-graphite-800">200</dd>
-                            </div>
-                            <div class="flex items-baseline justify-between gap-4 py-3">
-                                <dt class="font-semibold text-graphite-900">Diferença</dt>
-                                <dd class="flex items-center gap-2.5">
-                                    <span class="num text-lg font-bold text-graphite-900">0</span>
-                                    <span class="rounded-full bg-primary-600 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-on-primary">
-                                        Confere
-                                    </span>
-                                </dd>
-                            </div>
-                        </dl>
+                        <div class="p-6 sm:p-7">
+                            <figcaption class="text-sm text-graphite-500">
+                                Conferência de estoque, exemplo
+                                <span class="mt-1 block font-semibold text-graphite-700">Cerveja 600&nbsp;ml, caixa com 12</span>
+                            </figcaption>
 
-                        <p class="mt-5 text-sm leading-relaxed text-graphite-500">
-                            A compra entra pelo XML do fornecedor e a baixa acontece no
-                            momento da emissão. A diferença não é corrigida depois: ela
-                            nasce zero.
-                        </p>
+                            <dl class="mt-6 divide-y divide-graphite-100 border-y border-graphite-100">
+                                <div class="flex items-center justify-between gap-4 py-3">
+                                    <dt class="flex items-center gap-2 text-graphite-500">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4 text-graphite-400" aria-hidden="true">{!! $icones['painel'] !!}</svg>
+                                        O sistema diz
+                                    </dt>
+                                    <dd class="num text-lg font-semibold text-graphite-800">200</dd>
+                                </div>
+                                <div class="flex items-center justify-between gap-4 py-3">
+                                    <dt class="flex items-center gap-2 text-graphite-500">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4 text-graphite-400" aria-hidden="true">{!! $icones['caixas'] !!}</svg>
+                                        O galpão tem
+                                    </dt>
+                                    <dd class="num text-lg font-semibold text-graphite-800">200</dd>
+                                </div>
+                                <div class="flex items-center justify-between gap-4 py-3">
+                                    <dt class="flex items-center gap-2 font-semibold text-graphite-900">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4 text-primary-600" aria-hidden="true">{!! $icones['check'] !!}</svg>
+                                        Diferença
+                                    </dt>
+                                    <dd class="flex items-center gap-2.5">
+                                        <span class="num text-lg font-bold text-graphite-900">0</span>
+                                        <span class="rounded-full bg-primary-600 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-on-primary">
+                                            Confere
+                                        </span>
+                                    </dd>
+                                </div>
+                            </dl>
+
+                            <p class="mt-5 text-sm leading-relaxed text-graphite-500">
+                                A compra entra pelo XML do fornecedor e a baixa acontece no
+                                momento da emissão. A diferença não é corrigida depois: ela
+                                nasce zero.
+                            </p>
+                        </div>
                     </figure>
 
-                    <span aria-hidden="true" data-entra="6" class="flutua absolute -bottom-4 -right-3 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
+                    <span aria-hidden="true" data-entra="6" class="flutua absolute -bottom-2 right-0 z-10 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-success-600">{!! $icones['check'] !!}</svg>
                         Diferença zero
+                    </span>
+
+                    <span aria-hidden="true" data-entra="6" class="flutua absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 translate-x-full rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg lg:inline-flex lg:items-center lg:gap-1.5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary-600">{!! $icones['escudo'] !!}</svg>
+                        Tributo no servidor
                     </span>
                 </div>
             </div>

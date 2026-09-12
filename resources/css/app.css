@@ -317,6 +317,20 @@ html {
     animation-delay: 1.1s;
 }
 
+/*
+ | `animation` é shorthand: duas regras de mesma especificidade que a
+ | declaram brigam, e a última do arquivo vence a propriedade inteira, não
+ | soma. Um selo com `[data-entra]` e `.flutua` ao mesmo tempo perdia a
+ | entrada e ficava com opacity: 0 para sempre, porque só a animação de
+ | flutuar sobrevivia. A regra combinada abaixo declara as duas de uma vez,
+ | então nenhuma apaga a outra.
+ */
+[data-entra].flutua {
+    animation: entra-suave 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards, flutuar-suave 4.5s ease-in-out infinite;
+}
+
+[data-entra='6'].flutua { animation-delay: 680ms, 1.6s; }
+
 @keyframes fluxo-conexao {
     0% { transform: translateX(-10rem); opacity: 0; }
     12% { opacity: 1; }
