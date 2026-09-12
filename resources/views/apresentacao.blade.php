@@ -267,7 +267,8 @@
     {{-- ------------------------------------------------------------ dores --}}
     <section data-revelar class="border-t border-graphite-100 bg-graphite-50">
         <div class="mx-auto max-w-6xl px-6 py-16">
-            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+            <p class="etiqueta text-primary-700">Por que importa</p>
+            <h2 class="mt-2 font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                 Isso não chega organizado sozinho
             </h2>
             <p class="mt-3 max-w-[58ch] text-graphite-600">
@@ -295,24 +296,29 @@
     {{-- --------------------------------------------------------- recursos --}}
     <section id="recursos" data-revelar class="border-t border-graphite-100">
         <div class="mx-auto max-w-6xl px-6 py-16">
-            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+            <p class="etiqueta text-primary-700">O que ele faz</p>
+            <h2 class="mt-2 font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                 Sete coisas, e elas dependem uma da outra
             </h2>
 
             <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ([
-                    ['escudo', 'A nota sai certa de primeira', 'ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, nunca no navegador. Se a SEFAZ recusar, o sistema traduz o código do erro em português e diz o que fazer.'],
-                    ['caixas', 'O estoque bate com a contagem física', 'Movimento nunca é editado nem apagado. Correção é lançamento de estorno, então o Kardex continua sendo registro fiel de tudo o que entrou e saiu.'],
-                    ['upload', 'A compra entra pelo XML', 'Solta, em lote ou em ZIP. O fornecedor nasce do próprio arquivo, sem digitar de novo o que já veio na nota.'],
-                    ['dinheiro', 'Contas a pagar e a receber, com baixa', 'Título com vencimento por parcela, baixa lançada no caixa, cobrança por Pix quando a chave está cadastrada.'],
-                    ['predio', 'NFS-e de Araras, pelo SIGISS', 'Emitida a partir da parcela da fatura, com PDF, XML e cancelamento.'],
-                    ['painel', 'Um painel que abre com o que trava', 'Pendência antes de faturamento, porque reemitir sem saber se já saiu duplica nota.'],
-                    ['pasta', 'O contador recebe fechado', 'O período inteiro em um ZIP: emitidas, canceladas, cartas de correção, inutilizações e entradas, com resumo que abre no Excel em português sem acento quebrado.'],
-                ] as [$icone, $titulo, $texto])
+                    ['escudo', 'A nota sai certa de primeira', 'ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, nunca no navegador. Se a SEFAZ recusar, o sistema traduz o código do erro em português e diz o que fazer.', 'Cálculo no servidor'],
+                    ['caixas', 'O estoque bate com a contagem física', 'Movimento nunca é editado nem apagado. Correção é lançamento de estorno, então o Kardex continua sendo registro fiel de tudo o que entrou e saiu.', 'Kardex fiel'],
+                    ['upload', 'A compra entra pelo XML', 'Solta, em lote ou em ZIP. O fornecedor nasce do próprio arquivo, sem digitar de novo o que já veio na nota.', 'Sem digitar de novo'],
+                    ['dinheiro', 'Contas a pagar e a receber, com baixa', 'Título com vencimento por parcela, baixa lançada no caixa, cobrança por Pix quando a chave está cadastrada.', 'Pix incluso'],
+                    ['predio', 'NFS-e de Araras, pelo SIGISS', 'Emitida a partir da parcela da fatura, com PDF, XML e cancelamento.', 'PDF e XML'],
+                    ['painel', 'Um painel que abre com o que trava', 'Pendência antes de faturamento, porque reemitir sem saber se já saiu duplica nota.', 'Pendência primeiro'],
+                    ['pasta', 'O contador recebe fechado', 'O período inteiro em um ZIP: emitidas, canceladas, cartas de correção, inutilizações e entradas, com resumo que abre no Excel em português sem acento quebrado.', 'Um ZIP só'],
+                ] as [$icone, $titulo, $texto, $selo])
                     <div class="rounded-2xl border border-graphite-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
                         {!! $iconeChip($icone) !!}
                         <h3 class="mt-4 font-display text-base font-bold text-graphite-900">{{ $titulo }}</h3>
                         <p class="mt-3 text-sm leading-relaxed text-graphite-600">{{ $texto }}</p>
+                        <span class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-graphite-50 px-2.5 py-1 text-[11px] font-semibold text-graphite-600">
+                            <span aria-hidden="true" class="size-1.5 rounded-full bg-primary-600"></span>
+                            {{ $selo }}
+                        </span>
                     </div>
                 @endforeach
             </div>
@@ -322,7 +328,8 @@
     {{-- ----------------------------------------------- sequência de fato --}}
     <section id="sequencia" data-revelar class="border-t border-graphite-100 bg-graphite-50">
         <div class="mx-auto max-w-6xl px-6 py-16">
-            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+            <p class="etiqueta text-primary-700">Como funciona</p>
+            <h2 class="mt-2 font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                 Da compra até o contador
             </h2>
             <p class="mt-3 max-w-[58ch] text-graphite-600">
@@ -335,12 +342,12 @@
 
                 <ol class="relative grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-5">
                     @foreach ([
-                        ['upload', 'Chega a compra', 'O XML do fornecedor entra solto, em lote ou em ZIP. O fornecedor é criado a partir do próprio arquivo.'],
-                        ['check', 'Confere quem é o quê', 'O produto do fornecedor é ligado ao seu. Na segunda nota do mesmo fornecedor, ele já entra reconhecido.'],
-                        ['caixas', 'Entra no estoque', 'Só depois da sua confirmação. Registrar e confirmar são etapas separadas de propósito.'],
-                        ['recibo', 'Sai a venda', 'A nota é montada, os tributos são calculados no servidor e a baixa acontece na transmissão.'],
-                        ['pasta', 'Fecha o mês', 'O pacote do período sai pronto para o contador, sem ninguém montar pasta à mão.'],
-                    ] as $i => [$icone, $titulo, $texto])
+                        ['upload', 'Chega a compra', 'O XML do fornecedor entra solto, em lote ou em ZIP. O fornecedor é criado a partir do próprio arquivo.', 'XML recebido'],
+                        ['check', 'Confere quem é o quê', 'O produto do fornecedor é ligado ao seu. Na segunda nota do mesmo fornecedor, ele já entra reconhecido.', 'Vínculo salvo'],
+                        ['caixas', 'Entra no estoque', 'Só depois da sua confirmação. Registrar e confirmar são etapas separadas de propósito.', 'Kardex atualizado'],
+                        ['recibo', 'Sai a venda', 'A nota é montada, os tributos são calculados no servidor e a baixa acontece na transmissão.', 'Nota autorizada'],
+                        ['pasta', 'Fecha o mês', 'O pacote do período sai pronto para o contador, sem ninguém montar pasta à mão.', 'ZIP pronto'],
+                    ] as $i => [$icone, $titulo, $texto, $selo])
                         <li class="min-w-0">
                             <span class="num inline-flex size-10 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-on-primary">
                                 {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}
@@ -348,6 +355,10 @@
                             {!! $iconeChip($icone, 'size-9') !!}
                             <h3 class="mt-3 font-display text-base font-bold text-graphite-900">{{ $titulo }}</h3>
                             <p class="mt-2 text-sm leading-relaxed text-graphite-600">{{ $texto }}</p>
+                            <span class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-graphite-50 px-2.5 py-1 text-[11px] font-semibold text-graphite-600">
+                                <span aria-hidden="true" class="size-1.5 rounded-full bg-primary-600"></span>
+                                {{ $selo }}
+                            </span>
                         </li>
                     @endforeach
                 </ol>
@@ -362,7 +373,8 @@
                 <div class="flex flex-wrap items-start gap-6">
                     {!! $iconeChip('escudo', 'size-12') !!}
                     <div class="min-w-0 flex-1">
-                        <h2 class="max-w-[24ch] font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+                        <p class="etiqueta text-primary-700">Confiança</p>
+                        <h2 class="mt-2 max-w-[24ch] font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                             Quem escreve a regra fiscal é o seu contador
                         </h2>
                         <div class="mt-6 min-w-0 max-w-[62ch] space-y-4 text-graphite-700">
@@ -387,10 +399,72 @@
         </div>
     </section>
 
+    {{-- ------------------------------------------------------------ segurança --}}
+    <section data-revelar class="border-t border-graphite-100 bg-graphite-50">
+        <div class="mx-auto max-w-6xl px-6 py-16">
+            <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+                <div class="min-w-0">
+                    <p class="etiqueta text-primary-700">Segurança</p>
+                    <h2 class="mt-2 font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+                        Seus dados não circulam entre clientes
+                    </h2>
+                    <p class="mt-4 max-w-[52ch] leading-relaxed text-graphite-600">
+                        O sistema isola cada emitente por dentro, do banco ao arquivo.
+                        Certificado digital, senha e XML ficam em disco privado, nunca em
+                        log, nunca visíveis para outro cliente.
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap gap-2">
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-graphite-200 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-700">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary-600" aria-hidden="true">{!! $icones['pasta'] !!}</svg>
+                            Isolamento por emitente
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-graphite-200 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-700">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary-600" aria-hidden="true">{!! $icones['escudo'] !!}</svg>
+                            Certificado nunca logado
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-graphite-200 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-700">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary-600" aria-hidden="true">{!! $icones['relogio'] !!}</svg>
+                            Homologação por padrão
+                        </span>
+                    </div>
+                </div>
+
+                <div class="rounded-3xl border border-graphite-100 bg-white shadow-xl shadow-graphite-200/50">
+                    <div class="flex items-center gap-1.5 border-b border-graphite-100 px-6 py-3.5">
+                        <span aria-hidden="true" class="size-2.5 rounded-full bg-danger-300"></span>
+                        <span aria-hidden="true" class="size-2.5 rounded-full bg-ember-300"></span>
+                        <span aria-hidden="true" class="size-2.5 rounded-full bg-success-300"></span>
+                        <span class="ml-2 text-xs font-semibold uppercase tracking-[0.08em] text-graphite-500">Painel de segurança</span>
+                    </div>
+
+                    <ul class="divide-y divide-graphite-100 px-6">
+                        @foreach ([
+                            ['pasta', 'Isolamento por emitente', 'Cada consulta filtra pelo emitente atual', 'Ativo'],
+                            ['escudo', 'Certificado em disco privado', 'Nunca em log, nunca no navegador', 'Protegido'],
+                            ['relogio', 'Ambiente de homologação', 'Produção só por ativação manual', 'Padrão'],
+                            ['check', 'Alerta de vencimento', 'Avisos em 30, 15 e 7 dias', 'Ativo'],
+                        ] as [$icone, $titulo, $texto, $status])
+                            <li class="flex items-center gap-3 py-4">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-5 shrink-0 text-graphite-400" aria-hidden="true">{!! $icones[$icone] !!}</svg>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-sm font-semibold text-graphite-900">{{ $titulo }}</span>
+                                    <span class="block text-xs text-graphite-500">{{ $texto }}</span>
+                                </span>
+                                <span class="shrink-0 rounded-full bg-success-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.05em] text-success-700">{{ $status }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ------------------------------------------------------------ planos --}}
     <section id="planos" data-revelar class="border-t border-graphite-100">
         <div class="mx-auto max-w-6xl px-6 py-16">
-            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+            <p class="etiqueta text-primary-700">Planos</p>
+            <h2 class="mt-2 font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                 Comece pelo gratuito
             </h2>
             <p class="mt-3 max-w-[58ch] text-graphite-600">
@@ -399,7 +473,10 @@
             </p>
 
             <div class="mt-10 grid gap-6 sm:grid-cols-2">
-                <div class="rounded-3xl border border-graphite-100 bg-white p-7 shadow-sm sm:p-8">
+                <div class="relative rounded-3xl border border-graphite-100 bg-white p-7 shadow-sm sm:p-8">
+                    <span class="absolute right-7 top-7 flex size-10 items-center justify-center rounded-full bg-primary-50 text-primary-600 sm:right-8 sm:top-8">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true">{!! $icones['check'] !!}</svg>
+                    </span>
                     <p class="etiqueta text-primary-700">Gratuito</p>
                     <p class="mt-2 text-sm text-graphite-500">Entra pelo endereço da Venda Redonda.</p>
                     <ul class="mt-6 space-y-3 text-sm text-graphite-700">
@@ -414,7 +491,10 @@
                     </a>
                 </div>
 
-                <div class="rounded-3xl border border-graphite-100 bg-graphite-50 p-7 sm:p-8">
+                <div class="relative rounded-3xl border border-graphite-100 bg-graphite-50 p-7 sm:p-8">
+                    <span class="absolute right-7 top-7 flex size-10 items-center justify-center rounded-full bg-white text-graphite-500 sm:right-8 sm:top-8">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true">{!! $icones['predio'] !!}</svg>
+                    </span>
                     <p class="etiqueta text-graphite-500">Avançado</p>
                     <p class="mt-2 text-sm text-graphite-500">Domínio próprio, com a marca do cliente já na tela de login.</p>
                     <ul class="mt-6 space-y-3 text-sm text-graphite-700">
@@ -434,7 +514,8 @@
     {{-- ------------------------------------------------------ o que falta --}}
     <section data-revelar class="border-t border-graphite-100 bg-graphite-50">
         <div class="mx-auto max-w-6xl px-6 py-16">
-            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+            <p class="etiqueta text-primary-700">Transparência</p>
+            <h2 class="mt-2 font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                 O que ele ainda não faz
             </h2>
             <p class="mt-3 max-w-[58ch] text-graphite-600">
@@ -469,25 +550,29 @@
     {{-- --------------------------------------------------------------- faq --}}
     <section id="faq" data-revelar class="border-t border-graphite-100">
         <div class="mx-auto max-w-3xl px-6 py-16">
-            <h2 class="text-center font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+            <p class="etiqueta text-center text-primary-700">Perguntas</p>
+            <h2 class="mt-2 text-center font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
                 Perguntas frequentes
             </h2>
 
             <div class="mt-8 space-y-3">
                 @foreach ([
-                    ['Preciso trocar de sistema fiscal para usar?', 'Sim, é o sistema que emite a nota. Não precisa trocar o resto: importa o que já existe por XML.'],
-                    ['Meu contador consegue mexer na regra fiscal sozinho?', 'Sim. Tela própria, permissão própria, sem depender de programador para mudar alíquota ou CST.'],
-                    ['Serve para matriz e filial?', 'Sim. Um tenant pode ter mais de um emitente, cada um com CNPJ e certificado próprios.'],
-                    ['O que ainda falta no sistema?', 'Está listado na seção acima, sem esconder.'],
-                    ['O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço da Venda Redonda, sem domínio próprio.'],
-                    ['Onde ficam os meus dados?', 'No disco privado da conta, isolado por emitente. Certificado e senha nunca são logados.'],
-                ] as [$pergunta, $resposta])
+                    ['upload', 'Preciso trocar de sistema fiscal para usar?', 'Sim, é o sistema que emite a nota. Não precisa trocar o resto: importa o que já existe por XML.'],
+                    ['escudo', 'Meu contador consegue mexer na regra fiscal sozinho?', 'Sim. Tela própria, permissão própria, sem depender de programador para mudar alíquota ou CST.'],
+                    ['predio', 'Serve para matriz e filial?', 'Sim. Um tenant pode ter mais de um emitente, cada um com CNPJ e certificado próprios.'],
+                    ['relogio', 'O que ainda falta no sistema?', 'Está listado na seção acima, sem esconder.'],
+                    ['dinheiro', 'O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço da Venda Redonda, sem domínio próprio.'],
+                    ['pasta', 'Onde ficam os meus dados?', 'No disco privado da conta, isolado por emitente. Certificado e senha nunca são logados.'],
+                ] as [$icone, $pergunta, $resposta])
                     <details class="group rounded-2xl border border-graphite-100 bg-white px-6 py-5 open:shadow-sm">
-                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-bold text-graphite-900 marker:content-none">
-                            {{ $pergunta }}
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 marker:content-none">
+                            <span class="flex items-center gap-3">
+                                {!! $iconeChip($icone, 'size-9') !!}
+                                <span class="font-display text-base font-bold text-graphite-900">{{ $pergunta }}</span>
+                            </span>
                             <span aria-hidden="true" class="flex size-6 shrink-0 items-center justify-center rounded-full bg-graphite-50 text-graphite-500 transition-transform group-open:rotate-45">+</span>
                         </summary>
-                        <p class="mt-3 max-w-[60ch] text-sm leading-relaxed text-graphite-600">{{ $resposta }}</p>
+                        <p class="mt-3 max-w-[60ch] pl-12 text-sm leading-relaxed text-graphite-600">{{ $resposta }}</p>
                     </details>
                 @endforeach
             </div>
@@ -497,24 +582,37 @@
     {{-- ------------------------------------------------------------- ação --}}
     <section data-revelar class="border-t border-graphite-100">
         <div class="mx-auto max-w-6xl px-6 py-16">
-            <div class="relative isolate overflow-hidden rounded-4xl border border-graphite-100 bg-graphite-50 px-8 py-14 text-center sm:px-14">
-                <div aria-hidden="true" class="deriva-um pointer-events-none absolute -top-20 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl"></div>
+            <div class="relative isolate overflow-hidden rounded-4xl bg-primary-600 px-8 py-16 text-center sm:px-14">
+                <div aria-hidden="true" class="deriva-um pointer-events-none absolute -top-24 left-1/2 size-[30rem] -translate-x-1/2 rounded-full bg-primary-400/50 blur-3xl"></div>
+
+                <span aria-hidden="true" class="flutua absolute bottom-6 right-6 hidden rounded-full border border-graphite-900/10 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-700 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-success-600">{!! $icones['check'] !!}</svg>
+                    Diferença zero
+                </span>
 
                 <div class="relative">
-                    <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+                    <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-on-primary sm:text-3xl">
                         Da nota ao caixa, a venda fecha redonda
                     </h2>
-                    <p class="mt-3 text-graphite-600">Comece grátis, ou entre se já tem acesso.</p>
+                    <p class="mt-3 text-on-primary">Comece grátis, ou entre se já tem acesso.</p>
 
                     <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
                         <a href="{{ route('register') }}"
-                           class="inline-flex min-h-12 items-center rounded-full bg-primary-600 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-on-primary shadow-md transition-colors hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                           class="inline-flex min-h-12 items-center rounded-full bg-graphite-900 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition-colors hover:bg-graphite-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                             Criar conta grátis
                         </a>
                         <a href="{{ route('login') }}"
-                           class="inline-flex min-h-12 items-center rounded-full border border-graphite-200 bg-white px-5 text-[13px] font-semibold text-graphite-700 transition-colors hover:bg-graphite-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                           class="inline-flex min-h-12 items-center rounded-full border border-graphite-900/25 bg-white px-5 text-[13px] font-semibold text-graphite-800 transition-colors hover:bg-graphite-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                             Entrar no sistema
                         </a>
+                    </div>
+
+                    <div class="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-on-primary">
+                        <span>Cadastro imediato, sem contrato</span>
+                        <span aria-hidden="true">·</span>
+                        <span>Dados isolados por emitente</span>
+                        <span aria-hidden="true">·</span>
+                        <span>Homologação por padrão</span>
                     </div>
                 </div>
             </div>
@@ -523,13 +621,46 @@
 </main>
 
 {{-- ------------------------------------------------------------- rodapé --}}
-<footer class="border-t border-graphite-100">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-graphite-500">
-        <span class="flex items-center gap-2.5">
-            <x-marca-padrao class="size-5 text-graphite-700" />
-            Venda Redonda
-        </span>
-        <span>Fiscal · Estoque · Financeiro</span>
+<footer class="border-t border-graphite-100 bg-graphite-50">
+    <div class="mx-auto max-w-6xl px-6 py-14">
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr]">
+            <div class="max-w-[36ch]">
+                <span class="flex items-center gap-2.5">
+                    <x-marca-padrao class="size-6 text-graphite-900" />
+                    <span class="font-display text-sm font-extrabold uppercase tracking-[0.04em] text-graphite-900">Venda Redonda</span>
+                </span>
+                <p class="mt-3 text-sm leading-relaxed text-graphite-500">
+                    Sistema fiscal, de estoque e financeiro para empresas que compram,
+                    vendem e emitem nota fiscal.
+                </p>
+                <span class="mt-4 inline-flex items-center gap-1.5 rounded-full border border-graphite-200 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600">
+                    <span aria-hidden="true" class="size-1.5 rounded-full bg-primary-600"></span>
+                    Fiscal · Estoque · Financeiro
+                </span>
+            </div>
+
+            <div>
+                <p class="etiqueta text-graphite-500">Produto</p>
+                <ul class="mt-4 space-y-2.5 text-sm text-graphite-600">
+                    <li><a href="#recursos" class="transition-colors hover:text-graphite-900">Recursos</a></li>
+                    <li><a href="#sequencia" class="transition-colors hover:text-graphite-900">Sequência</a></li>
+                    <li><a href="#planos" class="transition-colors hover:text-graphite-900">Planos</a></li>
+                    <li><a href="#faq" class="transition-colors hover:text-graphite-900">Perguntas frequentes</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="etiqueta text-graphite-500">Conta</p>
+                <ul class="mt-4 space-y-2.5 text-sm text-graphite-600">
+                    <li><a href="{{ route('register') }}" class="transition-colors hover:text-graphite-900">Criar conta grátis</a></li>
+                    <li><a href="{{ route('login') }}" class="transition-colors hover:text-graphite-900">Entrar no sistema</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-12 border-t border-graphite-200 pt-6 text-xs text-graphite-500">
+            © {{ now()->year }} Venda Redonda. Todos os direitos reservados.
+        </div>
     </div>
 </footer>
 
