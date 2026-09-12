@@ -235,6 +235,50 @@
         </div>
     </section>
 
+    {{-- ------------------------------------------------------------ planos --}}
+    <section data-revelar class="border-t border-white/10">
+        <div class="mx-auto max-w-5xl px-6 py-16">
+            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
+                Comece pelo gratuito
+            </h2>
+            <p class="mt-3 max-w-[58ch] text-graphite-400">
+                Os dois planos têm o mesmo sistema fiscal, de estoque e
+                financeiro. O que muda é a porta de entrada.
+            </p>
+
+            <div class="mt-10 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-2">
+                <div class="bg-graphite-900 p-7">
+                    <p class="etiqueta text-primary-500">Gratuito</p>
+                    <p class="mt-2 text-sm text-graphite-400">Entra pelo endereço da Venda Redonda.</p>
+                    <ul class="mt-6 space-y-3 text-sm text-graphite-300">
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Cadastro imediato, sem contrato</li>
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Emissão de NF-e e de NFS-e</li>
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Estoque como razão imutável</li>
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Contas a pagar e a receber</li>
+                    </ul>
+                    <a href="{{ route('register') }}"
+                       class="mt-8 inline-flex min-h-11 items-center rounded-md bg-graphite-50 px-5 text-[13px] font-bold uppercase tracking-[0.05em] text-graphite-900 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                        Criar conta grátis
+                    </a>
+                </div>
+
+                <div class="bg-graphite-900 p-7">
+                    <p class="etiqueta text-graphite-400">Avançado</p>
+                    <p class="mt-2 text-sm text-graphite-400">Domínio próprio, com a marca do cliente já na tela de login.</p>
+                    <ul class="mt-6 space-y-3 text-sm text-graphite-300">
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Tudo do plano gratuito</li>
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Domínio próprio</li>
+                        <li class="flex gap-2.5"><span aria-hidden="true" class="mt-1.5 size-1.5 shrink-0 rounded-full bg-graphite-600"></span> Marca do cliente na tela de login</li>
+                    </ul>
+                    <p class="mt-8 text-sm leading-relaxed text-graphite-400">
+                        Comece no gratuito. O avançado é ativado para quem já é
+                        cliente.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ------------------------------------------------- regra é do contador --}}
     <section data-revelar class="border-t border-white/10">
         <div class="mx-auto max-w-5xl px-6 py-16">
@@ -278,7 +322,7 @@
             <ul class="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-2">
                 @foreach ([
                     'DRE e fechamento do mês',
-                    'Fluxo de caixa projetado',
+                    'Tesouraria: caixa livre, reserva, meses de sobrevivência',
                     'Distribuição DF-e e manifestação do destinatário',
                     'Relatórios gerenciais',
                     'Cálculo de DIFAL',
@@ -292,9 +336,9 @@
             </ul>
 
             <p class="mt-8 max-w-[58ch] text-sm leading-relaxed text-graphite-300">
-                Contas a pagar e a receber já funcionam, com baixa lançada no caixa.
-                O que falta é a leitura do resultado: DRE e projeção. Até ela existir a
-                assinatura da marca diz o que o sistema entrega hoje.
+                O núcleo do financeiro já funciona, por isso a assinatura já diz Financeiro.
+                O que falta é a leitura do resultado: DRE e
+                tesouraria.
             </p>
         </div>
     </section>

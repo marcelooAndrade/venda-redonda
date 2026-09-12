@@ -66,3 +66,30 @@ it('o link ver o que ele faz aponta para a secao de recursos', function () {
         ->and($html)->toContain('id="recursos"')
         ->and($html)->not->toContain('id="o-que-faz"');
 });
+
+it('mostra os dois planos reais, e a coluna avancado nao tem botao de cadastro', function () {
+    $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
+
+    expect($html)->toContain('>Gratuito<')
+        ->and($html)->toContain('>Avançado<')
+        ->and($html)->toContain('Comece no gratuito. O avançado é ativado para quem já é');
+
+    $inicioAvancado = strpos($html, '>Avançado<');
+    $fimSecao = strpos($html, '</section>', $inicioAvancado);
+    $colunaAvancado = substr($html, $inicioAvancado, $fimSecao - $inicioAvancado);
+
+    expect($colunaAvancado)->not->toContain('href="http://vendaredonda.com.br/register"');
+});
+
+it('a lista do que falta cita tesouraria em vez de fluxo de caixa projetado', function () {
+    $this->get('http://vendaredonda.com.br/')
+        ->assertOk()
+        ->assertSee('Tesouraria: caixa livre, reserva, meses de sobrevivência')
+        ->assertDontSee('Fluxo de caixa projetado');
+});
+
+it('o paragrafo final de o que falta reconhece que o financeiro ja existe', function () {
+    $this->get('http://vendaredonda.com.br/')
+        ->assertOk()
+        ->assertSee('O núcleo do financeiro já funciona, por isso a assinatura já diz Financeiro.');
+});
