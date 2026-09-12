@@ -63,3 +63,40 @@ it('nega virada para producao a quem nao for administrador', function () {
 
     expect($user->can('emitente.ativar-producao'))->toBeFalse();
 });
+
+it('faturamento ve, emite e cancela NFS-e, mas nao configura', function () {
+    $user = User::factory()->create();
+    setPermissionsTeamId(Emitente::factory()->create()->id);
+    $user->assignRole(Perfil::Faturamento->value);
+
+    expect($user->can('nfse.ver'))->toBeTrue()
+        ->and($user->can('nfse.emitir'))->toBeTrue()
+        ->and($user->can('nfse.cancelar'))->toBeTrue()
+        ->and($user->can('nfse.configurar'))->toBeFalse();
+});
+
+it('contador e consulta so veem NFS-e', function (string $perfil) {
+    $user = User::factory()->create();
+    setPermissionsTeamId(Emitente::factory()->create()->id);
+    $user->assignRole($perfil);
+
+    expect($user->can('nfse.ver'))->toBeTrue()
+        ->and($user->can('nfse.emitir'))->toBeFalse()
+        ->and($user->can('nfse.configurar'))->toBeFalse();
+})->with([Perfil::Contador->value, Perfil::Consulta->value]);
+
+it('estoque nao ve NFS-e', function () {
+    $user = User::factory()->create();
+    setPermissionsTeamId(Emitente::factory()->create()->id);
+    $user->assignRole(Perfil::Estoque->value);
+
+    expect($user->can('nfse.ver'))->toBeFalse();
+});
+
+it('o administrador configura a NFS-e', function () {
+    $user = User::factory()->create();
+    setPermissionsTeamId(Emitente::factory()->create()->id);
+    $user->assignRole(Perfil::Administrador->value);
+
+    expect($user->can('nfse.configurar'))->toBeTrue();
+});
