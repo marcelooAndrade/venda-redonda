@@ -102,11 +102,11 @@ it('mostra seis perguntas frequentes em details, sem javascript de acordeao', fu
         ->and($html)->toContain('Onde ficam os meus dados?');
 });
 
-it('o cta final tem os dois links, e o total na pagina bate com hero mais planos mais final', function () {
+it('o cta final tem os dois links, e o total na pagina bate com cabecalho mais hero mais planos mais final', function () {
     $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
 
-    // Hero (1) + coluna Gratuito dos planos (1) + CTA final (1).
-    expect(substr_count($html, 'href="http://vendaredonda.com.br/register"'))->toBe(3)
+    // Cabeçalho (1) + hero (1) + coluna Gratuito dos planos (1) + CTA final (1).
+    expect(substr_count($html, 'href="http://vendaredonda.com.br/register"'))->toBe(4)
         // Cabeçalho (1) + hero (1) + CTA final (1).
         ->and(substr_count($html, 'href="http://vendaredonda.com.br/login"'))->toBe(3);
 });
