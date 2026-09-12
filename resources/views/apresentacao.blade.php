@@ -343,6 +343,34 @@
         </div>
     </section>
 
+    {{-- --------------------------------------------------------------- faq --}}
+    <section data-revelar class="border-t border-white/10">
+        <div class="mx-auto max-w-5xl px-6 py-16">
+            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
+                Perguntas frequentes
+            </h2>
+
+            <div class="mt-8 divide-y divide-white/10 border-y border-white/10">
+                @foreach ([
+                    ['Preciso trocar de sistema fiscal para usar?', 'Sim, é o sistema que emite a nota. Não precisa trocar o resto: importa o que já existe por XML.'],
+                    ['Meu contador consegue mexer na regra fiscal sozinho?', 'Sim. Tela própria, permissão própria, sem depender de programador para mudar alíquota ou CST.'],
+                    ['Serve para matriz e filial?', 'Sim. Um tenant pode ter mais de um emitente, cada um com CNPJ e certificado próprios.'],
+                    ['O que ainda falta no sistema?', 'Está listado na seção acima, sem esconder.'],
+                    ['O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço da Venda Redonda, sem domínio próprio.'],
+                    ['Onde ficam os meus dados?', 'No disco privado da conta, isolado por emitente. Certificado e senha nunca são logados.'],
+                ] as [$pergunta, $resposta])
+                    <details class="group py-5">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base font-bold text-graphite-50 marker:content-none">
+                            {{ $pergunta }}
+                            <span aria-hidden="true" class="shrink-0 text-graphite-500 transition-transform group-open:rotate-45">+</span>
+                        </summary>
+                        <p class="mt-3 max-w-[60ch] text-sm leading-relaxed text-graphite-400">{{ $resposta }}</p>
+                    </details>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
     {{-- ------------------------------------------------------------- ação --}}
     <section data-revelar class="border-t border-white/10">
         <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-6 px-6 py-16">
@@ -350,12 +378,18 @@
                 <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
                     Da nota ao caixa, a venda fecha redonda
                 </h2>
-                <p class="mt-2 text-graphite-400">Já tem acesso? Entre pelo sistema.</p>
+                <p class="mt-2 text-graphite-400">Comece grátis, ou entre se já tem acesso.</p>
             </div>
-            <a href="{{ route('login') }}"
-               class="inline-flex min-h-12 items-center rounded-md bg-graphite-50 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-graphite-900 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
-                Entrar no sistema
-            </a>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ route('register') }}"
+                   class="inline-flex min-h-12 items-center rounded-md bg-graphite-50 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-graphite-900 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                    Criar conta grátis
+                </a>
+                <a href="{{ route('login') }}"
+                   class="inline-flex min-h-12 items-center rounded-md border border-white/20 px-5 text-[13px] font-semibold text-graphite-100 transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                    Entrar no sistema
+                </a>
+            </div>
         </div>
     </section>
 </main>
