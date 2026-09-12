@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PlanoTenant;
+use App\Jobs\EnviarLeads;
 use App\Models\Emitente;
 use App\Models\Tenant;
 use App\Models\User;
@@ -8,6 +9,7 @@ use App\Services\Integrations\AdminPessoalGateway;
 use App\Services\Integrations\MontadorDeLeads;
 use App\Support\TenantAtual;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 beforeEach(function () {
     $this->travelTo('2026-09-11 10:00:00');
@@ -171,6 +173,37 @@ it('paraTodos traz todos os tenants completos mesmo sem tenant nenhum resolvido'
 
     expect(collect($leads)->pluck('tenant_id')->sort()->values()->all())
         ->toBe(collect([$completo->id, $outro->id])->sort()->values()->all());
+});
+
+/**
+ * A resposta pode ter sucesso HTTP e ainda recusar leads por dado ruim. Sem
+ * logar isso, a contagem de recusados morre na resposta e ninguém do lado
+ * Laravel fica sabendo que leads estão sendo perdidos.
+ */
+it('registra aviso quando o admin pessoal recusa parte dos leads', function () {
+    Log::spy();
+    Http::fake(['exemplo.test/*' => Http::response(['processados' => 1, 'recusados' => 2], 200)]);
+
+    app(AdminPessoalGateway::class)->enviar([['tenant_id' => 7]]);
+
+    Log::shouldHaveReceived('warning')->once();
+});
+
+/**
+ * Esgotadas as tentativas, o job some para `failed_jobs` sem mais nenhum
+ * aviso. Um token errado (401 em toda tentativa) fica indistinguível de "não
+ * tem cadastro novo" sem este log de último aviso.
+ */
+it('registra erro quando o job esgota as tentativas', function () {
+    Log::spy();
+
+    $job = new EnviarLeads([['tenant_id' => 7], ['tenant_id' => 8]]);
+    $job->failed(new RuntimeException('token inválido'));
+
+    Log::shouldHaveReceived('error')
+        ->once()
+        ->withArgs(fn (string $mensagem, array $contexto) => $contexto['quantidade'] === 2
+            && $contexto['erro'] === 'token inválido');
 });
 
 it('nao chama a rede sem configuracao', function () {

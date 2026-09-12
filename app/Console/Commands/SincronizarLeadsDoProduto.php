@@ -21,6 +21,14 @@ class SincronizarLeadsDoProduto extends Command
 
     protected $description = 'Envia ao admin pessoal a situação atual de todos os tenants';
 
+    /**
+     * Tamanho de lote que mantém o payload bem abaixo do limite de 1 MB que a
+     * rota do outro lado recusa. Sem quebrar em lotes, por volta de três mil
+     * tenants num POST só trava a sincronização inteira, todo dia, em
+     * silêncio: o comando "roda com sucesso" e nenhum lead chega.
+     */
+    private const TAMANHO_DO_LOTE = 500;
+
     public function handle(MontadorDeLeads $montador): int
     {
         $leads = $montador->paraTodos();
@@ -31,9 +39,17 @@ class SincronizarLeadsDoProduto extends Command
             return self::SUCCESS;
         }
 
-        EnviarLeads::dispatch($leads);
+        $lotes = array_chunk($leads, self::TAMANHO_DO_LOTE);
 
-        $this->info(count($leads).' tenants enviados para a fila.');
+        foreach ($lotes as $lote) {
+            EnviarLeads::dispatch($lote);
+        }
+
+        $this->info(sprintf(
+            '%d tenants enviados para a fila em %d lote(s).',
+            count($leads),
+            count($lotes)
+        ));
 
         return self::SUCCESS;
     }

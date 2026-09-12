@@ -36,5 +36,18 @@ class AdminPessoalGateway implements GatewayDeLeads
                 'O admin pessoal recusou os leads. Status '.$resposta->status()
             );
         }
+
+        // A resposta pode ter sucesso HTTP e ainda assim recusar leads
+        // individuais por dado ruim (o corpo devolve {processados, recusados}).
+        // Sem ler isso aqui, a contagem de recusados morre na resposta e
+        // ninguém do lado Laravel fica sabendo que leads estão sendo perdidos.
+        $recusados = (int) $resposta->json('recusados', 0);
+
+        if ($recusados > 0) {
+            Log::warning('O admin pessoal recusou leads do lote.', [
+                'recusados' => $recusados,
+                'enviados' => count($leads),
+            ]);
+        }
     }
 }

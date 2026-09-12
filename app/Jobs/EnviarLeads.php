@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\Services\Integrations\GatewayDeLeads;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Leva o lead para o admin pessoal.
@@ -30,5 +32,18 @@ class EnviarLeads implements ShouldQueue
     public function handle(GatewayDeLeads $gateway): void
     {
         $gateway->enviar($this->leads);
+    }
+
+    /**
+     * Esgotadas as tentativas, o job some para `failed_jobs` sem mais nenhum
+     * aviso. Este log é o último antes do silêncio: sem ele, um token errado
+     * (401 em toda tentativa) fica indistinguível de "não tem cadastro novo".
+     */
+    public function failed(?Throwable $e): void
+    {
+        Log::error('Falha definitiva ao enviar leads ao admin pessoal.', [
+            'quantidade' => count($this->leads),
+            'erro' => $e?->getMessage(),
+        ]);
     }
 }

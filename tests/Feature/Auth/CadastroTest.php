@@ -129,3 +129,16 @@ it('grava o telefone no emitente', function () {
 
     expect(Emitente::first()->telefone)->toBe('(19) 99999-8888');
 });
+
+/**
+ * O admin pessoal aceita razao_social até 200 caracteres. Sem espelhar esse
+ * limite aqui, o cadastro seria aceito neste lado e o lead descartado em
+ * silêncio do lado de lá.
+ */
+it('recusa razao social maior que o destino aceita', function () {
+    $this->post('http://vendaredonda.com.br/register', dadosDeCadastro([
+        'razao_social' => str_repeat('A', 201),
+    ]))->assertSessionHasErrors('razao_social');
+
+    expect(Tenant::count())->toBe(0);
+});

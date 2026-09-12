@@ -38,10 +38,13 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): User
     {
         Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
+            // Os limites de name, email e razao_social espelham o que o admin
+            // pessoal aceita na entrada dele. Afrouxar aqui faria o cadastro
+            // ser aceito neste lado e descartado em silêncio do lado de lá.
+            'name' => ['required', 'string', 'min:2', 'max:160'],
+            'email' => ['required', 'string', 'email', 'max:254', Rule::unique(User::class)],
             'password' => $this->passwordRules(),
-            'razao_social' => ['required', 'string', 'max:255'],
+            'razao_social' => ['required', 'string', 'min:2', 'max:200'],
             'cnpj' => [
                 'required', 'string',
                 function (string $atributo, mixed $valor, callable $falhar): void {
