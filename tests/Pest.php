@@ -53,7 +53,9 @@ expect()->extend('toBeOne', function () {
  * só é carregado quando ele mesmo entra na execução.
  */
 
+use App\Enums\Fiscal\Ambiente;
 use App\Models\Emitente;
+use App\Models\EmitenteNfse;
 use App\Models\Fatura;
 use App\Models\FaturaParcela;
 use App\Models\NaturezaOperacao;
@@ -66,6 +68,8 @@ use App\Models\Produto;
 use App\Models\User;
 use App\Services\Fiscal\RespostaSefaz;
 use App\Services\Fiscal\SefazGateway;
+use App\Services\Nfse\GatewayNfse;
+use App\Services\Nfse\RespostaNfse;
 use App\Services\Stock\StockService;
 use App\Support\TenantAtual;
 
@@ -88,9 +92,9 @@ function xmlAutorizado(): string
     return (string) file_get_contents(base_path('tests/Fixtures/xml/nfe-autorizada.xml'));
 }
 
-function emitenteCompleto(): Emitente
+function emitenteCompleto(array $extra = []): Emitente
 {
-    return Emitente::factory()->create([
+    return Emitente::factory()->create(array_merge([
         'razao_social' => 'RCM DO BRASIL LTDA',
         'nome_fantasia' => 'RCM do Brasil',
         'cnpj' => '11222333000181',
@@ -100,7 +104,7 @@ function emitenteCompleto(): Emitente
         'bairro' => 'Distrito Industrial II',
         'codigo_municipio' => '3503307', 'municipio' => 'Araras',
         'uf' => 'SP', 'cep' => '13602200', 'telefone' => '1930960072',
-    ]);
+    ], $extra));
 }
 
 function destinatarioCompleto(Emitente $e, array $extra = []): Pessoa
@@ -293,4 +297,83 @@ function parcelaParaNfse(Emitente $emitente, array $extraParcela = []): FaturaPa
         'valor_centavos' => 150000,
         'vencimento' => today(),
     ], $extraParcela));
+}
+
+/*
+ * Emitente de Araras pronto para emitir NFS-e: inscrição municipal, NFS-e
+ * habilitada em homologação com senha. `$config` sobrescreve a configuração,
+ * `$emitente` sobrescreve o emitente.
+ */
+function emitenteComNfse(array $config = [], array $emitente = []): Emitente
+{
+    $e = emitenteCompleto(array_merge(['inscricao_municipal' => '44307'], $emitente));
+
+    EmitenteNfse::create(array_merge([
+        'emitente_id' => $e->id,
+        'habilitado' => true,
+        'senha_homologacao' => 'segredo-hml',
+    ], $config));
+
+    return $e->fresh();
+}
+
+/*
+ * Gateway falso de NFS-e, roteirizado como o `gatewayFake` da SEFAZ.
+ * `emitir` e `cancelar` devolvem RespostaNfse; `pdf` devolve string. Um
+ * Throwable no roteiro é lançado.
+ */
+function gatewayNfseFake(array $roteiro): GatewayNfse
+{
+    return new class($roteiro) implements GatewayNfse
+    {
+        public array $chamadas = [];
+
+        public function __construct(private array $roteiro) {}
+
+        private function responder(string $metodo, array $args): mixed
+        {
+            $this->chamadas[] = ['metodo' => $metodo, 'args' => $args];
+            $r = $this->roteiro[$metodo] ?? new RespostaNfse(false, motivo: "Sem roteiro para {$metodo}");
+
+            if ($r instanceof Throwable) {
+                throw $r;
+            }
+
+            return $r;
+        }
+
+        public function emitir(Emitente $e, Ambiente $a, string $xml): RespostaNfse
+        {
+            return $this->responder('emitir', ['ambiente' => $a, 'xml' => $xml]);
+        }
+
+        public function cancelar(Emitente $e, Ambiente $a, string $numero, string $serie, string $motivo): RespostaNfse
+        {
+            return $this->responder('cancelar', ['ambiente' => $a, 'numero' => $numero, 'serie' => $serie, 'motivo' => $motivo]);
+        }
+
+        public function pdf(Emitente $e, Ambiente $a, string $numero, string $serie): string
+        {
+            return $this->responder('pdf', ['ambiente' => $a, 'numero' => $numero, 'serie' => $serie]);
+        }
+    };
+}
+
+function comGatewayNfse(array $roteiro): object
+{
+    $fake = gatewayNfseFake($roteiro);
+    app()->instance(GatewayNfse::class, $fake);
+
+    return $fake;
+}
+
+function nfseAutorizada(string $numero = '700'): RespostaNfse
+{
+    return new RespostaNfse(
+        sucesso: true,
+        numero: $numero,
+        serie: 'NFE',
+        codigoVerificacao: 'ABC123',
+        bruto: "<notafiscal><numero_nf>{$numero}</numero_nf><serie>NFE</serie><codigo>ABC123</codigo></notafiscal>",
+    );
 }
