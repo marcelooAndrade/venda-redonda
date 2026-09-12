@@ -284,9 +284,15 @@ function usuarioMarca(string $perfil): User
  */
 function parcelaParaNfse(Emitente $emitente, array $extraParcela = []): FaturaParcela
 {
+    // O mesmo cliente serve para várias parcelas de teste do mesmo emitente:
+    // destinatarioCompleto() usa um documento fixo, e criar de novo colidiria
+    // com a unicidade de emitente_id + documento.
+    $tomador = Pessoa::where('emitente_id', $emitente->id)->where('documento', '11444777000161')->first()
+        ?? destinatarioCompleto($emitente, ['telefone' => '1935551234', 'email' => 'fiscal@piracicaba.com.br']);
+
     $fatura = Fatura::create([
         'emitente_id' => $emitente->id,
-        'pessoa_id' => destinatarioCompleto($emitente, ['telefone' => '1935551234', 'email' => 'fiscal@piracicaba.com.br'])->id,
+        'pessoa_id' => $tomador->id,
         'titulo' => 'Consultoria de setembro',
     ]);
 

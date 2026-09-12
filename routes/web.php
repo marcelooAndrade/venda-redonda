@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LogoTenantController;
+use App\Http\Controllers\NotaServicoArquivoController;
 use App\Http\Controllers\RaizController;
 use App\Livewire\Certificados\Gerenciar;
 use App\Livewire\Contador\Exportacao;
@@ -8,6 +9,7 @@ use App\Livewire\Estoque\Painel;
 use App\Livewire\Financeiro\ContasPagar;
 use App\Livewire\Financeiro\ContasReceber;
 use App\Livewire\Nfse\Configuracao;
+use App\Livewire\Nfse\Notas;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
@@ -47,6 +49,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // nome completo.
     Route::get('emitente', App\Livewire\Emitentes\Cadastro::class)->name('emitente');
     Route::get('nfse', Configuracao::class)->name('nfse');
+    Route::get('notas-servico', Notas::class)->name('notas-servico');
+    Route::get('notas-servico/{nota}/pdf', [NotaServicoArquivoController::class, 'pdf'])->name('notas-servico.pdf');
+    Route::get('notas-servico/{nota}/xml', [NotaServicoArquivoController::class, 'xml'])->name('notas-servico.xml');
 
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
