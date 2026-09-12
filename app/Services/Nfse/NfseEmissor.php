@@ -128,6 +128,63 @@ class NfseEmissor
         return $nota->fresh();
     }
 
+    public function cancelar(NotaServico $nota, string $motivo): NotaServico
+    {
+        $motivo = trim($motivo);
+
+        if ($nota->status !== NfseStatus::Autorizada || blank($nota->numero_nfse)) {
+            throw $this->erro('Só é possível cancelar uma NFS-e autorizada.');
+        }
+
+        if (mb_strlen($motivo) < 15 || mb_strlen($motivo) > 255) {
+            throw $this->erro('Informe uma justificativa entre 15 e 255 caracteres.');
+        }
+
+        $nota->loadMissing('emitente.nfse');
+
+        try {
+            // O ambiente é o da nota: se a configuração mudou depois, a nota
+            // continua onde foi emitida.
+            $resposta = $this->gateway->cancelar(
+                $nota->emitente,
+                $nota->ambiente,
+                (string) $nota->numero_nfse,
+                $nota->serie_nfse ?: 'NFE',
+                $motivo,
+            );
+        } catch (FalhaDeComunicacaoNfse $e) {
+            throw $this->erro($e->getMessage());
+        }
+
+        if (! $resposta->sucesso) {
+            throw $this->erro('O SIGISS recusou o cancelamento: '.($resposta->motivo ?: 'sem detalhe.'));
+        }
+
+        $nota->forceFill([
+            'status' => NfseStatus::Cancelada,
+            'cancelada_em' => now(),
+            'motivo_cancelamento' => $motivo,
+        ])->save();
+
+        return $nota->fresh();
+    }
+
+    /** Bytes do PDF, buscados no SIGISS a cada pedido. Nunca guardado. */
+    public function pdf(NotaServico $nota): string
+    {
+        if (! $nota->temDocumento()) {
+            throw $this->erro('Esta NFS-e ainda não tem número no SIGISS.');
+        }
+
+        $nota->loadMissing('emitente.nfse');
+
+        try {
+            return $this->gateway->pdf($nota->emitente, $nota->ambiente, (string) $nota->numero_nfse, $nota->serie_nfse ?: 'NFE');
+        } catch (FalhaDeComunicacaoNfse $e) {
+            throw $this->erro($e->getMessage());
+        }
+    }
+
     private function conferirExistente(?NotaServico $existente): void
     {
         if ($existente === null) {
