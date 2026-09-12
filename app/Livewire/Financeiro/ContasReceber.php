@@ -48,15 +48,6 @@ class ContasReceber extends Component
 
     public ?int $contaBaixaId = null;
 
-    /**
-     * A chave é do emitente, e é editada aqui porque é aqui que ela serve.
-     *
-     * O lugar definitivo é a tela de cadastro de emitente, que ainda não
-     * existe. Enquanto isso, deixar o recurso inalcançável seria pior do que
-     * abrigá-lo na tela que o usa.
-     */
-    public string $chavePix = '';
-
     public function mount(): void
     {
         abort_unless($this->emitente !== null, 404, 'Nenhum emitente vinculado a este usuário.');
@@ -64,7 +55,6 @@ class ContasReceber extends Component
 
         $this->primeiroVencimento = today()->toDateString();
         $this->contaBaixaId = $this->contas->first()?->getKey();
-        $this->chavePix = (string) ($this->emitente->chave_pix ?? '');
     }
 
     #[Computed]

@@ -34,17 +34,16 @@
     </div>
 
     @can('financeiro.gerenciar')
-        <x-ui.card title="Cobrança Pix"
-            subtitle="Com a chave preenchida, cada parcela lançada sai com código de pagamento.">
-            <form wire:submit="salvarChavePix" class="flex flex-wrap items-end gap-3">
-                <x-ui.field label="Chave Pix do emitente" for="cr-chave" class="min-w-0 flex-1"
-                    :error="$errors->first('chavePix')"
-                    hint="CNPJ, e-mail, telefone ou chave aleatória. O recebedor sai da razão social e do município.">
-                    <x-ui.input id="cr-chave" wire:model="chavePix" maxlength="77" placeholder="Deixe vazio para desligar" />
-                </x-ui.field>
-                <x-ui.button type="submit" variant="secondary">Salvar chave</x-ui.button>
-            </form>
-        </x-ui.card>
+        @if (blank($this->emitente->chave_pix))
+            <x-ui.alert variant="info" title="Cobrança Pix desligada">
+                Sem chave cadastrada a parcela nasce sem código de pagamento.
+                @can('emitente.gerenciar')
+                    Cadastre a chave em <a href="{{ route('emitente') }}" class="underline">Emitente</a>.
+                @else
+                    Peça a quem administra o emitente para cadastrar a chave.
+                @endcan
+            </x-ui.alert>
+        @endif
 
         <x-ui.card title="Lançar fatura"
             subtitle="Gere as parcelas a partir do total, e ajuste linha a linha se a negociação foi outra.">

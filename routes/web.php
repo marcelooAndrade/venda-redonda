@@ -42,6 +42,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('regras-fiscais', Regras::class)->name('regras-fiscais');
     Route::get('destinatarios', Cadastro::class)->name('destinatarios');
     Route::get('certificados', Gerenciar::class)->name('certificados');
+    // `Cadastro` já nomeia o de pessoas neste arquivo, então este vai pelo
+    // nome completo.
+    Route::get('emitente', App\Livewire\Emitentes\Cadastro::class)->name('emitente');
 
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
