@@ -1,9 +1,11 @@
 {{--
     Apresentação do produto, servida no domínio nu pelo RaizController.
 
-    Sem movimento de rolagem de propósito. A marca pede peso de livro-razão, e
-    livro-razão não anima. Isso também elimina a classe de bug em que elemento
-    nasce invisível esperando JS e some para quem usa movimento reduzido.
+    O revelar ao rolar é progressive enhancement: as seções levam
+    `data-revelar`, e é `resources/js/app.js` que observa isso com
+    `IntersectionObserver` e aplica o movimento. A garantia de nunca esconder
+    conteúdo permanentemente sem JS ou com `prefers-reduced-motion` vive lá,
+    não aqui. Sem JS, ou com movimento reduzido, o conteúdo já nasce visível.
 --}}
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -91,8 +93,8 @@
                 </p>
 
                 <p class="mt-4 max-w-[52ch] text-graphite-400">
-                    Sistema fiscal e de estoque feito para distribuidoras independentes
-                    de bebidas.
+                    Sistema fiscal, de estoque e financeiro feito para distribuidoras
+                    independentes de bebidas.
                 </p>
 
                 <div class="mt-9 flex flex-wrap items-center gap-3">
@@ -171,7 +173,7 @@
                 ] as [$titulo, $texto])
                     <div class="bg-graphite-800 p-6">
                         <h3 class="font-display text-base font-bold text-graphite-50">{{ $titulo }}</h3>
-                        <p class="mt-3 text-sm leading-relaxed text-graphite-400">{{ $texto }}</p>
+                        <p class="mt-3 text-sm leading-relaxed text-graphite-300">{{ $texto }}</p>
                     </div>
                 @endforeach
             </div>
@@ -235,6 +237,35 @@
         </div>
     </section>
 
+    {{-- ------------------------------------------------- regra é do contador --}}
+    <section data-revelar class="border-t border-white/10">
+        <div class="mx-auto max-w-5xl px-6 py-16">
+            {{-- Uma coluna só, como as outras seções. Em duas colunas o título
+                 é curto e deixava metade da largura vazia abaixo dele. --}}
+            <div>
+                <h2 class="max-w-[20ch] font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-graphite-50">
+                    Quem escreve a regra fiscal é o seu contador
+                </h2>
+                <div class="mt-6 min-w-0 space-y-4 text-graphite-300">
+                    <p class="max-w-[60ch] leading-relaxed">
+                        Não existe alíquota, CST, CSOSN ou CFOP escrito dentro do
+                        sistema. O contador entra numa tela própria, com permissão
+                        própria, e escreve a regra que vale para a sua operação.
+                    </p>
+                    <p class="max-w-[60ch] leading-relaxed">
+                        Toda regra tem data de vigência. Quando a lei muda, a anterior
+                        recebe fim de vigência em vez de ser apagada, e a nota de março
+                        continua conferindo com a regra de março.
+                    </p>
+                    <p class="max-w-[60ch] leading-relaxed text-graphite-400">
+                        É por isso que a Reforma não vira reescrita de sistema: IBS, CBS
+                        e IS são regra cadastrada, com a data em que passam a valer.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ------------------------------------------------------------ planos --}}
     <section data-revelar class="border-t border-white/10">
         <div class="mx-auto max-w-5xl px-6 py-16">
@@ -273,35 +304,6 @@
                     <p class="mt-8 text-sm leading-relaxed text-graphite-400">
                         Comece no gratuito. O avançado é ativado para quem já é
                         cliente.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- ------------------------------------------------- regra é do contador --}}
-    <section data-revelar class="border-t border-white/10">
-        <div class="mx-auto max-w-5xl px-6 py-16">
-            {{-- Uma coluna só, como as outras seções. Em duas colunas o título
-                 é curto e deixava metade da largura vazia abaixo dele. --}}
-            <div>
-                <h2 class="max-w-[20ch] font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-graphite-50">
-                    Quem escreve a regra fiscal é o seu contador
-                </h2>
-                <div class="mt-6 min-w-0 space-y-4 text-graphite-300">
-                    <p class="max-w-[60ch] leading-relaxed">
-                        Não existe alíquota, CST, CSOSN ou CFOP escrito dentro do
-                        sistema. O contador entra numa tela própria, com permissão
-                        própria, e escreve a regra que vale para a sua operação.
-                    </p>
-                    <p class="max-w-[60ch] leading-relaxed">
-                        Toda regra tem data de vigência. Quando a lei muda, a anterior
-                        recebe fim de vigência em vez de ser apagada, e a nota de março
-                        continua conferindo com a regra de março.
-                    </p>
-                    <p class="max-w-[60ch] leading-relaxed text-graphite-400">
-                        É por isso que a Reforma não vira reescrita de sistema: IBS, CBS
-                        e IS são regra cadastrada, com a data em que passam a valer.
                     </p>
                 </div>
             </div>

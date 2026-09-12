@@ -3,10 +3,10 @@
 use App\Models\Tenant;
 
 /**
- * A apresentação pública, redesenhada em 12/09/2026: estrutura inspirada no
- * site importado da Aura (av-design-system, Fluxo B), cores e conteúdo
- * próprios da Venda Redonda. `HostTest.php` já cobre host, título e dados
- * estruturados; este arquivo cobre o conteúdo do redesenho.
+ * A apresentação pública, redesenhada em 12/09/2026: estrutura de seções
+ * inspirada em referência externa de mercado (ver spec do redesenho), cores
+ * e conteúdo próprios da Venda Redonda. `HostTest.php` já cobre host, título
+ * e dados estruturados; este arquivo cobre o conteúdo do redesenho.
  */
 beforeEach(function () {
     Tenant::query()->delete();
