@@ -102,11 +102,40 @@ it('mostra seis perguntas frequentes em details, sem javascript de acordeao', fu
         ->and($html)->toContain('Onde ficam os meus dados?');
 });
 
-it('o cta final tem os dois links, e o total na pagina bate com cabecalho mais hero mais planos mais final mais rodape', function () {
+it('mostra a secao de transformacao entre dores e recursos', function () {
     $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
 
-    // Cabeçalho (1) + hero (1) + coluna Gratuito dos planos (1) + CTA final (1) + rodapé (1).
-    expect(substr_count($html, 'href="http://vendaredonda.com.br/register"'))->toBe(5)
+    expect($html)->toContain('Da divergência ao fechamento redondo');
+
+    $posicaoDores = strpos($html, 'Isso não chega organizado sozinho');
+    $posicaoTransformacao = strpos($html, 'Da divergência ao fechamento redondo');
+    $posicaoRecursos = strpos($html, 'Sete coisas, e elas dependem uma da outra');
+
+    expect($posicaoDores)->toBeLessThan($posicaoTransformacao)
+        ->and($posicaoTransformacao)->toBeLessThan($posicaoRecursos);
+});
+
+it('mostra a secao de papeis com faturamento, estoque e contador', function () {
+    $this->get('http://vendaredonda.com.br/')
+        ->assertOk()
+        ->assertSee('Cada papel vê só o que precisa')
+        ->assertSee('Faturamento')
+        ->assertSee('Estoque')
+        ->assertSee('Contador');
+});
+
+it('mostra a secao de fechamento do mes, com o exemplo rotulado como exemplo', function () {
+    $this->get('http://vendaredonda.com.br/')
+        ->assertOk()
+        ->assertSee('O fechamento sai pronto, não é montado')
+        ->assertSee('Fechamento do mês, exemplo');
+});
+
+it('o cta final tem os dois links, e o total na pagina bate com cabecalho mais hero mais transformacao mais planos mais final mais rodape', function () {
+    $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
+
+    // Cabeçalho (1) + hero (1) + transformação (1) + coluna Gratuito dos planos (1) + CTA final (1) + rodapé (1).
+    expect(substr_count($html, 'href="http://vendaredonda.com.br/register"'))->toBe(6)
         // Cabeçalho (1) + hero (1) + CTA final (1) + rodapé (1).
         ->and(substr_count($html, 'href="http://vendaredonda.com.br/login"'))->toBe(4);
 });

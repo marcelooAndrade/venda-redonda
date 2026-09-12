@@ -293,6 +293,71 @@
         </div>
     </section>
 
+    {{-- ------------------------------------------------------ transformação --}}
+    <section data-revelar class="border-t border-graphite-100 bg-graphite-900">
+        <div class="mx-auto max-w-6xl px-6 py-16">
+            <p class="etiqueta text-primary-400">A transformação</p>
+            <h2 class="mt-2 max-w-[22ch] font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-white sm:text-3xl">
+                Da divergência ao fechamento redondo
+            </h2>
+            <p class="mt-4 max-w-[58ch] leading-relaxed text-graphite-300">
+                O mesmo evento entra bagunçado e sai organizado: a nota, o estoque e o
+                caixa param de contar histórias diferentes.
+            </p>
+
+            <div class="mt-10 grid gap-6 lg:grid-cols-2">
+                <div class="rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-7">
+                    <p class="etiqueta text-graphite-300">Entra assim</p>
+                    <ul class="mt-4 space-y-3">
+                        @foreach ([
+                            ['upload', 'XML solto, sem padrão'],
+                            ['caixas', 'Contagem que não bate'],
+                            ['dinheiro', 'Título sem baixa'],
+                            ['relogio', 'Fechamento montado à mão'],
+                        ] as [$icone, $texto])
+                            <li class="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+                                <span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-graphite-300">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">{!! $icones[$icone] !!}</svg>
+                                </span>
+                                <span class="text-sm font-semibold text-graphite-200">{{ $texto }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <div class="rounded-3xl border border-primary-500/30 bg-primary-600/10 p-6 sm:p-7">
+                    <p class="etiqueta text-primary-400">Sai assim</p>
+                    <ul class="mt-4 space-y-3">
+                        @foreach ([
+                            ['recibo', 'Nota emitida certa'],
+                            ['check', 'Kardex fiel'],
+                            ['painel', 'Caixa conferido'],
+                            ['pasta', 'Pacote pronto pro contador'],
+                        ] as [$icone, $texto])
+                            <li class="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+                                <span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-600 text-on-primary">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">{!! $icones[$icone] !!}</svg>
+                                </span>
+                                <span class="text-sm font-semibold text-white">{{ $texto }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-10 flex flex-wrap items-center gap-3">
+                <a href="{{ route('register') }}"
+                   class="inline-flex min-h-12 items-center rounded-full bg-primary-600 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-on-primary shadow-md transition-colors hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    Criar conta grátis
+                </a>
+                <a href="#recursos"
+                   class="inline-flex min-h-12 items-center rounded-full border border-white/20 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    Ver o que ele faz
+                </a>
+            </div>
+        </div>
+    </section>
+
     {{-- --------------------------------------------------------- recursos --}}
     <section id="recursos" data-revelar class="border-t border-graphite-100">
         <div class="mx-auto max-w-6xl px-6 py-16">
@@ -362,6 +427,85 @@
                         </li>
                     @endforeach
                 </ol>
+            </div>
+        </div>
+    </section>
+
+    {{-- ------------------------------------------------------------ papéis --}}
+    <section data-revelar class="border-t border-graphite-100">
+        <div class="mx-auto max-w-6xl px-6 py-16">
+            <p class="etiqueta text-primary-700">Para cada papel</p>
+            <h2 class="mt-2 font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
+                Cada papel vê só o que precisa
+            </h2>
+            <p class="mt-3 max-w-[58ch] text-graphite-600">
+                A permissão é por emitente e por perfil. Ninguém vê tela nem dado que
+                não é da sua função.
+            </p>
+
+            <div class="mt-10 grid gap-6 lg:grid-cols-3">
+                @foreach ([
+                    ['recibo', 'Faturamento', 'Emite a nota, vê o estoque, recebe pelo Pix.', ['Emissão de NF-e', 'Contas a receber', 'Estoque, só consulta']],
+                    ['caixas', 'Estoque', 'Confere, ajusta por inventário, nunca edita o passado.', ['Kardex', 'Conferência', 'Importação de XML']],
+                    ['escudo', 'Contador', 'Escreve a regra fiscal, exporta o fechamento.', ['Regras fiscais', 'Exportação do período', 'Financeiro, só consulta']],
+                ] as [$icone, $papel, $texto, $tags])
+                    <div class="rounded-2xl border border-graphite-100 bg-white p-6 shadow-sm">
+                        {!! $iconeChip($icone) !!}
+                        <h3 class="mt-4 font-display text-base font-bold text-graphite-900">{{ $papel }}</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-graphite-600">{{ $texto }}</p>
+                        <ul class="mt-4 flex flex-wrap gap-1.5">
+                            @foreach ($tags as $tag)
+                                <li class="rounded-full bg-graphite-50 px-2.5 py-1 text-[11px] font-semibold text-graphite-600">{{ $tag }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- --------------------------------------------------------- fechamento --}}
+    <section data-revelar class="border-t border-graphite-100 bg-graphite-900">
+        <div class="mx-auto max-w-6xl px-6 py-16">
+            <div class="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
+                <div class="min-w-0">
+                    <p class="etiqueta text-primary-400">Fim do mês</p>
+                    <h2 class="mt-2 max-w-[20ch] font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-white sm:text-3xl">
+                        O fechamento sai pronto, não é montado
+                    </h2>
+                    <p class="mt-4 max-w-[46ch] leading-relaxed text-graphite-300">
+                        O pacote do contador já nasce pronto ao longo do mês: cada nota,
+                        cada baixa, cada entrada entra no lugar certo na hora em que
+                        acontece.
+                    </p>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-white p-6 shadow-2xl sm:p-7">
+                    <p class="text-sm text-graphite-500">
+                        Fechamento do mês, exemplo
+                        <span class="mt-1 block font-semibold text-graphite-700">Agosto de 2026</span>
+                    </p>
+
+                    <div class="mt-6 grid grid-cols-3 gap-3">
+                        <div class="rounded-2xl bg-graphite-50 p-4">
+                            <p class="etiqueta text-graphite-500">Emitidas</p>
+                            <p class="num mt-2 text-2xl font-bold text-graphite-900">184</p>
+                        </div>
+                        <div class="rounded-2xl bg-graphite-50 p-4">
+                            <p class="etiqueta text-graphite-500">Pendentes</p>
+                            <p class="num mt-2 text-2xl font-bold text-graphite-900">0</p>
+                        </div>
+                        <div class="rounded-2xl bg-primary-600 p-4">
+                            <p class="etiqueta text-on-primary">Pacote</p>
+                            <p class="mt-2 text-sm font-bold text-on-primary">Pronto</p>
+                        </div>
+                    </div>
+
+                    <p class="mt-5 text-sm leading-relaxed text-graphite-500">
+                        Emitidas, canceladas, cartas de correção e entradas, num ZIP só,
+                        sem ninguém montar pasta à mão.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
