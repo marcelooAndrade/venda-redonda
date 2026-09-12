@@ -44,6 +44,15 @@ class User extends Authenticatable implements PasskeyUser
     use Auditavel, HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
     /**
+     * Default também em memória, não só no banco: coluna booleana vem `null`
+     * num model recém criado, e o Gate compara com `=== true`. Mesma regra
+     * dos outros models, coberta por DefaultsEmMemoriaTest.
+     */
+    protected $attributes = [
+        'dono_do_produto' => false,
+    ];
+
+    /**
      * Escopo próprio, e não o `DoTenant` comum, porque o `User` tem uma regra
      * a mais: ele é consultado pelo provider de autenticação, antes de existir
      * sessão.
@@ -84,6 +93,9 @@ class User extends Authenticatable implements PasskeyUser
         return [
             'email_verified_at' => 'datetime',
             'ultimo_acesso_em' => 'datetime',
+            // Fora do `#[Fillable]` de propósito: só o comando
+            // `produto:definir-dono` escreve aqui. Ver a migration.
+            'dono_do_produto' => 'boolean',
             'password' => 'hashed',
         ];
     }

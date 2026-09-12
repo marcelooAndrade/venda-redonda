@@ -11,7 +11,8 @@
     // Agrupada por ritmo de uso: o que se faz todo dia, o que se cadastra de
     // vez em quando, e o que se configura uma vez. Onze itens chapados
     // obrigam a ler a lista inteira toda vez.
-    $grupos = ['Operação', 'Cadastros', 'Configuração'];
+    // "Produto" só existe para o dono do produto, e o filtro abaixo cuida disso.
+    $grupos = ['Operação', 'Cadastros', 'Configuração', 'Produto'];
 
     $navegacao = collect([
         ['Painel', 'dashboard', 'relatorio.ver', 'Operação', 'M3 12h18M3 6h18M3 18h18'],
@@ -27,6 +28,7 @@
         ['Regras fiscais', 'regras-fiscais', 'tributacao.gerenciar', 'Configuração', 'M9 12h6m-6 4h4m4-11V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9l-4-4z'],
         ['Certificado', 'certificados', 'certificado.ver', 'Configuração', 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'],
         ['Marca', 'marca', 'emitente.gerenciar', 'Configuração', 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343'],
+        ['Empresas', 'empresas', 'produto.administrar', 'Produto', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
     ])->filter(fn (array $item): bool => $item[2] === null || $user?->can($item[2]))->groupBy(3);
 @endphp
 

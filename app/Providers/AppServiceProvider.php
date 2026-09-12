@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Services\Fiscal\ConversorLegado;
 use App\Services\Fiscal\ConversorLegadoOpenssl;
 use App\Services\Fiscal\NfephpSefazGateway;
@@ -12,6 +13,7 @@ use App\Support\TenantAtual;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -35,8 +37,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
         $this->configureDefaults();
+
+        // A única habilidade que atravessa tenants. Não é permissão do spatie
+        // porque essas são por emitente e o perfil Administrador as recebe
+        // todas; esta é de uma pessoa, marcada por coluna. O `Gate::before`
+        // do spatie devolve nulo para habilidade que ele não conhece, e a
+        // decisão cai aqui.
+        Gate::define('produto.administrar', fn (User $user): bool => $user->dono_do_produto === true);
     }
 
     /**

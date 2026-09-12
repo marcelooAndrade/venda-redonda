@@ -10,6 +10,7 @@ use App\Livewire\Financeiro\ContasReceber;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
+use App\Livewire\Produto\Empresas;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('regras-fiscais', Regras::class)->name('regras-fiscais');
     Route::get('destinatarios', Cadastro::class)->name('destinatarios');
     Route::get('certificados', Gerenciar::class)->name('certificados');
+
+    // Atravessa tenants. O componente exige `produto.administrar`, que só o
+    // dono do produto tem.
+    Route::get('empresas', Empresas::class)->name('empresas');
 });
 
 require __DIR__.'/settings.php';

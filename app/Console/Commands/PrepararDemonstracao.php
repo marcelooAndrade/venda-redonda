@@ -361,7 +361,12 @@ class PrepararDemonstracao extends Command
             'tenant_id' => $tenant->id, 'name' => $nome, 'email' => $email, 'password' => self::SENHA,
         ]);
 
-        $user->forceFill(['email_verified_at' => now()])->save();
+        // O primeiro usuário da demonstração é o dono do produto, para o
+        // painel de empresas aparecer sem precisar do comando à parte.
+        $user->forceFill([
+            'email_verified_at' => now(),
+            'dono_do_produto' => User::query()->withoutGlobalScope('tenant')->where('dono_do_produto', true)->doesntExist(),
+        ])->save();
         $user->emitentes()->attach($emitente);
 
         setPermissionsTeamId($emitente->id);
