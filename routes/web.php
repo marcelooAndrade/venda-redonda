@@ -7,6 +7,7 @@ use App\Livewire\Contador\Exportacao;
 use App\Livewire\Estoque\Painel;
 use App\Livewire\Financeiro\ContasPagar;
 use App\Livewire\Financeiro\ContasReceber;
+use App\Livewire\Nfse\Configuracao;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // `Cadastro` já nomeia o de pessoas neste arquivo, então este vai pelo
     // nome completo.
     Route::get('emitente', App\Livewire\Emitentes\Cadastro::class)->name('emitente');
+    Route::get('nfse', Configuracao::class)->name('nfse');
 
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
