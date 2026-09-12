@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Emitente extends Model
 {
@@ -75,5 +76,17 @@ class Emitente extends Model
     public function certificados(): HasMany
     {
         return $this->hasMany(EmitenteCertificado::class)->latest('id');
+    }
+
+    /** @return HasOne<EmitenteNfse, $this> */
+    public function nfse(): HasOne
+    {
+        return $this->hasOne(EmitenteNfse::class);
+    }
+
+    /** @return HasMany<ServicoNfse, $this> */
+    public function servicosNfse(): HasMany
+    {
+        return $this->hasMany(ServicoNfse::class)->orderBy('nome');
     }
 }

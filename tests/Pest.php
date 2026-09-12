@@ -54,6 +54,8 @@ expect()->extend('toBeOne', function () {
  */
 
 use App\Models\Emitente;
+use App\Models\Fatura;
+use App\Models\FaturaParcela;
 use App\Models\NaturezaOperacao;
 use App\Models\Nota;
 use App\Models\NotaItem;
@@ -270,4 +272,25 @@ function usuarioMarca(string $perfil): User
     $user->assignRole($perfil);
 
     return $user;
+}
+
+/*
+ * Uma parcela pronta para virar NFS-e: fatura ativa, com cliente completo
+ * e um título de R$ 1.500,00 vencendo hoje.
+ */
+function parcelaParaNfse(Emitente $emitente, array $extraParcela = []): FaturaParcela
+{
+    $fatura = Fatura::create([
+        'emitente_id' => $emitente->id,
+        'pessoa_id' => destinatarioCompleto($emitente, ['telefone' => '1935551234', 'email' => 'fiscal@piracicaba.com.br'])->id,
+        'titulo' => 'Consultoria de setembro',
+    ]);
+
+    return FaturaParcela::create(array_merge([
+        'fatura_id' => $fatura->id,
+        'numero' => 1,
+        'descricao' => 'Consultoria de setembro, parcela 1 de 1',
+        'valor_centavos' => 150000,
+        'vencimento' => today(),
+    ], $extraParcela));
 }
