@@ -20,10 +20,10 @@
     @include('partials.head', ['marca' => 'Venda Redonda'])
 
     @php
-        $descricao = 'Sistema fiscal, de estoque e financeiro para distribuidoras independentes '
-            .'de bebidas. Emite NF-e com ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, emite '
-            .'NFS-e pelo SIGISS de Araras, importa compras por XML, fecha o estoque contra o galpão '
-            .'e lança contas a pagar e a receber com baixa.';
+        $descricao = 'Sistema fiscal, de estoque e financeiro para empresas que compram, vendem '
+            .'e emitem nota fiscal. Emite NF-e com ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, '
+            .'emite NFS-e pelo SIGISS de Araras, importa compras por XML, fecha o estoque contra a '
+            .'contagem física e lança contas a pagar e a receber com baixa.';
         $site = 'https://'.config('produto.dominio');
 
         // Montado aqui, e não com `@json`, porque o parser de diretiva do Blade
@@ -89,12 +89,17 @@
 </a>
 
 {{-- ---------------------------------------------------------------- topo --}}
-<header class="sticky top-0 z-40 border-b border-graphite-100 bg-white/85 backdrop-blur">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+<header class="sticky top-3 z-40 px-3 sm:top-4 sm:px-4">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 rounded-full border border-graphite-100 bg-white/90 px-4 py-2.5 shadow-lg shadow-graphite-200/40 backdrop-blur sm:px-6">
         <span class="flex items-center gap-2.5">
-            <x-marca-padrao class="size-7 text-graphite-900" />
-            <span class="font-display text-base font-extrabold uppercase tracking-[0.04em] text-graphite-900">
-                Venda Redonda
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-graphite-900">
+                <x-marca-padrao class="size-5 text-white" />
+            </span>
+            <span class="leading-tight">
+                <span class="block font-display text-sm font-extrabold uppercase tracking-[0.04em] text-graphite-900">
+                    Venda Redonda
+                </span>
+                <span class="block text-[11px] font-semibold text-graphite-500">Fiscal · Estoque · Financeiro</span>
             </span>
         </span>
 
@@ -136,18 +141,18 @@
                     </span>
 
                     <h1 data-entra="2" class="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-[-0.01em] text-graphite-900 sm:text-5xl">
-                        O sistema diz 200 caixas.<br>
-                        <span class="text-primary-600">O galpão tem 170.</span>
+                        O sistema diz 200 unidades.<br>
+                        <span class="text-primary-600">O estoque tem 170.</span>
                     </h1>
 
                     <p data-entra="3" class="mt-6 max-w-[46ch] text-lg leading-relaxed text-graphite-600">
                         Venda redonda é quando esses dois números são o mesmo, e a nota, o
-                        galpão e o caixa contam a mesma história no fim do mês.
+                        estoque e o caixa contam a mesma história no fim do mês.
                     </p>
 
                     <p data-entra="3" class="mt-4 max-w-[52ch] text-graphite-500">
-                        Sistema fiscal, de estoque e financeiro feito para distribuidoras
-                        independentes de bebidas.
+                        Sistema fiscal, de estoque e financeiro para qualquer empresa que
+                        compra, vende e emite nota fiscal.
                     </p>
 
                     <div data-entra="4" class="mt-9 flex flex-wrap items-center gap-3">
@@ -205,7 +210,7 @@
                         <div class="p-6 sm:p-7">
                             <figcaption class="text-sm text-graphite-500">
                                 Conferência de estoque, exemplo
-                                <span class="mt-1 block font-semibold text-graphite-700">Cerveja 600&nbsp;ml, caixa com 12</span>
+                                <span class="mt-1 block font-semibold text-graphite-700">Produto A, lote de 12 unidades</span>
                             </figcaption>
 
                             <dl class="mt-6 divide-y divide-graphite-100 border-y border-graphite-100">
@@ -219,7 +224,7 @@
                                 <div class="flex items-center justify-between gap-4 py-3">
                                     <dt class="flex items-center gap-2 text-graphite-500">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4 text-graphite-400" aria-hidden="true">{!! $icones['caixas'] !!}</svg>
-                                        O galpão tem
+                                        O estoque tem
                                     </dt>
                                     <dd class="num text-lg font-semibold text-graphite-800">200</dd>
                                 </div>
@@ -273,7 +278,7 @@
             <div class="mt-10 grid gap-5 sm:grid-cols-2">
                 @foreach ([
                     ['recibo', 'A nota sai, e ninguém sabe se saiu certa', 'Cálculo feito na hora, sem conferência, e o erro só aparece quando a SEFAZ rejeita.'],
-                    ['caixas', 'O estoque diz um número, o galpão diz outro', 'Sem razão imutável, toda contagem vira desconfiança.'],
+                    ['caixas', 'O estoque diz um número, a contagem física diz outro', 'Sem razão imutável, toda contagem vira desconfiança.'],
                     ['dinheiro', 'A conta existe, mas ninguém sabe se foi paga', 'Lançamento solto, sem baixa, sem saber quanto entrou nem quanto falta.'],
                     ['relogio', 'O contador corre atrás no fim do mês', 'Cada emissão, cada nota de entrada, cada carta de correção, juntadas na mão.'],
                 ] as [$icone, $titulo, $texto])
@@ -297,7 +302,7 @@
             <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ([
                     ['escudo', 'A nota sai certa de primeira', 'ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, nunca no navegador. Se a SEFAZ recusar, o sistema traduz o código do erro em português e diz o que fazer.'],
-                    ['caixas', 'O estoque bate com o galpão', 'Movimento nunca é editado nem apagado. Correção é lançamento de estorno, então o Kardex continua sendo registro fiel de tudo o que entrou e saiu.'],
+                    ['caixas', 'O estoque bate com a contagem física', 'Movimento nunca é editado nem apagado. Correção é lançamento de estorno, então o Kardex continua sendo registro fiel de tudo o que entrou e saiu.'],
                     ['upload', 'A compra entra pelo XML', 'Solta, em lote ou em ZIP. O fornecedor nasce do próprio arquivo, sem digitar de novo o que já veio na nota.'],
                     ['dinheiro', 'Contas a pagar e a receber, com baixa', 'Título com vencimento por parcela, baixa lançada no caixa, cobrança por Pix quando a chave está cadastrada.'],
                     ['predio', 'NFS-e de Araras, pelo SIGISS', 'Emitida a partir da parcela da fatura, com PDF, XML e cancelamento.'],
