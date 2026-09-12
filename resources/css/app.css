@@ -365,3 +365,47 @@ html {
         animation: none !important;
     }
 }
+
+/*
+ | Tipografia e fundo da apresentação pública, portados do template de
+ | referência (ver `templates/aura-assistant-aura/`). Lá a página inteira é
+ | Inter nos pesos 300 a 600, nunca bold, com JetBrains Mono nos rótulos
+ | miúdos, e um fundo fixo de manchas que derivam devagar sob uma trama de
+ | pontos. É o que dá o ar leve que a marca sozinha não dava.
+ |
+ | Só vale na apresentação: o sistema continua em Manrope.
+ */
+.fonte-inter {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.fonte-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@keyframes deriva-ambiente-tres {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(2vw, -4vh, 0) scale(1.05); }
+}
+
+.deriva-tres {
+    animation: deriva-ambiente-tres 30s ease-in-out infinite;
+}
+
+@keyframes deriva-pontos {
+    0% { background-position: 0 0; }
+    100% { background-position: 4rem 4rem; }
+}
+
+.trama-pontos {
+    background-image: radial-gradient(circle at 1px 1px, rgba(14, 27, 31, 0.09) 1px, transparent 0);
+    background-size: 2rem 2rem;
+    animation: deriva-pontos 38s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .deriva-tres,
+    .trama-pontos {
+        animation: none;
+    }
+}
