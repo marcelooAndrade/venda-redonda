@@ -13,9 +13,10 @@
     @include('partials.head', ['marca' => 'Venda Redonda'])
 
     @php
-        $descricao = 'Sistema fiscal e de estoque para distribuidoras independentes de bebidas. '
-            .'Emite NF-e com ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, importa compras '
-            .'por XML e fecha o estoque contra o galpão.';
+        $descricao = 'Sistema fiscal, de estoque e financeiro para distribuidoras independentes '
+            .'de bebidas. Emite NF-e com ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, emite '
+            .'NFS-e pelo SIGISS de Araras, importa compras por XML, fecha o estoque contra o galpão '
+            .'e lança contas a pagar e a receber com baixa.';
         $site = 'https://'.config('produto.dominio');
 
         // Montado aqui, e não com `@json`, porque o parser de diretiva do Blade
@@ -27,7 +28,7 @@
             '@type' => 'SoftwareApplication',
             'name' => 'Venda Redonda',
             'applicationCategory' => 'BusinessApplication',
-            'applicationSubCategory' => 'Emissor de NF-e e controle de estoque',
+            'applicationSubCategory' => 'Emissor de NF-e e NFS-e, controle de estoque e financeiro',
             'operatingSystem' => 'Navegador',
             'inLanguage' => 'pt-BR',
             'url' => $site,
@@ -95,8 +96,12 @@
                 </p>
 
                 <div class="mt-9 flex flex-wrap items-center gap-3">
-                    <a href="{{ route('login') }}"
+                    <a href="{{ route('register') }}"
                        class="inline-flex min-h-12 items-center rounded-md bg-graphite-50 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-graphite-900 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                        Criar conta grátis
+                    </a>
+                    <a href="{{ route('login') }}"
+                       class="inline-flex min-h-12 items-center rounded-md border border-white/20 px-5 text-[13px] font-semibold text-graphite-100 transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                         Entrar no sistema
                     </a>
                     <a href="#o-que-faz"
@@ -169,7 +174,7 @@
     </section>
 
     {{-- ----------------------------------------------- sequência de fato --}}
-    <section class="border-t border-white/10">
+    <section data-revelar class="border-t border-white/10">
         <div class="mx-auto max-w-5xl px-6 py-16">
             <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
                 Da compra até o contador
@@ -198,7 +203,7 @@
     </section>
 
     {{-- ------------------------------------------------- regra é do contador --}}
-    <section class="border-t border-white/10">
+    <section data-revelar class="border-t border-white/10">
         <div class="mx-auto max-w-5xl px-6 py-16">
             {{-- Uma coluna só, como as outras seções. Em duas colunas o título
                  é curto e deixava metade da largura vazia abaixo dele. --}}
@@ -227,7 +232,7 @@
     </section>
 
     {{-- ------------------------------------------------------ o que falta --}}
-    <section class="border-t border-white/10 bg-graphite-800">
+    <section data-revelar class="border-t border-white/10 bg-graphite-800">
         <div class="mx-auto max-w-5xl px-6 py-16">
             <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
                 O que ele ainda não faz
@@ -262,7 +267,7 @@
     </section>
 
     {{-- ------------------------------------------------------------- ação --}}
-    <section class="border-t border-white/10">
+    <section data-revelar class="border-t border-white/10">
         <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-6 px-6 py-16">
             <div class="min-w-0">
                 <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
@@ -285,7 +290,7 @@
             <x-marca-padrao class="size-5 text-graphite-300" />
             Venda Redonda
         </span>
-        <span>Fiscal · Estoque</span>
+        <span>Fiscal · Estoque · Financeiro</span>
     </div>
 </footer>
 

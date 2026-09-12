@@ -229,3 +229,20 @@
 [data-flux-label] {
     @apply !mb-0 !leading-tight;
 }
+
+/*
+ | Reveal ao rolar da apresentação pública. Some com o script em
+ | resources/js/app.js: sem JavaScript, ou com prefers-reduced-motion, a
+ | seção nunca fica presa em opacity: 0, porque o script marca `.revelado`
+ | de uma vez quando nenhum dos dois está disponível.
+ */
+[data-revelar] {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+[data-revelar].revelado {
+    opacity: 1;
+    transform: translateY(0);
+}
