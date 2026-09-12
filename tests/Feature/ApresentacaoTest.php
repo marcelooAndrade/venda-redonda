@@ -40,3 +40,29 @@ it('as secoes existentes ganham o atributo de revelar ao rolar', function () {
 
     expect(substr_count($html, 'data-revelar'))->toBeGreaterThanOrEqual(4);
 });
+
+it('mostra a secao de dores antes dos recursos', function () {
+    $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
+
+    expect($html)->toContain('Isso não chega organizado sozinho')
+        ->and(strpos($html, 'Isso não chega organizado sozinho'))
+        ->toBeLessThan(strpos($html, 'Sete coisas, e elas dependem uma da outra'));
+});
+
+it('recursos tem sete cartoes, incluindo nfse e contas a pagar e a receber', function () {
+    $this->get('http://vendaredonda.com.br/')
+        ->assertOk()
+        ->assertSee('Sete coisas, e elas dependem uma da outra')
+        ->assertSee('NFS-e de Araras, pelo SIGISS')
+        ->assertSee('Contas a pagar e a receber, com baixa')
+        ->assertSee('A compra entra pelo XML')
+        ->assertSee('Um painel que abre com o que trava');
+});
+
+it('o link ver o que ele faz aponta para a secao de recursos', function () {
+    $html = $this->get('http://vendaredonda.com.br/')->assertOk()->getContent();
+
+    expect($html)->toContain('href="#recursos"')
+        ->and($html)->toContain('id="recursos"')
+        ->and($html)->not->toContain('id="o-que-faz"');
+});

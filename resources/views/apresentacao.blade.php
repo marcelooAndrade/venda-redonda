@@ -104,7 +104,7 @@
                        class="inline-flex min-h-12 items-center rounded-md border border-white/20 px-5 text-[13px] font-semibold text-graphite-100 transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                         Entrar no sistema
                     </a>
-                    <a href="#o-que-faz"
+                    <a href="#recursos"
                        class="inline-flex min-h-12 items-center px-2 text-[13px] font-semibold text-graphite-300 underline decoration-graphite-600 underline-offset-4 transition-colors hover:text-graphite-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                         Ver o que ele faz
                     </a>
@@ -151,17 +151,48 @@
         </div>
     </section>
 
-    {{-- ------------------------------------------------------- o que faz --}}
-    <section id="o-que-faz" class="border-t border-white/10">
+    {{-- ------------------------------------------------------------ dores --}}
+    <section data-revelar class="border-t border-white/10 bg-graphite-800">
         <div class="mx-auto max-w-5xl px-6 py-16">
             <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
-                Três coisas, e elas dependem uma da outra
+                Isso não chega organizado sozinho
+            </h2>
+            <p class="mt-3 max-w-[58ch] text-graphite-300">
+                É o que acontece antes de existir um sistema que faça a nota, o
+                estoque e o caixa conversarem.
+            </p>
+
+            <div class="mt-10 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-2">
+                @foreach ([
+                    ['A nota sai, e ninguém sabe se saiu certa', 'Cálculo feito na hora, sem conferência, e o erro só aparece quando a SEFAZ rejeita.'],
+                    ['O estoque diz um número, o galpão diz outro', 'Sem razão imutável, toda contagem vira desconfiança.'],
+                    ['A conta existe, mas ninguém sabe se foi paga', 'Lançamento solto, sem baixa, sem saber quanto entrou nem quanto falta.'],
+                    ['O contador corre atrás no fim do mês', 'Cada emissão, cada nota de entrada, cada carta de correção, juntadas na mão.'],
+                ] as [$titulo, $texto])
+                    <div class="bg-graphite-800 p-6">
+                        <h3 class="font-display text-base font-bold text-graphite-50">{{ $titulo }}</h3>
+                        <p class="mt-3 text-sm leading-relaxed text-graphite-400">{{ $texto }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- --------------------------------------------------------- recursos --}}
+    <section id="recursos" data-revelar class="border-t border-white/10">
+        <div class="mx-auto max-w-5xl px-6 py-16">
+            <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-50">
+                Sete coisas, e elas dependem uma da outra
             </h2>
 
-            <div class="mt-10 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-3">
+            <div class="mt-10 grid gap-px overflow-hidden rounded-lg bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ([
                     ['A nota sai certa de primeira', 'ICMS-ST, FCP, IBS, CBS e IS calculados no servidor, nunca no navegador. Se a SEFAZ recusar, o sistema traduz o código do erro em português e diz o que fazer.'],
                     ['O estoque bate com o galpão', 'Movimento nunca é editado nem apagado. Correção é lançamento de estorno, então o Kardex continua sendo registro fiel de tudo o que entrou e saiu.'],
+                    ['A compra entra pelo XML', 'Solta, em lote ou em ZIP. O fornecedor nasce do próprio arquivo, sem digitar de novo o que já veio na nota.'],
+                    ['Contas a pagar e a receber, com baixa', 'Título com vencimento por parcela, baixa lançada no caixa, cobrança por Pix quando a chave está cadastrada.'],
+                    ['NFS-e de Araras, pelo SIGISS', 'Emitida a partir da parcela da fatura, com PDF, XML e cancelamento.'],
+                    ['Um painel que abre com o que trava', 'Pendência antes de faturamento, porque reemitir sem saber se já saiu duplica nota.'],
                     ['O contador recebe fechado', 'O período inteiro em um ZIP: emitidas, canceladas, cartas de correção, inutilizações e entradas, com resumo que abre no Excel em português sem acento quebrado.'],
                 ] as [$titulo, $texto])
                     <div class="bg-graphite-900 p-6">
@@ -192,9 +223,11 @@
                     ['Sai a venda', 'A nota é montada, os tributos são calculados no servidor e a baixa acontece na transmissão.'],
                     ['Fecha o mês', 'O pacote do período sai pronto para o contador, sem ninguém montar pasta à mão.'],
                 ] as $i => [$titulo, $texto])
-                    <li class="min-w-0">
-                        <span class="num block text-sm font-bold text-primary-600">{{ $i + 1 }}</span>
-                        <h3 class="mt-2 font-display text-base font-bold text-graphite-50">{{ $titulo }}</h3>
+                    <li class="min-w-0 border-t border-white/10 pt-5">
+                        <span class="num inline-flex size-8 items-center justify-center rounded-full border border-primary-600/40 text-sm font-bold text-primary-500">
+                            {{ $i + 1 }}
+                        </span>
+                        <h3 class="mt-3 font-display text-base font-bold text-graphite-50">{{ $titulo }}</h3>
                         <p class="mt-2 text-sm leading-relaxed text-graphite-400">{{ $texto }}</p>
                     </li>
                 @endforeach
