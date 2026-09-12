@@ -122,34 +122,34 @@
 
     {{-- ------------------------------------------------------------ herói --}}
     <section class="relative isolate overflow-hidden">
-        <div aria-hidden="true" class="pointer-events-none absolute -top-32 right-[-10%] size-[34rem] rounded-full bg-primary-200/40 blur-3xl"></div>
-        <div aria-hidden="true" class="pointer-events-none absolute top-64 -left-40 size-[26rem] rounded-full bg-graphite-100 blur-3xl"></div>
+        <div aria-hidden="true" class="deriva-um pointer-events-none absolute -top-32 right-[-10%] size-[34rem] rounded-full bg-primary-200/40 blur-3xl"></div>
+        <div aria-hidden="true" class="deriva-dois pointer-events-none absolute top-64 -left-40 size-[26rem] rounded-full bg-graphite-100 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-6xl px-6 py-16 md:py-24">
             <div class="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
 
                 <div class="min-w-0">
-                    <span class="inline-flex items-center gap-2 rounded-full border border-graphite-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-graphite-600 shadow-sm">
+                    <span data-entra="1" class="inline-flex items-center gap-2 rounded-full border border-graphite-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-graphite-600 shadow-sm">
                         <span aria-hidden="true" class="size-1.5 rounded-full bg-primary-600"></span>
                         Sistema fiscal, de estoque e financeiro
                     </span>
 
-                    <h1 class="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-[-0.01em] text-graphite-900 sm:text-5xl">
+                    <h1 data-entra="2" class="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-[-0.01em] text-graphite-900 sm:text-5xl">
                         O sistema diz 200 caixas.<br>
                         <span class="text-primary-600">O galpão tem 170.</span>
                     </h1>
 
-                    <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-graphite-600">
+                    <p data-entra="3" class="mt-6 max-w-[46ch] text-lg leading-relaxed text-graphite-600">
                         Venda redonda é quando esses dois números são o mesmo, e a nota, o
                         galpão e o caixa contam a mesma história no fim do mês.
                     </p>
 
-                    <p class="mt-4 max-w-[52ch] text-graphite-500">
+                    <p data-entra="3" class="mt-4 max-w-[52ch] text-graphite-500">
                         Sistema fiscal, de estoque e financeiro feito para distribuidoras
                         independentes de bebidas.
                     </p>
 
-                    <div class="mt-9 flex flex-wrap items-center gap-3">
+                    <div data-entra="4" class="mt-9 flex flex-wrap items-center gap-3">
                         <a href="{{ route('register') }}"
                            class="inline-flex min-h-12 items-center rounded-full bg-primary-600 px-6 text-[13px] font-bold uppercase tracking-[0.05em] text-on-primary shadow-md transition-colors hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                             Criar conta grátis
@@ -164,7 +164,7 @@
                         </a>
                     </div>
 
-                    <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-graphite-500">
+                    <div data-entra="5" class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-graphite-600">
                         <span class="inline-flex items-center gap-1.5">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-4 text-primary-600" aria-hidden="true">{!! $icones['escudo'] !!}</svg>
                             Tributo calculado no servidor
@@ -184,12 +184,12 @@
                      cima para reforçar a leitura, do jeito que o resto da
                      página também usa cartão com sombra. --}}
                 <div class="relative min-w-0">
-                    <span aria-hidden="true" class="absolute -top-4 -left-4 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
+                    <span aria-hidden="true" data-entra="6" class="flutua absolute -top-4 -left-4 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-primary-600">{!! $icones['upload'] !!}</svg>
                         Baixa automática
                     </span>
 
-                    <figure class="rounded-3xl border border-graphite-100 bg-white p-6 shadow-xl shadow-graphite-200/50 sm:p-7">
+                    <figure data-entra="5" class="rounded-3xl border border-graphite-100 bg-white p-6 shadow-xl shadow-graphite-200/50 sm:p-7">
                         <figcaption class="text-sm text-graphite-500">
                             Conferência de estoque, exemplo
                             <span class="mt-1 block font-semibold text-graphite-700">Cerveja 600&nbsp;ml, caixa com 12</span>
@@ -222,7 +222,7 @@
                         </p>
                     </figure>
 
-                    <span aria-hidden="true" class="absolute -bottom-4 -right-3 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
+                    <span aria-hidden="true" data-entra="6" class="flutua absolute -bottom-4 -right-3 hidden rounded-full border border-graphite-100 bg-white px-3 py-1.5 text-xs font-semibold text-graphite-600 shadow-lg sm:inline-flex sm:items-center sm:gap-1.5">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 text-success-600">{!! $icones['check'] !!}</svg>
                         Diferença zero
                     </span>
@@ -297,8 +297,10 @@
                 digitação do que já estava na nota do fornecedor.
             </p>
 
-            <div class="relative mt-12 rounded-4xl border border-graphite-100 bg-white p-8 shadow-sm sm:p-10">
-                <ol class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-5">
+            <div class="relative isolate mt-12 overflow-hidden rounded-4xl border border-graphite-100 bg-white p-8 shadow-sm sm:p-10">
+                <div aria-hidden="true" class="linha-fluxo pointer-events-none absolute left-10 right-10 top-[3.75rem] hidden h-px bg-gradient-to-r from-transparent via-primary-400/70 to-transparent lg:block"></div>
+
+                <ol class="relative grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-5">
                     @foreach ([
                         ['upload', 'Chega a compra', 'O XML do fornecedor entra solto, em lote ou em ZIP. O fornecedor é criado a partir do próprio arquivo.'],
                         ['check', 'Confere quem é o quê', 'O produto do fornecedor é ligado ao seu. Na segunda nota do mesmo fornecedor, ele já entra reconhecido.'],
@@ -463,7 +465,7 @@
     <section data-revelar class="border-t border-graphite-100">
         <div class="mx-auto max-w-6xl px-6 py-16">
             <div class="relative isolate overflow-hidden rounded-4xl border border-graphite-100 bg-graphite-50 px-8 py-14 text-center sm:px-14">
-                <div aria-hidden="true" class="pointer-events-none absolute -top-20 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl"></div>
+                <div aria-hidden="true" class="deriva-um pointer-events-none absolute -top-20 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary-200/40 blur-3xl"></div>
 
                 <div class="relative">
                     <h2 class="font-display text-2xl font-extrabold tracking-[-0.01em] text-graphite-900 sm:text-3xl">
