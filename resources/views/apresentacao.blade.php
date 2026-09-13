@@ -164,16 +164,18 @@
                     <span class="fonte-mono text-xs font-medium tracking-[-0.04em] text-graphite-600">FISCAL · ESTOQUE · FINANCEIRO</span>
                 </div>
 
-                <h1 data-entra="2" class="text-[3rem] font-light leading-[0.94] tracking-[-0.06em] text-graphite-900 md:text-[3.75rem] lg:text-[4.5rem]">
-                    O sistema diz 200.<br>
-                    O estoque tem 170.<br>
-                    <span class="mt-2 inline-block rounded-2xl bg-gradient-to-b from-primary-600 to-primary-700 px-5 pb-2 pt-1 text-on-primary shadow-[0_18px_40px_-22px_rgba(228,87,46,0.8),inset_0_1px_0_rgba(255,255,255,0.35)]">Agora bate.</span>
+                {{-- Três linhas curtas, como o template: as duas primeiras no peso
+                     leve e a terceira, que é o nome da marca, na placa de cor. --}}
+                <h1 data-entra="2" class="text-[3.25rem] font-light leading-[0.92] tracking-[-0.075em] text-graphite-900 md:text-[4.5rem] lg:text-[5.25rem]">
+                    Emita rápido.<br>
+                    Controle tudo.<br>
+                    <span class="mt-3 inline-block whitespace-nowrap rounded-2xl bg-gradient-to-b from-primary-600 to-primary-700 px-5 pb-3 pt-1 text-on-primary shadow-[0_18px_40px_-22px_rgba(228,87,46,0.8),inset_0_1px_0_rgba(255,255,255,0.35)]">Venda redonda.</span>
                 </h1>
 
                 <p data-entra="3" class="mx-auto mt-8 max-w-2xl text-base font-light leading-8 text-graphite-600 lg:mx-0 md:text-lg">
-                    Venda redonda é quando esses dois números são o mesmo, e a nota, o
-                    estoque e o caixa contam a mesma história no fim do mês. Sistema
-                    fiscal, de estoque e financeiro para quem compra, vende e emite nota.
+                    Venda redonda é quando a nota, o estoque e o caixa contam a mesma
+                    história no fim do mês. Sistema fiscal, de estoque e financeiro
+                    para quem compra, vende e emite nota.
                 </p>
 
                 <div data-entra="4" class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
