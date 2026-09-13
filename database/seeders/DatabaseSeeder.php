@@ -2,24 +2,34 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * O que o banco precisa ter para a aplicação funcionar, e nada além disso.
+ *
+ * Isto não é dado de exemplo: sem os perfis, o cadastro quebra na criação da
+ * conta com `RoleDoesNotExist`, porque `CreateNewUser` dá `assignRole` no
+ * perfil Administrador. Foi o que aconteceu em produção em 13/09, onde o
+ * deploy rodava só `migrate` e este arquivo ainda era o esqueleto do Laravel,
+ * que criava um "Test User" e não semeava perfil nenhum.
+ *
+ * Os dois seeders são idempotentes, `findOrCreate` num e `upsert` no outro,
+ * então rodar a cada deploy é seguro. Dado de demonstração vive em
+ * `venda:demo`, que é outro comando e não entra em produção.
+ */
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
+    /*
+     | Sem `WithoutModelEvents`, que vinha do esqueleto do Laravel: o spatie
+     | invalida o cache de permissões por evento de model, e com os eventos
+     | suprimidos o `syncPermissions` do PerfilSeeder não enxerga a permissão
+     | que ele mesmo acabou de criar. Rebenta com `PermissionDoesNotExist`.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            PerfilSeeder::class,
+            TabelasFiscaisSeeder::class,
         ]);
     }
 }
