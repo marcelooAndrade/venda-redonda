@@ -5,6 +5,7 @@ namespace App\Services\Integrations;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
+use Throwable;
 
 class ViaCepService
 {
@@ -14,8 +15,9 @@ class ViaCepService
 
     /**
      * Mesma régua do ReceitaWsService, e pela mesma razão: pior caso de
-     * 8 + 0,5 + 8 = 16,5s, contra os 15 + 1 + 15 + 1 + 15 = 47s de antes.
-     * Ver o comentário lá para a origem do número.
+     * 8 + 0,5 + 8 = 16,5s, contra os 15 + 1 + 15 = 31s de antes, que eram
+     * `retry(2, 1000)`, duas tentativas no total. Ver o comentário lá para
+     * a origem do número e para o que `Http::retry()` conta.
      */
     public const TIMEOUT_SEGUNDOS = 8;
 
@@ -42,9 +44,9 @@ class ViaCepService
     {
         try {
             $resposta = Http::timeout(self::TIMEOUT_SEGUNDOS)
-                ->retry(self::REPETICOES, self::ESPERA_MS, throw: false)
+                ->retry(1 + self::REPETICOES, self::ESPERA_MS, fn (Throwable $e) => PoliticaDeRepeticao::valeRepetir($e), throw: false)
                 ->get(self::URL."{$cep}/json/");
-        } catch (\Throwable) {
+        } catch (Throwable) {
             throw new RuntimeException('Não foi possível consultar o CEP agora. Preencha manualmente.');
         }
 

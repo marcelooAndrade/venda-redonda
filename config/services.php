@@ -36,8 +36,13 @@ return [
     ],
 
     'receitaws' => [
-        // Opcional. Sem token vale o plano gratuito, limitado por minuto.
+        // Opcional. Sem token a consulta vai para a API Pública: 3 por
+        // minuto por IP, e só CNPJ que já está no banco da ReceitaWS. Com
+        // token vai para a API Comercial, que consulta a Receita Federal.
         'token' => env('RECEITAWS_TOKEN'),
+        // Só na API Comercial: idade máxima, em dias, do dado que a ReceitaWS
+        // pode devolver do cache dela antes de consultar a Receita de novo.
+        'dias' => (int) env('RECEITAWS_DIAS', 30),
     ],
 
 ];
