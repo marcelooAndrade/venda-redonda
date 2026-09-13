@@ -148,19 +148,36 @@ class Cadastro extends Component
             $this->avisoSituacao = $dados->situacao;
         }
 
-        // A ReceitaWS não devolve o código IBGE, que a NF-e exige. Ele vem do
-        // ViaCEP, disparado com o CEP que acabou de chegar.
-        if ($this->form['cep'] !== '') {
-            $this->buscarCep(app(ViaCepService::class));
-        }
+        // A consulta de CNPJ já trouxe o endereço inteiro. O que falta é o
+        // código IBGE, que a ReceitaWS não devolve: ele sai da tabela oficial
+        // pelo município e UF, e o ViaCEP é só reforço pelo CEP. Por isso o
+        // ViaCEP aqui é silencioso: um CEP que ele não conhece, como o de
+        // cidade pequena, não pode virar erro vermelho numa consulta que deu
+        // certo. Quem viu isso: 47.528.089/0001-27, de Urânia, cujo CEP a
+        // ViaCEP não tem. O código IBGE é resolvido de todo jeito, pela tabela.
+        $this->enriquecerEnderecoPeloCep(app(ViaCepService::class), silencioso: true);
     }
 
     public function buscarCep(ViaCepService $viaCep): void
     {
+        // O usuário clicou no botão de CEP de propósito, então aqui a falha
+        // é dita: se o CEP não existe, ele precisa saber para corrigir.
+        $this->enriquecerEnderecoPeloCep($viaCep, silencioso: false);
+    }
+
+    private function enriquecerEnderecoPeloCep(ViaCepService $viaCep, bool $silencioso): void
+    {
         try {
             $dados = $viaCep->consultar((string) $this->form['cep']);
         } catch (RuntimeException $e) {
-            $this->addError('cep', $e->getMessage());
+            if (! $silencioso) {
+                $this->addError('cep', $e->getMessage());
+            }
+
+            // Mesmo sem o ViaCEP, o código IBGE ainda pode sair da tabela
+            // oficial pelo município e UF que a consulta de CNPJ já preencheu.
+            // Antes o método saía aqui e deixava o código vazio à toa.
+            $this->completarCodigoIbge();
 
             return;
         }
@@ -189,6 +206,14 @@ class Cadastro extends Component
      *
      * Quando a tabela não sabe, seja porque está vazia ou porque o nome não
      * casa, o que estiver no campo permanece. É aí que digitar na mão vale.
+     *
+     * A comparação ignora acento e caixa. A ReceitaWS devolve o município em
+     * maiúsculas e sem acento ("URANIA"), enquanto a tabela guarda o nome
+     * oficial ("Urânia"). Em MySQL a collation padrão casaria os dois, mas
+     * em SQLite, que é o banco de teste e o local, a comparação é sensível a
+     * acento e o par não fechava, deixando o código IBGE vazio para cidade
+     * com acento no nome. Normalizar em PHP resolve nos dois bancos, sem DDL
+     * específico, e mantém as migrations portáveis como o projeto exige.
      */
     private function completarCodigoIbge(): void
     {
@@ -199,14 +224,22 @@ class Cadastro extends Component
             return;
         }
 
+        $alvo = $this->normalizarNomeMunicipio($municipio);
+
         $codigo = DB::table('municipios')
             ->where('uf', $uf)
-            ->whereRaw('LOWER(nome) = ?', [Str::lower($municipio)])
-            ->value('codigo_ibge');
+            ->get(['nome', 'codigo_ibge'])
+            ->first(fn ($m): bool => $this->normalizarNomeMunicipio($m->nome) === $alvo)
+            ?->codigo_ibge;
 
         if ($codigo !== null) {
             $this->form['codigo_municipio'] = (string) $codigo;
         }
+    }
+
+    private function normalizarNomeMunicipio(string $nome): string
+    {
+        return Str::of($nome)->ascii()->lower()->trim()->value();
     }
 
     public function salvar(ValidarPessoa $validador): void
