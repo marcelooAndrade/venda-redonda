@@ -10,6 +10,8 @@ use App\Services\Integrations\ReceitaWsService;
 use App\Services\Integrations\ViaCepService;
 use App\Services\Pessoas\ValidarPessoa;
 use App\Support\EmitenteAtual;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -167,12 +169,53 @@ class Cadastro extends Component
         $this->form['bairro'] = $dados->bairro ?: $this->form['bairro'];
         $this->form['municipio'] = $dados->municipio ?: $this->form['municipio'];
         $this->form['uf'] = $dados->uf ?: $this->form['uf'];
-        $this->form['codigo_municipio'] = $dados->codigoIbge ?? '';
+
+        // Preserva o que já estava, em vez de apagar: o ViaCEP nem sempre
+        // devolve o IBGE, e antes um CEP sem IBGE zerava um código correto
+        // que a pessoa tinha acabado de digitar.
+        $this->form['codigo_municipio'] = $dados->codigoIbge ?: $this->form['codigo_municipio'];
+
+        $this->completarCodigoIbge();
+    }
+
+    /**
+     * Resolve o código IBGE pela tabela oficial, a partir de município e UF.
+     *
+     * A tabela vem de `fiscal:importar-municipios` e é a própria lista do
+     * IBGE, então ela manda sempre que souber responder: é o que garante o
+     * par consistente que a decisão de 10/09 protege, inclusive no caso em
+     * que a consulta de CNPJ troca o município e deixaria para trás o código
+     * da cidade anterior.
+     *
+     * Quando a tabela não sabe, seja porque está vazia ou porque o nome não
+     * casa, o que estiver no campo permanece. É aí que digitar na mão vale.
+     */
+    private function completarCodigoIbge(): void
+    {
+        $municipio = trim((string) $this->form['municipio']);
+        $uf = strtoupper(trim((string) $this->form['uf']));
+
+        if ($municipio === '' || $uf === '') {
+            return;
+        }
+
+        $codigo = DB::table('municipios')
+            ->where('uf', $uf)
+            ->whereRaw('LOWER(nome) = ?', [Str::lower($municipio)])
+            ->value('codigo_ibge');
+
+        if ($codigo !== null) {
+            $this->form['codigo_municipio'] = (string) $codigo;
+        }
     }
 
     public function salvar(ValidarPessoa $validador): void
     {
         $this->authorize('pessoa.gerenciar');
+
+        // Quem digitou município e UF na mão, sem passar pelo CEP, também
+        // ganha o código pela tabela oficial antes da validação cobrar.
+        $this->completarCodigoIbge();
 
         $dados = $this->form;
         $dados['inscricao_estadual'] = blank($dados['inscricao_estadual']) ? null : $dados['inscricao_estadual'];

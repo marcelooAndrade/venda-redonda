@@ -123,8 +123,9 @@
                 </x-ui.field>
 
                 <x-ui.field label="Código IBGE" for="p-ibge" required
-                    hint="Obrigatório na NF-e. Vem do CEP." :error="$errors->first('codigo_municipio')">
-                    <x-ui.input id="p-ibge" wire:model="form.codigo_municipio" numeric readonly />
+                    hint="Obrigatório na NF-e. Vem do CEP, ou do município e da UF. Pode digitar."
+                    :error="$errors->first('codigo_municipio')">
+                    <x-ui.input id="p-ibge" wire:model="form.codigo_municipio" numeric maxlength="7" />
                 </x-ui.field>
 
                 <x-ui.field label="Telefone" for="p-tel">

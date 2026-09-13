@@ -5,6 +5,7 @@ namespace App\Services\Pessoas;
 use App\Enums\Fiscal\IndIEDest;
 use App\Enums\Fiscal\TipoPessoa;
 use App\Support\Documento;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -44,9 +45,46 @@ class ValidarPessoa
             $this->conferirDocumento($validator, $dados);
             $this->conferirInscricaoEstadual($validator, $dados);
             $this->conferirPapel($validator, $dados);
+            $this->conferirMunicipio($validator, $dados);
         });
 
         $validator->validate();
+    }
+
+    /**
+     * O código IBGE precisa ser de um município da UF informada.
+     *
+     * Desde 13/09 o campo é digitável, porque o ViaCEP nem sempre devolve o
+     * código e antes disso a pessoa ficava travada sem poder salvar. Digitável
+     * pede conferência: código de outra UF é rejeição na transmissão, e a ideia
+     * da decisão de 10/09 é barrar o par inconsistente no cadastro.
+     *
+     * A conferência só acontece quando a tabela oficial conhece o código. Com
+     * `fiscal:importar-municipios` ainda não rodado, a tabela está vazia e não
+     * há o que conferir: aí vale o `digits:7` e mais nada, porque inventar
+     * recusa sem base seria pior do que deixar passar.
+     */
+    private function conferirMunicipio($validator, array $dados): void
+    {
+        $codigo = (string) ($dados['codigo_municipio'] ?? '');
+        $uf = strtoupper(trim((string) ($dados['uf'] ?? '')));
+
+        if ($codigo === '' || $uf === '') {
+            return;
+        }
+
+        $municipio = DB::table('municipios')->where('codigo_ibge', $codigo)->first();
+
+        if ($municipio === null) {
+            return;
+        }
+
+        if (strtoupper($municipio->uf) !== $uf) {
+            $validator->errors()->add(
+                'codigo_municipio',
+                "O código {$codigo} é de {$municipio->nome}/{$municipio->uf}, e não da UF {$uf}."
+            );
+        }
     }
 
     private function conferirDocumento($validator, array $dados): void
