@@ -125,12 +125,46 @@
                     SEFAZ-SP em operação
                 </span>
 
-                <span class="flex items-center gap-2 text-xs text-graphite-600">
-                    <span class="flex size-7 items-center justify-center rounded-full bg-graphite-800 text-[10px] font-semibold text-white">
-                        {{ mb_strtoupper(mb_substr($user?->name ?? '?', 0, 2)) }}
-                    </span>
-                    <span class="hidden sm:inline">{{ $user?->name }}</span>
-                </span>
+                {{-- `<details>` em vez de um dropdown com Alpine: o layout inteiro é
+                     hand-rolled, sem `x-data` em lugar nenhum, e o `<details>` já é o
+                     padrão do projeto para menu sem JavaScript (mesma solução do FAQ
+                     da apresentação). Antes deste menu não existia jeito nenhum de
+                     sair do sistema de dentro dele: o avatar era só decoração. --}}
+                <details class="group relative">
+                    <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md px-1.5 py-1 text-xs text-graphite-600 transition-colors marker:content-none hover:bg-graphite-50">
+                        <span class="flex size-7 items-center justify-center rounded-full bg-graphite-800 text-[10px] font-semibold text-white">
+                            {{ mb_strtoupper(mb_substr($user?->name ?? '?', 0, 2)) }}
+                        </span>
+                        <span class="hidden sm:inline">{{ $user?->name }}</span>
+                        <svg class="size-3.5 text-graphite-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </summary>
+
+                    {{-- Fecha ao clicar fora: um `<label>` transparente do tamanho da
+                         tela, atrás do painel, que também é `<summary>` de fechamento
+                         por já estar dentro de outro `<details>` não seria simples só
+                         com HTML, então o clique fora usa este truque de overlay. --}}
+                    <label class="fixed inset-0 z-10 hidden cursor-default group-open:block" aria-hidden="true" onclick="this.closest('details').open = false"></label>
+
+                    <div class="absolute right-0 z-20 mt-2 w-56 rounded-md border border-graphite-200 bg-white py-1 shadow-lg">
+                        <div class="border-b border-graphite-100 px-3 py-2">
+                            <p class="truncate text-sm font-medium text-graphite-900">{{ $user?->name }}</p>
+                            <p class="truncate text-xs text-graphite-500">{{ $user?->email }}</p>
+                        </div>
+                        <a href="{{ route('profile.edit') }}" wire:navigate
+                           class="block px-3 py-2 text-sm text-graphite-700 hover:bg-graphite-50">
+                            Configurações da conta
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                    class="block w-full px-3 py-2 text-left text-sm text-danger-600 hover:bg-danger-50">
+                                Sair
+                            </button>
+                        </form>
+                    </div>
+                </details>
             </header>
 
             {{-- O contêiner da página vive aqui, uma vez só. Cada view repetia
