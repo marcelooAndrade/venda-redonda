@@ -12,6 +12,17 @@ class ViaCepService
 
     private const CACHE_DIAS = 30;
 
+    /**
+     * Mesma régua do ReceitaWsService, e pela mesma razão: pior caso de
+     * 8 + 0,5 + 8 = 16,5s, contra os 15 + 1 + 15 + 1 + 15 = 47s de antes.
+     * Ver o comentário lá para a origem do número.
+     */
+    public const TIMEOUT_SEGUNDOS = 8;
+
+    public const REPETICOES = 1;
+
+    public const ESPERA_MS = 500;
+
     public function consultar(string $cep): RespostaCep
     {
         $cep = preg_replace('/\D/', '', $cep) ?? '';
@@ -30,7 +41,9 @@ class ViaCepService
     private function buscar(string $cep): RespostaCep
     {
         try {
-            $resposta = Http::timeout(15)->retry(2, 1000, throw: false)->get(self::URL."{$cep}/json/");
+            $resposta = Http::timeout(self::TIMEOUT_SEGUNDOS)
+                ->retry(self::REPETICOES, self::ESPERA_MS, throw: false)
+                ->get(self::URL."{$cep}/json/");
         } catch (\Throwable) {
             throw new RuntimeException('Não foi possível consultar o CEP agora. Preencha manualmente.');
         }

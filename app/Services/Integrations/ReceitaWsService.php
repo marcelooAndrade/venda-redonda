@@ -14,6 +14,22 @@ class ReceitaWsService
 
     private const CACHE_DIAS = 7;
 
+    /**
+     * Pior caso do tempo de rede: `TIMEOUT_SEGUNDOS` vezes (1 + `REPETICOES`)
+     * mais `REPETICOES` esperas de `ESPERA_MS`. Com os valores abaixo, isso
+     * dá 8 + 0,5 + 8 = 16,5s, bem abaixo do limite de requisição de qualquer
+     * plataforma comum. Antes era timeout de 20s com 2 repetições e 1,5s de
+     * espera: 20 + 1,5 + 20 + 1,5 + 20 = 64s, e foi o que travou um cadastro
+     * em 13/09 com "This page has expired", porque a plataforma corta a
+     * requisição bem antes disso. Constantes, e não números soltos, para o
+     * teste de tempo de espera conferir contra elas, não reproduzi-las.
+     */
+    public const TIMEOUT_SEGUNDOS = 8;
+
+    public const REPETICOES = 1;
+
+    public const ESPERA_MS = 500;
+
     public function consultar(string $cnpj): RespostaCnpj
     {
         $cnpj = Documento::normalizarCnpj($cnpj);
@@ -36,8 +52,8 @@ class ReceitaWsService
         $token = config('services.receitaws.token');
 
         try {
-            $resposta = Http::timeout(20)
-                ->retry(2, 1500, throw: false)
+            $resposta = Http::timeout(self::TIMEOUT_SEGUNDOS)
+                ->retry(self::REPETICOES, self::ESPERA_MS, throw: false)
                 ->when($token, fn ($http) => $http->withToken($token))
                 ->get(self::URL.$cnpj);
         } catch (\Throwable $e) {
