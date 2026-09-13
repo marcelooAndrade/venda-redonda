@@ -56,11 +56,18 @@ class ReceitaWsService
             throw new RuntimeException('CNPJ inválido. Confira os dígitos antes de consultar.');
         }
 
-        return Cache::remember(
+        // O cache guarda array, não o objeto: o padrão `serializable_classes
+        // => false` do Laravel recusa desserializar classe do cache, e a
+        // segunda consulta do mesmo CNPJ voltava como classe incompleta. O
+        // erro do `buscar` continua propagando sem cachear, porque a exceção
+        // sobe antes do `remember` guardar qualquer coisa.
+        $dados = Cache::remember(
             "receitaws:{$cnpj}",
             now()->addDays(self::CACHE_DIAS),
-            fn (): RespostaCnpj => $this->buscar($cnpj),
+            fn (): array => $this->buscar($cnpj)->toArray(),
         );
+
+        return RespostaCnpj::fromArray($dados);
     }
 
     private function buscar(string $cnpj): RespostaCnpj

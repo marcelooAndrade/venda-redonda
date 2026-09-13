@@ -33,11 +33,16 @@ class ViaCepService
             throw new RuntimeException('CEP precisa ter 8 dígitos.');
         }
 
-        return Cache::remember(
+        // Guarda array, não o objeto: ver a nota no ReceitaWsService. O
+        // padrão do Laravel recusa desserializar classe do cache, e a segunda
+        // consulta do mesmo CEP voltava como classe incompleta.
+        $dados = Cache::remember(
             "viacep:{$cep}",
             now()->addDays(self::CACHE_DIAS),
-            fn (): RespostaCep => $this->buscar($cep),
+            fn (): array => $this->buscar($cep)->toArray(),
         );
+
+        return RespostaCep::fromArray($dados);
     }
 
     private function buscar(string $cep): RespostaCep
