@@ -61,8 +61,11 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
+        // Piso de 8, não de 12: o de 12 barrava cadastro legítimo na porta de
+        // entrada. O que segura a senha fraca aqui é o `uncompromised`, que
+        // recusa senha já vista em vazamento, e não o comprimento.
         Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
+            ? Password::min(8)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
