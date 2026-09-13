@@ -58,7 +58,7 @@
                  emitente não existe permissão neste sistema, e razão social,
                  CNPJ, inscrição estadual e regime são o mínimo que a SEFAZ
                  exige para um emitente existir. --}}
-            <flux:separator :text="__('Sua empresa')" />
+            <flux:separator text="Sua empresa" />
 
             <flux:input
                 name="razao_social"
