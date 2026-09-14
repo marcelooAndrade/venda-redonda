@@ -114,6 +114,6 @@ it('mostra a pagina de erro em portugues, com a marca', function () {
     $this->get('http://vendaredonda.com.br/rota-que-nao-existe')
         ->assertNotFound()
         ->assertSee('Página não encontrada')
-        ->assertSee('Venda Redonda')
+        ->assertSee('EmitirAgora')
         ->assertDontSee('Not Found');
 });

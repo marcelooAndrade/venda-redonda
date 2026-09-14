@@ -119,7 +119,7 @@ it('a tela de login mostra a logo do tenant quando existe', function () {
 it('a tela de login cai na marca do produto quando o tenant nao tem logo', function () {
     $this->get('/login')
         ->assertOk()
-        ->assertSee('Venda Redonda')
+        ->assertSee('EmitirAgora')
         ->assertDontSee(route('logo'));
 });
 

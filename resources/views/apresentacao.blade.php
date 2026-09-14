@@ -22,7 +22,7 @@
 <head>
     {{-- A marca vai cravada, não vem de `APP_NAME`. E sem `title`, senão o
          partial concatena e sai "Venda Redonda - Venda Redonda". --}}
-    @include('partials.head', ['marca' => 'Venda Redonda'])
+    @include('partials.head', ['marca' => 'EmitirAgora'])
 
     {{-- As duas famílias do template. O sistema segue em Manrope; só esta
          página usa Inter e JetBrains Mono. --}}
@@ -56,8 +56,8 @@
     <link rel="canonical" href="{{ $site }}">
 
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Venda Redonda">
-    <meta property="og:title" content="Venda Redonda, da nota ao caixa">
+    <meta property="og:site_name" content="EmitirAgora">
+    <meta property="og:title" content="EmitirAgora, da nota ao caixa">
     <meta property="og:description" content="{{ $descricao }}">
     <meta property="og:url" content="{{ $site }}">
     <meta property="og:locale" content="pt_BR">
@@ -127,7 +127,7 @@
                         <x-marca-padrao class="h-5 w-5 text-graphite-900" />
                     </span>
                     <span class="flex flex-col justify-center leading-none">
-                        <span class="whitespace-nowrap text-sm font-medium tracking-tight text-graphite-900">Venda Redonda</span>
+                        <span class="whitespace-nowrap text-sm font-medium tracking-tight text-primary-600">EmitirAgora</span>
                         <span class="mt-1 hidden whitespace-nowrap text-[11px] font-light text-graphite-500 sm:block">Fiscal · Estoque · Financeiro</span>
                     </span>
                 </a>
@@ -169,13 +169,13 @@
                 <h1 data-entra="2" class="text-[3.25rem] font-light leading-[0.92] tracking-[-0.075em] text-graphite-900 md:text-[4.5rem] lg:text-[5.25rem]">
                     Emita rápido.<br>
                     Controle tudo.<br>
-                    <span class="mt-3 inline-block whitespace-nowrap rounded-2xl bg-gradient-to-b from-primary-600 to-primary-700 px-5 pb-3 pt-1 text-on-primary shadow-[0_18px_40px_-22px_rgba(228,87,46,0.8),inset_0_1px_0_rgba(255,255,255,0.35)]">Venda redonda.</span>
+                    <span class="mt-3 inline-block whitespace-nowrap rounded-2xl bg-gradient-to-b from-primary-600 to-primary-700 px-5 pb-3 pt-1 text-on-primary shadow-[0_18px_40px_-22px_rgba(228,87,46,0.8),inset_0_1px_0_rgba(255,255,255,0.35)]">EmitirAgora.</span>
                 </h1>
 
                 <p data-entra="3" class="mx-auto mt-8 max-w-2xl text-base font-light leading-8 text-graphite-600 lg:mx-0 md:text-lg">
-                    Venda redonda é quando a nota, o estoque e o caixa contam a mesma
-                    história no fim do mês. Sistema fiscal, de estoque e financeiro
-                    para quem compra, vende e emite nota.
+                    O <span class="text-primary-600">EmitirAgora</span> existe para que a nota, o estoque e o caixa
+                    contem a mesma história no fim do mês. Sistema fiscal, de estoque
+                    e financeiro para quem compra, vende e emite nota.
                 </p>
 
                 <div data-entra="4" class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
@@ -629,7 +629,7 @@
                 </span>
 
                 <p class="fonte-mono text-xs font-medium tracking-[-0.04em] text-primary-700">Gratuito</p>
-                <p class="mt-3 text-sm font-light leading-7 text-graphite-600">Entra pelo endereço da Venda Redonda.</p>
+                <p class="mt-3 text-sm font-light leading-7 text-graphite-600">Entra pelo endereço do <span class="text-primary-600">EmitirAgora</span>.</p>
 
                 <ul class="mt-7 space-y-3 border-t border-primary-200/70 pt-6 text-sm font-light text-graphite-700">
                     @foreach ([
@@ -750,7 +750,7 @@
                         ['escudo', 'Meu contador consegue mexer na regra fiscal sozinho?', 'Sim. Tela própria, permissão própria, sem depender de programador para mudar alíquota ou CST.'],
                         ['predio', 'Serve para matriz e filial?', 'Sim. Um tenant pode ter mais de um emitente, cada um com CNPJ e certificado próprios.'],
                         ['relogio', 'O que ainda falta no sistema?', 'Está listado na seção acima, sem esconder.'],
-                        ['dinheiro', 'O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço da Venda Redonda, sem domínio próprio.'],
+                        ['dinheiro', 'O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço do EmitirAgora, sem domínio próprio.'],
                         ['pasta', 'Onde ficam os meus dados?', 'No disco privado da conta, isolado por emitente. Certificado e senha nunca são logados.'],
                     ] as [$icone, $pergunta, $resposta])
                         <details class="group rounded-[1.5rem] border border-white bg-white/72 px-5 py-4 shadow-[0_8px_22px_-18px_rgba(14,27,31,0.3),inset_0_1px_0_white] transition-colors duration-300 open:bg-white/90">
@@ -843,7 +843,7 @@
                         <x-marca-padrao class="h-5 w-5 text-graphite-900" />
                     </span>
                     <span class="flex flex-col justify-center leading-none">
-                        <span class="whitespace-nowrap text-sm font-medium tracking-tight text-graphite-900">Venda Redonda</span>
+                        <span class="whitespace-nowrap text-sm font-medium tracking-tight text-primary-600">EmitirAgora</span>
                         <span class="mt-1 hidden whitespace-nowrap text-[11px] font-light text-graphite-500 sm:block">Fiscal · Estoque · Financeiro</span>
                     </span>
                 </span>
@@ -884,7 +884,7 @@
         </div>
 
         <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-graphite-200/70 pt-6 md:flex-row">
-            <p class="text-xs font-light text-graphite-500">© {{ now()->year }} Venda Redonda. Todos os direitos reservados.</p>
+            <p class="text-xs font-light text-graphite-500">© {{ now()->year }} <span class="text-primary-600">EmitirAgora</span>. Todos os direitos reservados.</p>
             <p class="fonte-mono text-xs tracking-[-0.04em] text-graphite-500">FISCAL · ESTOQUE · FINANCEIRO</p>
         </div>
     </div>

@@ -8,7 +8,7 @@
 --}}
 {{-- Sem tamanho padrão: o `merge` concatenaria `size-9` com o tamanho que o
      chamador passa, e duas classes de tamanho brigando é bug esperando data. --}}
-<svg viewBox="0 0 100 100" {{ $attributes }} role="img" aria-label="Venda Redonda">
+<svg viewBox="0 0 100 100" {{ $attributes }} role="img" aria-label="EmitirAgora">
     <path fill="currentColor" d="M0 0 H44 A56 56 0 0 0 100 56 V100 H0 Z" />
     <path fill="var(--color-primary-600)" d="M100 0 H56 A44 44 0 0 0 100 44 Z" />
 </svg>

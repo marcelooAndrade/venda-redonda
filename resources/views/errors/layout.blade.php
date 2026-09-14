@@ -13,7 +13,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>@yield('titulo') - Venda Redonda</title>
+    <title>@yield('titulo') - EmitirAgora</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <style>
         /* O `x-marca-padrao` pinta o quarto de disco com esta variável. */
@@ -81,7 +81,7 @@
     <main class="cartao">
         <div class="marca">
             <x-marca-padrao style="color:#0e1b1f" />
-            <span>Venda Redonda</span>
+            <span style="color: var(--color-primary-600)">EmitirAgora</span>
         </div>
 
         <p class="codigo">ERRO @yield('codigo')</p>

@@ -83,7 +83,11 @@
                         {{ mb_strtoupper(mb_substr($tenant?->rotulo() ?? 'N', 0, 1)) }}
                     </span>
                     <span class="truncate font-display text-base font-bold uppercase tracking-wide text-white">
-                        {{ $tenant?->rotulo() ?? 'Venda Redonda' }}
+                        @if ($tenant?->rotulo())
+                            {{ $tenant->rotulo() }}
+                        @else
+                            <span class="text-primary-600">EmitirAgora</span>
+                        @endif
                     </span>
                 @endif
             </div>

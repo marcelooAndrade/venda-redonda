@@ -9,7 +9,7 @@
     <x-ui.page-header
         eyebrow="Produto"
         title="Empresas"
-        description="Quem se cadastrou na Venda Redonda, e quem voltou depois de entrar." />
+        description="Quem se cadastrou no EmitirAgora, e quem voltou depois de entrar." />
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <x-ui.card>
@@ -46,7 +46,7 @@
     <x-ui.card title="Todas as empresas" subtitle="Mais recente primeiro" :padded="false">
         @if ($this->empresas->isEmpty())
             <div class="p-5">
-                <x-ui.empty-state title="Nenhuma empresa cadastrada" description="Quando alguém criar uma conta na Venda Redonda, ela aparece aqui." />
+                <x-ui.empty-state title="Nenhuma empresa cadastrada" description="Quando alguém criar uma conta no EmitirAgora, ela aparece aqui." />
             </div>
         @else
             <x-ui.table>

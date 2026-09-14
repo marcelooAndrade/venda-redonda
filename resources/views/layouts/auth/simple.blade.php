@@ -36,8 +36,8 @@
                         @else
                             <span class="flex items-center gap-2.5">
                                 <x-marca-padrao class="size-7 text-graphite-50" />
-                                <span class="font-display text-sm font-extrabold uppercase tracking-[0.04em] text-graphite-50">
-                                    Venda Redonda
+                                <span class="font-display text-sm font-extrabold uppercase tracking-[0.04em] text-primary-600">
+                                    EmitirAgora
                                 </span>
                             </span>
                         @endif
