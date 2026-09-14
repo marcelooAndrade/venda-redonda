@@ -105,12 +105,12 @@ class Cadastro extends Component
                 continue;
             }
 
-            // `roles()->get()`, não a propriedade `roles`: a propriedade
-            // cacheia no model na primeira leitura, e o laço muda o time de
-            // permissão a cada volta. Sem isso, todo emitente devolveria o
-            // papel do primeiro que o laço tocou.
+            // `roles()->value('name')`, não a propriedade `roles`: a
+            // propriedade cacheia no model na primeira leitura, e o laço
+            // muda o time de permissão a cada volta. Sem isso, todo
+            // emitente devolveria o papel do primeiro que o laço tocou.
             $registrador->setPermissionsTeamId($emitenteDaEmpresa->id);
-            $this->papeis[$emitenteDaEmpresa->id] = $usuario->roles()->get()->first()?->name ?? '';
+            $this->papeis[$emitenteDaEmpresa->id] = (string) ($usuario->roles()->value('name') ?? '');
         }
 
         // O time de permissão é global no processo: sem restaurar o do

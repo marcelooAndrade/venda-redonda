@@ -20,9 +20,9 @@ class EscolherEmitenteController extends Controller
 {
     public function __invoke(Request $request, EmitenteAtual $emitenteAtual): RedirectResponse
     {
-        $dados = $request->validate(['emitente_id' => ['required', 'integer']]);
+        $request->validate(['emitente_id' => ['required', 'integer']]);
 
-        $emitente = Emitente::withoutGlobalScope('tenant')->findOrFail($dados['emitente_id']);
+        $emitente = Emitente::query()->withoutGlobalScope('tenant')->findOrFail($request->integer('emitente_id'));
 
         try {
             $emitenteAtual->escolher($emitente);
