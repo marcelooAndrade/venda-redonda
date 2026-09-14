@@ -239,7 +239,11 @@
                  rolagem própria em toda a tela, então a barra lateral e o
                  topo nunca se movem quando a página é mais alta que a tela. --}}
             <main class="min-w-0 flex-1 overflow-y-auto">
-                <div class="mx-auto w-full max-w-[1800px] px-5 py-6 lg:px-8">
+                {{-- `h-full`: sem efeito para a maioria das páginas, que só
+                     têm a altura do próprio conteúdo. É o que permite a
+                     Destinatários encaixar listagem e formulário na altura
+                     cheia da tela, em vez de rolar a página inteira. --}}
+                <div class="mx-auto h-full w-full max-w-[1800px] px-5 py-6 lg:px-8">
                     {{ $slot }}
                 </div>
             </main>
