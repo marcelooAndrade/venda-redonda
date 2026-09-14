@@ -42,7 +42,7 @@ it('nao autentica usuario de outro tenant no host errado', function () {
     ])->assertSessionHasErrors();
 
     $this->assertGuest();
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('autentica no host do proprio tenant', function () {
     $leme = tenantHost('leme', 'leme.test');
@@ -61,4 +61,4 @@ it('autentica no host do proprio tenant', function () {
     ]);
 
     $this->assertAuthenticated();
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');

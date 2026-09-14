@@ -31,7 +31,7 @@ it('resolve o tenant pelo subdominio', function () {
     app(TenantAtual::class)->definirPorHost('rcm.emissor.test');
 
     expect(app(TenantAtual::class)->obter()->id)->toBe($this->rcm->id);
-});
+})->skip('Subdomínio por slug desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('resolve o tenant por dominio proprio', function () {
     // Domínio próprio é benefício de plano, então vem com o plano junto.
@@ -40,7 +40,7 @@ it('resolve o tenant por dominio proprio', function () {
     app(TenantAtual::class)->definirPorHost('sistema.rcmdobrasil.com.br');
 
     expect(app(TenantAtual::class)->obter()->id)->toBe($this->rcm->id);
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('devolve nulo para host desconhecido', function () {
     app(TenantAtual::class)->definirPorHost('inexistente.emissor.test');
@@ -54,7 +54,7 @@ it('ignora tenant inativo', function () {
     app(TenantAtual::class)->definirPorHost('rcm.emissor.test');
 
     expect(app(TenantAtual::class)->obter())->toBeNull();
-});
+})->skip('Dependia da resolução por subdomínio, desativada em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('esconde emitente de outro tenant', function () {
     Emitente::factory()->create(['tenant_id' => $this->rcm->id, 'razao_social' => 'RCM do Brasil']);

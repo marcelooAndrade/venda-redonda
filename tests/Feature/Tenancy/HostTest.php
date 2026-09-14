@@ -38,23 +38,23 @@ it('casa o dominio proprio do cliente antes de mexer no prefixo', function () {
     $rcm = Tenant::create(['nome' => 'RCM', 'slug' => 'rcm', 'dominio' => 'app.rcmdobrasil.com.br', 'plano' => PlanoTenant::Avancado]);
 
     expect(resolver('app.rcmdobrasil.com.br')?->getKey())->toBe($rcm->getKey());
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('aceita o dominio do cliente cadastrado sem o prefixo', function () {
     $rcm = Tenant::create(['nome' => 'RCM', 'slug' => 'rcm', 'dominio' => 'rcmdobrasil.com.br', 'plano' => PlanoTenant::Avancado]);
 
     expect(resolver('app.rcmdobrasil.com.br')?->getKey())->toBe($rcm->getKey());
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('continua resolvendo tenant por subdominio', function () {
     $rcm = Tenant::create(['nome' => 'RCM', 'slug' => 'rcm']);
 
     expect(resolver('rcm.vendaredonda.com.br')?->getKey())->toBe($rcm->getKey())
         ->and(resolver('app.rcm.vendaredonda.com.br')?->getKey())->toBe($rcm->getKey());
-});
+})->skip('Subdomínio por slug desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('a raiz mostra a apresentacao no dominio do produto', function () {
-    $this->get('http://vendaredonda.com.br/')->assertOk()->assertSee('Venda Redonda');
+    $this->get('http://vendaredonda.com.br/')->assertOk()->assertSee('EmitirAgora');
 });
 
 it('a apresentacao nao depende de APP_NAME para dizer o nome do produto', function () {
@@ -65,7 +65,7 @@ it('a apresentacao nao depende de APP_NAME para dizer o nome do produto', functi
         ->assertOk()
         ->assertSee('<title>', false)
         ->assertDontSee('Nome Errado')
-        ->assertDontSee('Venda Redonda - Venda Redonda');
+        ->assertDontSee('EmitirAgora - EmitirAgora');
 });
 
 it('a apresentacao manda para o login do mesmo dominio, nao para um subdominio app', function () {

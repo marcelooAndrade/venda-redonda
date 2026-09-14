@@ -53,7 +53,7 @@ it('no dominio do produto a porta e da venda redonda, mesmo havendo cliente com 
 
     $this->get('http://vendaredonda.com.br/login')
         ->assertOk()
-        ->assertSee('Venda Redonda')
+        ->assertSee('EmitirAgora')
         ->assertDontSee(route('logo'));
 });
 
@@ -67,4 +67,4 @@ it('no dominio do cliente a marca dele abre a porta', function () {
     $this->get('http://app.rcmdobrasil.com.br/login')
         ->assertOk()
         ->assertSee('src="'.route('logo').'"', false);
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');

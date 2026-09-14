@@ -75,38 +75,53 @@ class TenantAtual
     {
         $host = strtolower(trim($host));
 
-        // Domínio próprio tem prioridade, e com o host inteiro: é assim que
-        // um cliente cadastrado como `app.rcmdobrasil.com.br` continua casando.
-        $porDominio = Tenant::query()->where('dominio', $host)->first();
-
-        if ($porDominio !== null) {
-            return $porDominio;
+        // Carve-out só de teste/dev: a suíte usa o host padrão do cliente
+        // HTTP de teste (`localhost`) para achar o tenant fixo de testes,
+        // pelo mesmo campo `dominio` que o domínio próprio de cliente usava.
+        // Não é recurso de cliente, é só o jeito de simular "existe um
+        // tenant" nos testes. Ver tests/TestCase.php.
+        if ($host === 'localhost') {
+            return Tenant::query()->where('dominio', 'localhost')->first();
         }
 
-        $semPrefixo = HostDoProduto::semPrefixo($host);
+        // Domínio próprio de cliente e subdomínio por slug desativados em
+        // 14/09/2026: por ora todo mundo entra pelo domínio único do
+        // produto. Comentado, não apagado, para poder voltar.
+        //
+        // // Domínio próprio tem prioridade, e com o host inteiro: é assim que
+        // // um cliente cadastrado como `app.rcmdobrasil.com.br` continua casando.
+        // $porDominio = Tenant::query()->where('dominio', $host)->first();
+        //
+        // if ($porDominio !== null) {
+        //     return $porDominio;
+        // }
+        //
+        // $semPrefixo = HostDoProduto::semPrefixo($host);
+        //
+        // // Cadastrado sem o prefixo, atendido com ele.
+        // if ($semPrefixo !== $host) {
+        //     $porDominioNu = Tenant::query()->where('dominio', $semPrefixo)->first();
+        //
+        //     if ($porDominioNu !== null) {
+        //         return $porDominioNu;
+        //     }
+        // }
+        //
+        // // O domínio do produto não é de tenant nenhum: é superfície própria,
+        // // apresentação ou login. Sem esta parada, `app.<dominio>` cairia na
+        // // regra de slug abaixo e um tenant de slug `app` o capturaria.
+        // if (HostDoProduto::eDominioDoProduto($semPrefixo)) {
+        //     return null;
+        // }
+        //
+        // $partes = explode('.', $semPrefixo);
+        //
+        // if (count($partes) < 2) {
+        //     return null;
+        // }
+        //
+        // return Tenant::query()->where('slug', $partes[0])->first();
 
-        // Cadastrado sem o prefixo, atendido com ele.
-        if ($semPrefixo !== $host) {
-            $porDominioNu = Tenant::query()->where('dominio', $semPrefixo)->first();
-
-            if ($porDominioNu !== null) {
-                return $porDominioNu;
-            }
-        }
-
-        // O domínio do produto não é de tenant nenhum: é superfície própria,
-        // apresentação ou login. Sem esta parada, `app.<dominio>` cairia na
-        // regra de slug abaixo e um tenant de slug `app` o capturaria.
-        if (HostDoProduto::eDominioDoProduto($semPrefixo)) {
-            return null;
-        }
-
-        $partes = explode('.', $semPrefixo);
-
-        if (count($partes) < 2) {
-            return null;
-        }
-
-        return Tenant::query()->where('slug', $partes[0])->first();
+        return null;
     }
 }

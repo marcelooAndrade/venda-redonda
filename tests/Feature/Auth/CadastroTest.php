@@ -46,7 +46,7 @@ it('nao existe em dominio de cliente', function () {
     $this->post('http://app.rcmdobrasil.com.br/register', dadosDeCadastro())->assertNotFound();
 
     expect(User::withoutGlobalScopes()->count())->toBe(0);
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('existe no dominio do produto', function () {
     $this->get('http://vendaredonda.com.br/register')->assertOk();

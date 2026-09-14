@@ -75,7 +75,7 @@ it('o tenant vem do host, e nao do usuario, quando os dois discordam', function 
     $this->actingAs($user)->get('http://app.rcmdobrasil.com.br/dashboard');
 
     expect(app(TenantAtual::class)->id())->toBe(Tenant::where('dominio', 'app.rcmdobrasil.com.br')->value('id'));
-});
+})->skip('Domínio próprio de cliente desativado em 14/09/2026, ver TenantAtual::resolverHost');
 
 it('visitante no dominio do produto nao tem tenant', function () {
     clienteCom('leme');
