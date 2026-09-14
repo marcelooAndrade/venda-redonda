@@ -4,6 +4,7 @@ namespace App\Livewire\Usuarios;
 
 use App\Models\Emitente;
 use App\Models\User;
+use App\Support\TenantAtual;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -23,9 +24,22 @@ use Livewire\Component;
 #[Title('Usuários')]
 class Cadastro extends Component
 {
+    /** @var array<string, string> */
+    public array $form = ['name' => '', 'email' => '', 'senha' => ''];
+
+    /** @var array<int, string> emitente_id => perfil (vazio = sem acesso) */
+    public array $papeis = [];
+
+    public ?int $editandoId = null;
+
+    public bool $emailVerificado = false;
+
+    public bool $contaExistente = false;
+
     public function mount(): void
     {
         $this->authorize('usuario.gerenciar');
+        $this->prepararPapeisVazios();
     }
 
     /**
@@ -55,6 +69,75 @@ class Cadastro extends Component
             ->with(['emitentes' => fn ($q) => $q->whereIn('emitentes.id', $idsDaEmpresa)])
             ->orderBy('name')
             ->get();
+    }
+
+    private function prepararPapeisVazios(): void
+    {
+        $this->papeis = $this->emitentesDaEmpresa->mapWithKeys(fn (Emitente $e): array => [$e->id => ''])->all();
+    }
+
+    public function novoUsuario(): void
+    {
+        $this->reset('form', 'editandoId', 'emailVerificado', 'contaExistente');
+        $this->prepararPapeisVazios();
+    }
+
+    public function verificarEmail(): void
+    {
+        $dados = $this->validate([
+            'form.email' => ['required', 'email', 'max:254'],
+        ], [], ['form.email' => 'e-mail'])['form'];
+
+        $existente = User::withoutGlobalScope('tenant')->where('email', $dados['email'])->first();
+
+        $this->emailVerificado = true;
+        $this->contaExistente = $existente !== null;
+        $this->editandoId = $existente?->id;
+
+        if ($existente !== null) {
+            $this->form['name'] = $existente->name;
+        }
+    }
+
+    public function salvar(): void
+    {
+        $this->authorize('usuario.gerenciar');
+
+        $dados = $this->validate([
+            'form.email' => ['required', 'email', 'max:254'],
+            'form.name' => $this->contaExistente ? ['nullable'] : ['required', 'string', 'min:2', 'max:160'],
+            'form.senha' => $this->contaExistente ? ['nullable'] : ['required', 'string', 'min:8'],
+        ], [], ['form.email' => 'e-mail', 'form.name' => 'nome', 'form.senha' => 'senha'])['form'];
+
+        if (collect($this->papeis)->filter(fn (string $p): bool => $p !== '')->isEmpty()) {
+            $this->addError('papeis', 'Escolha um perfil em pelo menos um emitente.');
+
+            return;
+        }
+
+        $usuario = $this->contaExistente
+            ? User::withoutGlobalScope('tenant')->findOrFail($this->editandoId)
+            : User::create([
+                'tenant_id' => app(TenantAtual::class)->id(),
+                'name' => $dados['name'],
+                'email' => $dados['email'],
+                'password' => $dados['senha'],
+                'email_verified_at' => now(),
+            ]);
+
+        foreach ($this->papeis as $emitenteId => $perfil) {
+            if ($perfil === '') {
+                $usuario->emitentes()->detach($emitenteId);
+
+                continue;
+            }
+
+            $usuario->emitentes()->syncWithoutDetaching([$emitenteId]);
+        }
+
+        session()->flash('sucesso', 'Usuário salvo.');
+        $this->novoUsuario();
+        unset($this->usuarios);
     }
 
     public function render()

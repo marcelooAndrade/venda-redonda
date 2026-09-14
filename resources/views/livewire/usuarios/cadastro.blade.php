@@ -34,4 +34,53 @@
         @endif
     </x-ui.card>
 
+    <x-ui.card title="Novo usuário">
+        <div class="grid gap-4">
+            <x-ui.field label="E-mail" for="u-email" required :error="$errors->first('form.email')">
+                <div class="flex gap-2">
+                    <x-ui.input id="u-email" type="email" wire:model="form.email" maxlength="254" class="flex-1" />
+                    <x-ui.button variant="secondary" size="md" wire:click="verificarEmail" wire:loading.attr="disabled" wire:target="verificarEmail">
+                        <span wire:loading.remove wire:target="verificarEmail">Verificar</span>
+                        <span wire:loading wire:target="verificarEmail">...</span>
+                    </x-ui.button>
+                </div>
+            </x-ui.field>
+
+            @if ($emailVerificado)
+                @if ($contaExistente)
+                    <x-ui.alert variant="info">
+                        Já existe uma conta com este e-mail, de {{ $form['name'] }}. Vamos apenas dar acesso a esta empresa.
+                    </x-ui.alert>
+                @else
+                    <x-ui.field label="Nome" for="u-nome" required :error="$errors->first('form.name')">
+                        <x-ui.input id="u-nome" wire:model="form.name" maxlength="160" />
+                    </x-ui.field>
+                    <x-ui.field label="Senha inicial" for="u-senha" required :error="$errors->first('form.senha')" hint="A pessoa troca depois, em Configurações da conta.">
+                        <x-ui.input id="u-senha" type="password" wire:model="form.senha" minlength="8" />
+                    </x-ui.field>
+                @endif
+
+                <div class="grid gap-2">
+                    <p class="etiqueta text-graphite-500">Perfil por emitente</p>
+                    @error('papeis') <p class="text-sm text-danger-600">{{ $message }}</p> @enderror
+                    @foreach ($this->emitentesDaEmpresa as $emitenteDaEmpresa)
+                        <x-ui.field :label="$emitenteDaEmpresa->nome_fantasia ?: $emitenteDaEmpresa->razao_social" :for="'u-papel-'.$emitenteDaEmpresa->id">
+                            <x-ui.select :id="'u-papel-'.$emitenteDaEmpresa->id" wire:model="papeis.{{ $emitenteDaEmpresa->id }}">
+                                <option value="">Sem acesso</option>
+                                @foreach (\App\Enums\Perfil::cases() as $perfil)
+                                    <option value="{{ $perfil->value }}">{{ $perfil->value }}</option>
+                                @endforeach
+                            </x-ui.select>
+                        </x-ui.field>
+                    @endforeach
+                </div>
+
+                <div class="flex gap-2">
+                    <x-ui.button variant="primary" wire:click="salvar">Salvar</x-ui.button>
+                    <x-ui.button variant="ghost" wire:click="novoUsuario">Cancelar</x-ui.button>
+                </div>
+            @endif
+        </div>
+    </x-ui.card>
+
 </div>
