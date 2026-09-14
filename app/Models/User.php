@@ -114,10 +114,15 @@ class User extends Authenticatable implements PasskeyUser
 
     /**
      * Todo dado fiscal é isolado por emitente. Sem vínculo, sem acesso.
+     *
+     * Sem o escopo de tenant, de propósito: esta checagem também vale para
+     * escolher uma empresa diferente da que está em foco agora, incluindo a
+     * primeira vez, quando o tenant da sessão ainda não é o dela. Ver
+     * EmitenteAtual::escolher().
      */
     public function podeAcessar(Emitente $emitente): bool
     {
-        return $this->emitentes()->whereKey($emitente->getKey())->exists();
+        return $this->emitentes()->withoutGlobalScope('tenant')->whereKey($emitente->getKey())->exists();
     }
 
     /**
