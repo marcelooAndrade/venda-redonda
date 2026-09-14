@@ -19,6 +19,7 @@
                         <th class="etiqueta px-2 py-2 text-left text-graphite-500">Nome</th>
                         <th class="etiqueta px-2 py-2 text-left text-graphite-500">E-mail</th>
                         <th class="etiqueta px-2 py-2 text-left text-graphite-500">Situação</th>
+                        <th class="etiqueta px-2 py-2 text-right text-graphite-500">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,6 +28,9 @@
                             <td class="px-2 py-2">{{ $usuario->name }}</td>
                             <td class="px-2 py-2">{{ $usuario->email }}</td>
                             <td class="px-2 py-2">{{ $usuario->ativo ? 'Ativo' : 'Inativo' }}</td>
+                            <td class="px-2 py-2 text-right">
+                                <x-ui.button variant="ghost" size="sm" wire:click="editar({{ $usuario->id }})">Editar</x-ui.button>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

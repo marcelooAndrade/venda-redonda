@@ -10,6 +10,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Spatie\Permission\PermissionRegistrar;
 
 /**
  * Quem tem acesso a esta empresa, e com qual perfil em cada emitente dela.
@@ -82,6 +83,41 @@ class Cadastro extends Component
         $this->prepararPapeisVazios();
     }
 
+    public function editar(int $id): void
+    {
+        $usuario = User::withoutGlobalScope('tenant')->findOrFail($id);
+
+        $this->reset('form', 'emailVerificado', 'contaExistente');
+        $this->prepararPapeisVazios();
+
+        $this->editandoId = $usuario->id;
+        $this->form['name'] = $usuario->name;
+        $this->form['email'] = $usuario->email;
+        $this->emailVerificado = true;
+        $this->contaExistente = true;
+
+        $registrador = app(PermissionRegistrar::class);
+        $timeOriginal = $registrador->getPermissionsTeamId();
+
+        foreach ($this->emitentesDaEmpresa as $emitenteDaEmpresa) {
+            if (! $usuario->podeAcessar($emitenteDaEmpresa)) {
+                continue;
+            }
+
+            // `roles()->get()`, não a propriedade `roles`: a propriedade
+            // cacheia no model na primeira leitura, e o laço muda o time de
+            // permissão a cada volta. Sem isso, todo emitente devolveria o
+            // papel do primeiro que o laço tocou.
+            $registrador->setPermissionsTeamId($emitenteDaEmpresa->id);
+            $this->papeis[$emitenteDaEmpresa->id] = $usuario->roles()->get()->first()?->name ?? '';
+        }
+
+        // O time de permissão é global no processo: sem restaurar o do
+        // administrador logado, as checagens de permissão do resto desta
+        // mesma requisição usariam o último emitente do laço acima.
+        $registrador->setPermissionsTeamId($timeOriginal);
+    }
+
     public function verificarEmail(): void
     {
         $dados = $this->validate([
@@ -109,21 +145,34 @@ class Cadastro extends Component
             'form.senha' => $this->contaExistente ? ['nullable'] : ['required', 'string', 'min:8'],
         ], [], ['form.email' => 'e-mail', 'form.name' => 'nome', 'form.senha' => 'senha'])['form'];
 
-        if (collect($this->papeis)->filter(fn (string $p): bool => $p !== '')->isEmpty()) {
+        $usuario = $this->contaExistente
+            ? User::withoutGlobalScope('tenant')->findOrFail($this->editandoId)
+            : null;
+
+        // A exigência de ao menos um emitente com perfil vale para quem
+        // ainda não tinha acesso nenhum a esta empresa: conta nova, ou
+        // conta existente sendo anexada aqui pela primeira vez. Quem já
+        // tinha acesso pode reduzir a zero de propósito, para revogar.
+        $jaTinhaAcessoNestaEmpresa = $usuario !== null
+            && $usuario->emitentes()->withoutGlobalScope('tenant')
+                ->whereIn('emitentes.id', $this->emitentesDaEmpresa->pluck('id'))->exists();
+
+        if (! $jaTinhaAcessoNestaEmpresa && collect($this->papeis)->filter(fn (string $p): bool => $p !== '')->isEmpty()) {
             $this->addError('papeis', 'Escolha um perfil em pelo menos um emitente.');
 
             return;
         }
 
-        $usuario = $this->contaExistente
-            ? User::withoutGlobalScope('tenant')->findOrFail($this->editandoId)
-            : User::create([
-                'tenant_id' => app(TenantAtual::class)->id(),
-                'name' => $dados['name'],
-                'email' => $dados['email'],
-                'password' => $dados['senha'],
-                'email_verified_at' => now(),
-            ]);
+        $usuario ??= User::create([
+            'tenant_id' => app(TenantAtual::class)->id(),
+            'name' => $dados['name'],
+            'email' => $dados['email'],
+            'password' => $dados['senha'],
+            'email_verified_at' => now(),
+        ]);
+
+        $registrador = app(PermissionRegistrar::class);
+        $timeOriginal = $registrador->getPermissionsTeamId();
 
         foreach ($this->papeis as $emitenteId => $perfil) {
             if ($perfil === '') {
@@ -133,7 +182,14 @@ class Cadastro extends Component
             }
 
             $usuario->emitentes()->syncWithoutDetaching([$emitenteId]);
+
+            $registrador->setPermissionsTeamId($emitenteId);
+            $usuario->syncRoles([$perfil]);
         }
+
+        // Mesma razão do laço em editar(): sem restaurar, o resto desta
+        // requisição checaria permissão pelo último emitente do laço.
+        $registrador->setPermissionsTeamId($timeOriginal);
 
         session()->flash('sucesso', 'Usuário salvo.');
         $this->novoUsuario();
