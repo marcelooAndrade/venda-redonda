@@ -3,7 +3,9 @@
 namespace App\Support;
 
 use App\Models\Emitente;
+use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Resolve qual emitente está em foco.
@@ -24,13 +26,10 @@ class EmitenteAtual
             return null;
         }
 
-        // A relação passa pelo model Emitente, então o escopo global de tenant
-        // já se aplica: emitente de outro tenant simplesmente não aparece.
-
         $escolhido = session()->get(self::CHAVE);
 
         if ($escolhido !== null) {
-            $emitente = $user->emitentes()->whereKey($escolhido)->first();
+            $emitente = $this->consulta($user)->whereKey($escolhido)->first();
 
             if ($emitente !== null) {
                 return $emitente;
@@ -39,7 +38,24 @@ class EmitenteAtual
             session()->forget(self::CHAVE);
         }
 
-        return $user->emitentes()->orderBy('razao_social')->first();
+        return $this->consulta($user)->orderBy('razao_social')->first();
+    }
+
+    /**
+     * Com o host já tendo fixado um tenant (domínio próprio de um cliente),
+     * o escopo natural de `Emitente` já restringe a busca a ele, e é isso
+     * que impede a sessão de escapar para outra empresa ali. Sem tenant
+     * fixado (domínio comum, onde todo cliente entra hoje), a busca
+     * atravessa todas as empresas do login, do mesmo jeito que o painel de
+     * empresas atravessa tenants para o dono do produto.
+     *
+     * @return BelongsToMany<Emitente, User>
+     */
+    private function consulta(User $user): BelongsToMany
+    {
+        return app(TenantAtual::class)->id() !== null
+            ? $user->emitentes()
+            : $user->emitentes()->withoutGlobalScope('tenant');
     }
 
     /**

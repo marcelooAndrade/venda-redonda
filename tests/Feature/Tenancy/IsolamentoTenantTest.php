@@ -83,17 +83,33 @@ it('esconde pessoa de outro tenant', function () {
     expect(Pessoa::query()->pluck('razao_social')->all())->toBe(['Cliente da RCM']);
 });
 
-it('nao resolve emitente de outro tenant como atual', function () {
+it('com tenant fixado pelo host, sessao nao escapa para emitente de outro tenant', function () {
     $user = usuarioDo($this->rcm);
-    // Vínculo indevido, deixado para trás por uma migração ou erro operacional.
-    $alheio = Emitente::factory()->create(['tenant_id' => $this->transm->id]);
-    $user->emitentes()->attach($alheio);
+    // Login com acesso legítimo a uma segunda empresa: desde 14/09/2026 isto
+    // é um caso comum, não mais um erro operacional. A garantia que
+    // continua valendo é outra: com o host já tendo fixado um tenant
+    // (domínio próprio de um cliente), a sessão não pode usar essa segunda
+    // empresa ali, mesmo tendo acesso a ela em algum lugar.
+    $outraEmpresa = Emitente::factory()->create(['tenant_id' => $this->transm->id]);
+    $user->emitentes()->attach($outraEmpresa);
 
     app(TenantAtual::class)->definir($this->rcm);
     $this->actingAs($user);
-    session()->put('emitente_atual_id', $alheio->id);
+    session()->put('emitente_atual_id', $outraEmpresa->id);
 
     expect(app(EmitenteAtual::class)->resolver()->tenant_id)->toBe($this->rcm->id);
+});
+
+it('sem tenant fixado pelo host, a sessao atravessa as empresas do login', function () {
+    $user = usuarioDo($this->rcm);
+    $outraEmpresa = Emitente::factory()->create(['tenant_id' => $this->transm->id, 'razao_social' => 'Outra empresa']);
+    $user->emitentes()->attach($outraEmpresa);
+
+    app(TenantAtual::class)->limpar();
+    $this->actingAs($user);
+    session()->put('emitente_atual_id', $outraEmpresa->id);
+
+    expect(app(EmitenteAtual::class)->resolver()->id)->toBe($outraEmpresa->id);
 });
 
 it('sem tenant definido nao vaza dado de ninguem', function () {
