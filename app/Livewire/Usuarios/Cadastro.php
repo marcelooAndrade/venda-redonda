@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Usuarios;
 
+use App\Enums\Perfil;
 use App\Models\Emitente;
 use App\Models\User;
 use App\Support\TenantAtual;
@@ -118,6 +119,42 @@ class Cadastro extends Component
         $registrador->setPermissionsTeamId($timeOriginal);
     }
 
+    /**
+     * Só desliga a conta inteira quando este login não tem nenhuma outra
+     * empresa: senão, esta empresa estaria bloqueando o acesso a uma
+     * empresa que não é dela. Quem quer só tirar o acesso a esta empresa
+     * usa "Sem acesso" no perfil, em `salvar()`.
+     */
+    public function inativar(int $id): void
+    {
+        $this->authorize('usuario.gerenciar');
+
+        if ($id === auth()->id()) {
+            return;
+        }
+
+        $usuario = User::withoutGlobalScope('tenant')->findOrFail($id);
+
+        $idsDaEmpresa = $this->emitentesDaEmpresa->pluck('id');
+        $temOutraEmpresa = $usuario->emitentes()->withoutGlobalScope('tenant')
+            ->whereNotIn('emitentes.id', $idsDaEmpresa)->exists();
+
+        if ($temOutraEmpresa) {
+            return;
+        }
+
+        $usuario->forceFill(['ativo' => false])->save();
+        unset($this->usuarios);
+    }
+
+    public function reativar(int $id): void
+    {
+        $this->authorize('usuario.gerenciar');
+
+        User::withoutGlobalScope('tenant')->findOrFail($id)->forceFill(['ativo' => true])->save();
+        unset($this->usuarios);
+    }
+
     public function verificarEmail(): void
     {
         $dados = $this->validate([
@@ -138,6 +175,16 @@ class Cadastro extends Component
     public function salvar(): void
     {
         $this->authorize('usuario.gerenciar');
+
+        if ($this->contaExistente && (int) $this->editandoId === auth()->id()) {
+            $ficaAdministradorEmAlgumEmitenteAqui = collect($this->papeis)->contains(Perfil::Administrador->value);
+
+            if (! $ficaAdministradorEmAlgumEmitenteAqui) {
+                $this->addError('form.email', 'Você não pode remover o próprio acesso de Administrador nesta empresa.');
+
+                return;
+            }
+        }
 
         $dados = $this->validate([
             'form.email' => ['required', 'email', 'max:254'],

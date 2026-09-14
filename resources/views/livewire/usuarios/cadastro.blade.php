@@ -30,6 +30,13 @@
                             <td class="px-2 py-2">{{ $usuario->ativo ? 'Ativo' : 'Inativo' }}</td>
                             <td class="px-2 py-2 text-right">
                                 <x-ui.button variant="ghost" size="sm" wire:click="editar({{ $usuario->id }})">Editar</x-ui.button>
+                                @if ($usuario->id !== auth()->id())
+                                    @if ($usuario->ativo)
+                                        <x-ui.button variant="ghost" size="sm" wire:click="inativar({{ $usuario->id }})">Inativar</x-ui.button>
+                                    @else
+                                        <x-ui.button variant="ghost" size="sm" wire:click="reativar({{ $usuario->id }})">Reativar</x-ui.button>
+                                    @endif
+                                @endif
                             </td>
                         </tr>
                     @endforeach
