@@ -13,30 +13,42 @@
     // A navegação reflete os módulos e a permissão de quem está olhando.
     // Item sem permissão não aparece: mostrar um caminho que leva a 403 é
     // pior do que não mostrar. `rota` nula é módulo ainda não construído.
-    // Agrupada por ritmo de uso: o que se faz todo dia, o que se cadastra de
-    // vez em quando, e o que se configura uma vez. Onze itens chapados
-    // obrigam a ler a lista inteira toda vez.
+    //
+    // Agrupada por assunto, não por ritmo de uso: até 14/09 existia um grupo
+    // "Operação" só, com 9 itens misturados (emissão, financeiro e estoque
+    // juntos), e a lista tinha que ser lida inteira para achar qualquer
+    // coisa. Separar por assunto (o que emite nota, o que mexe em dinheiro,
+    // o que é cadastro e estoque) deixa no máximo 6 itens por grupo.
+    //
+    // Painel fica sem grupo, solto no topo: é o único destino que todo
+    // mundo sempre usa, e não precisa de rótulo para ser encontrado.
+    //
     // "Produto" só existe para o dono do produto, e o filtro abaixo cuida disso.
-    $grupos = ['Operação', 'Cadastros', 'Configuração', 'Produto'];
+    $grupos = ['', 'Fiscal', 'Financeiro', 'Estoque e cadastros', 'Configuração', 'Produto'];
 
     $navegacao = collect([
-        ['Painel', 'dashboard', 'relatorio.ver', 'Operação', 'M3 12h18M3 6h18M3 18h18'],
-        ['Notas fiscais', 'notas', 'nota.ver', 'Operação', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
-        ['Notas de serviço', 'notas-servico', 'nfse.ver', 'Operação', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
-        ['Destinatários', 'destinatarios', 'pessoa.ver', 'Cadastros', 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
-        ['Produtos', 'produtos', 'produto.ver', 'Cadastros', 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
-        ['Estoque', 'estoque', 'estoque.ver', 'Operação', 'M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7h16M9 11h6'],
-        ['Importação', 'importacao', 'importacao.ver', 'Operação', 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-8-4v8m0-8l-3 3m3-3l3 3M12 4v4'],
-        ['Financeiro', 'financeiro', 'financeiro.ver', 'Operação', 'M3 3v16a2 2 0 002 2h16M7 15l3.5-4 3 3L20 7'],
-        ['Contas a pagar', 'contas-a-pagar', 'financeiro.ver', 'Operação', 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
-        ['Contas a receber', 'contas-a-receber', 'financeiro.ver', 'Operação', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-        ['Contabilidade', 'contabilidade', 'contador.exportar', 'Operação', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+        ['Painel', 'dashboard', 'relatorio.ver', '', 'M3 12h18M3 6h18M3 18h18'],
+
+        ['Notas fiscais', 'notas', 'nota.ver', 'Fiscal', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+        ['Notas de serviço', 'notas-servico', 'nfse.ver', 'Fiscal', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+        ['Contabilidade', 'contabilidade', 'contador.exportar', 'Fiscal', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+
+        ['Financeiro', 'financeiro', 'financeiro.ver', 'Financeiro', 'M3 3v16a2 2 0 002 2h16M7 15l3.5-4 3 3L20 7'],
+        ['Contas a pagar', 'contas-a-pagar', 'financeiro.ver', 'Financeiro', 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
+        ['Contas a receber', 'contas-a-receber', 'financeiro.ver', 'Financeiro', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+
+        ['Estoque', 'estoque', 'estoque.ver', 'Estoque e cadastros', 'M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7h16M9 11h6'],
+        ['Importação', 'importacao', 'importacao.ver', 'Estoque e cadastros', 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-8-4v8m0-8l-3 3m3-3l3 3M12 4v4'],
+        ['Destinatários', 'destinatarios', 'pessoa.ver', 'Estoque e cadastros', 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
+        ['Produtos', 'produtos', 'produto.ver', 'Estoque e cadastros', 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
+
         ['Regras fiscais', 'regras-fiscais', 'tributacao.gerenciar', 'Configuração', 'M9 12h6m-6 4h4m4-11V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9l-4-4z'],
         ['Certificado', 'certificados', 'certificado.ver', 'Configuração', 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'],
         ['Emitente', 'emitente', 'emitente.gerenciar', 'Configuração', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
         ['Marca', 'marca', 'emitente.gerenciar', 'Configuração', 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343'],
         ['NFS-e', 'nfse', 'nfse.configurar', 'Configuração', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
         ['Usuários', 'usuarios', 'usuario.gerenciar', 'Configuração', 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'],
+
         ['Empresas', 'empresas', 'produto.administrar', 'Produto', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
     ])->filter(fn (array $item): bool => $item[2] === null || $user?->can($item[2]))->groupBy(3);
 @endphp
@@ -48,15 +60,19 @@
 </head>
 <body class="min-h-dvh bg-graphite-50 font-sans text-sm text-graphite-900 antialiased">
 
-    @if ($emitente)
-        <x-ui.env-banner :ambiente="$emitente->ambiente" />
-    @endif
+    {{-- Altura exata da tela, sem rolar: o corpo nunca rola, só `<main>` mais
+         abaixo. Sem isso a barra lateral subia junto quando o conteúdo da
+         página era mais alto que a tela, em vez de ficar travada no lugar. --}}
+    <div class="flex h-dvh flex-col">
+        @if ($emitente)
+            <x-ui.env-banner :ambiente="$emitente->ambiente" class="shrink-0" />
+        @endif
 
-    <div class="flex min-h-dvh">
+        <div class="flex min-h-0 flex-1">
         {{-- Sidebar. A barra vermelha de 3px no item ativo herda o motivo do
              hero do site, onde uma barra vertical vermelha corta a fachada. --}}
-        <aside class="hidden w-60 shrink-0 flex-col bg-graphite-900 md:flex">
-            <div class="flex h-14 items-center gap-2.5 border-b border-white/10 px-5">
+        <aside class="hidden min-h-0 w-60 shrink-0 flex-col bg-graphite-900 md:flex">
+            <div class="flex h-14 shrink-0 items-center gap-2.5 border-b border-white/10 px-5">
                 @if ($tenant?->logo_path)
                     <img src="{{ route('logo') }}" alt="{{ $tenant->nome }}" class="h-7 w-auto max-w-[9rem] object-contain">
                 @else
@@ -76,7 +92,11 @@
                 @foreach ($grupos as $grupo)
                     @continue (! isset($navegacao[$grupo]))
                     <div class="flex flex-col gap-0.5">
-                        <p class="etiqueta px-5 pb-2 text-graphite-500">{{ $grupo }}</p>
+                        {{-- Painel usa a chave vazia, sem rótulo: é o único
+                             destino que todo mundo sempre usa. --}}
+                        @if ($grupo !== '')
+                            <p class="etiqueta px-5 pb-2 text-graphite-500">{{ $grupo }}</p>
+                        @endif
 
                         @foreach ($navegacao[$grupo] as [$rotulo, $rota, $permissao, $secao, $icone])
                             @php
@@ -113,10 +133,10 @@
             </nav>
         </aside>
 
-        <div class="flex min-w-0 flex-1 flex-col">
+        <div class="flex min-h-0 min-w-0 flex-1 flex-col">
             {{-- Topbar clara. Escura, ela empilhava uma terceira faixa sob o
                  banner de ambiente e a área de trabalho virava um poço. --}}
-            <header class="flex h-14 flex-wrap items-center gap-3 border-b border-graphite-200 bg-white px-5">
+            <header class="flex h-14 shrink-0 flex-wrap items-center gap-3 border-b border-graphite-200 bg-white px-5">
                 @if ($emitente && $alcancaveis->count() > 1)
                     {{-- Mais de uma empresa alcançável: o selo vira seletor.
                          `<details>` no mesmo padrão sem JavaScript do menu do
@@ -215,13 +235,16 @@
 
             {{-- O contêiner da página vive aqui, uma vez só. Cada view repetia
                  `mx-auto max-w-6xl`, e em monitor largo isso deixava faixas
-                 vazias dos dois lados. --}}
-            <main class="min-w-0 flex-1">
+                 vazias dos dois lados. Rola sozinho: é o único elemento com
+                 rolagem própria em toda a tela, então a barra lateral e o
+                 topo nunca se movem quando a página é mais alta que a tela. --}}
+            <main class="min-w-0 flex-1 overflow-y-auto">
                 <div class="mx-auto w-full max-w-[1800px] px-5 py-6 lg:px-8">
                     {{ $slot }}
                 </div>
             </main>
         </div>
+    </div>
     </div>
 
     @fluxScripts
