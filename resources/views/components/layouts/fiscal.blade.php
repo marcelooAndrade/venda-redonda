@@ -4,6 +4,7 @@
     $emitente = app(\App\Support\EmitenteAtual::class)->resolver();
     $tenant = app(\App\Support\TenantAtual::class)->obter();
     $user = auth()->user();
+    $alcancaveis = $user ? app(\App\Support\EmitenteAtual::class)->alcancaveis() : collect();
 
     // Última consulta ao serviço de status, feita pelo comando agendado com o
     // certificado do emitente. A tela só lê: nunca sai para a SEFAZ daqui.
@@ -35,6 +36,7 @@
         ['Emitente', 'emitente', 'emitente.gerenciar', 'Configuração', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
         ['Marca', 'marca', 'emitente.gerenciar', 'Configuração', 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343'],
         ['NFS-e', 'nfse', 'nfse.configurar', 'Configuração', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+        ['Usuários', 'usuarios', 'usuario.gerenciar', 'Configuração', 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'],
         ['Empresas', 'empresas', 'produto.administrar', 'Produto', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
     ])->filter(fn (array $item): bool => $item[2] === null || $user?->can($item[2]))->groupBy(3);
 @endphp
@@ -115,7 +117,36 @@
             {{-- Topbar clara. Escura, ela empilhava uma terceira faixa sob o
                  banner de ambiente e a área de trabalho virava um poço. --}}
             <header class="flex h-14 flex-wrap items-center gap-3 border-b border-graphite-200 bg-white px-5">
-                @if ($emitente)
+                @if ($emitente && $alcancaveis->count() > 1)
+                    {{-- Mais de uma empresa alcançável: o selo vira seletor.
+                         `<details>` no mesmo padrão sem JavaScript do menu do
+                         usuário logo abaixo. --}}
+                    <details class="group relative">
+                        <summary class="flex cursor-pointer list-none items-center gap-2 rounded-md border border-graphite-200 bg-graphite-50 px-2.5 py-1.5 text-xs font-medium text-graphite-700 marker:content-none hover:bg-graphite-100">
+                            <span class="size-1.5 rounded-full bg-primary-600" aria-hidden="true"></span>
+                            {{ $emitente->nome_fantasia ?: $emitente->razao_social }}
+                            <svg class="size-3.5 text-graphite-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </summary>
+
+                        <label class="fixed inset-0 z-10 hidden cursor-default group-open:block" aria-hidden="true" onclick="this.closest('details').open = false"></label>
+
+                        <div class="absolute left-0 z-20 mt-2 w-64 rounded-md border border-graphite-200 bg-white py-1 shadow-lg">
+                            @foreach ($alcancaveis as $opcao)
+                                <form method="POST" action="{{ route('emitente.escolher') }}">
+                                    @csrf
+                                    <input type="hidden" name="emitente_id" value="{{ $opcao->id }}" />
+                                    <button type="submit"
+                                            class="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-graphite-50 {{ $opcao->is($emitente) ? 'bg-graphite-50 font-medium text-graphite-900' : 'text-graphite-700' }}">
+                                        <span>{{ $opcao->nome_fantasia ?: $opcao->razao_social }}</span>
+                                        <span class="text-xs text-graphite-500">{{ $opcao->tenant->rotulo() }}</span>
+                                    </button>
+                                </form>
+                            @endforeach
+                        </div>
+                    </details>
+                @elseif ($emitente)
                     <span class="flex items-center gap-2 rounded-md border border-graphite-200 bg-graphite-50 px-2.5 py-1.5 text-xs font-medium text-graphite-700">
                         <span class="size-1.5 rounded-full bg-primary-600" aria-hidden="true"></span>
                         {{ $emitente->nome_fantasia ?: $emitente->razao_social }}

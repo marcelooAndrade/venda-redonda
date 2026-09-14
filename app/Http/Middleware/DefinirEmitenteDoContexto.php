@@ -42,7 +42,7 @@ class DefinirEmitenteDoContexto
             $emitente = $this->emitenteAtual->resolver();
 
             if ($this->tenantAtual->id() === null && $emitente !== null) {
-                $this->tenantAtual->definir($emitente->tenant);
+                $this->tenantAtual->definirDoEmitente($emitente->tenant);
             }
 
             $this->permissoes->setPermissionsTeamId($emitente?->getKey());

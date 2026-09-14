@@ -15,14 +15,44 @@ class TenantAtual
 {
     private ?Tenant $tenant = null;
 
+    /**
+     * Verdadeiro quando o tenant veio do host (ou foi definido diretamente,
+     * o que os testes tratam como equivalente), falso quando veio derivado
+     * do emitente resolvido. É o que diferencia "domínio próprio de um
+     * cliente, a busca de emitente fica presa a ele" de "domínio comum, a
+     * busca atravessa empresas": sem essa distinção, depois que
+     * `DefinirEmitenteDoContexto` deriva o tenant do primeiro emitente
+     * resolvido, uma segunda leitura na mesma requisição (o seletor de
+     * empresa no topo do layout) veria esse tenant como se o host o tivesse
+     * fixado, e nunca mostraria a segunda empresa. Ver EmitenteAtual.
+     */
+    private bool $fixadoPeloHost = false;
+
     public function definir(?Tenant $tenant): void
     {
         $this->tenant = $tenant?->ativo === true ? $tenant : null;
+        $this->fixadoPeloHost = $this->tenant !== null;
     }
 
     public function definirPorHost(string $host): void
     {
         $this->definir($this->resolverHost($host));
+    }
+
+    /**
+     * Usado quando o tenant vem do emitente resolvido, não do host. Ao
+     * contrário de `definir()`, não marca como fixado: uma leitura seguinte
+     * de `EmitenteAtual` na mesma requisição continua podendo atravessar
+     * empresas.
+     */
+    public function definirDoEmitente(?Tenant $tenant): void
+    {
+        $this->tenant = $tenant?->ativo === true ? $tenant : null;
+    }
+
+    public function fixadoPeloHost(): bool
+    {
+        return $this->fixadoPeloHost;
     }
 
     public function obter(): ?Tenant
@@ -38,6 +68,7 @@ class TenantAtual
     public function limpar(): void
     {
         $this->tenant = null;
+        $this->fixadoPeloHost = false;
     }
 
     private function resolverHost(string $host): ?Tenant

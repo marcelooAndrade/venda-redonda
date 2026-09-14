@@ -6,6 +6,7 @@ use App\Models\Emitente;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 /**
  * Resolve qual emitente está em foco.
@@ -45,15 +46,21 @@ class EmitenteAtual
      * Com o host já tendo fixado um tenant (domínio próprio de um cliente),
      * o escopo natural de `Emitente` já restringe a busca a ele, e é isso
      * que impede a sessão de escapar para outra empresa ali. Sem tenant
-     * fixado (domínio comum, onde todo cliente entra hoje), a busca
-     * atravessa todas as empresas do login, do mesmo jeito que o painel de
-     * empresas atravessa tenants para o dono do produto.
+     * fixado pelo host (domínio comum, onde todo cliente entra hoje), a
+     * busca atravessa todas as empresas do login, do mesmo jeito que o
+     * painel de empresas atravessa tenants para o dono do produto.
+     *
+     * A checagem é `fixadoPeloHost()`, não `id() !== null`: depois que
+     * `DefinirEmitenteDoContexto` deriva o tenant do primeiro emitente
+     * resolvido, `id()` deixa de ser nulo, mas isso não pode travar uma
+     * segunda leitura nesta mesma requisição (o seletor de empresa) numa
+     * única empresa.
      *
      * @return BelongsToMany<Emitente, User>
      */
     private function consulta(User $user): BelongsToMany
     {
-        return app(TenantAtual::class)->id() !== null
+        return app(TenantAtual::class)->fixadoPeloHost()
             ? $user->emitentes()
             : $user->emitentes()->withoutGlobalScope('tenant');
     }
@@ -62,9 +69,9 @@ class EmitenteAtual
      * Todas as empresas que este login alcança, para o seletor no topo.
      * Mesma regra de alcance do `resolver()`.
      *
-     * @return \Illuminate\Support\Collection<int, Emitente>
+     * @return Collection<int, Emitente>
      */
-    public function alcancaveis(): \Illuminate\Support\Collection
+    public function alcancaveis(): Collection
     {
         $user = auth()->user();
 
