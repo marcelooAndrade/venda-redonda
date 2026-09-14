@@ -7,6 +7,7 @@ use App\Models\Pessoa;
 use App\Models\Produto;
 use App\Models\ServicoNfse;
 use App\Models\Tenant;
+use App\Models\User;
 
 /**
  * Guarda contra uma classe de bug que já apareceu quatro vezes no projeto:
@@ -32,4 +33,5 @@ it('reflete em memoria todo default booleano verdadeiro do banco', function (str
     [NaturezaOperacao::class, 'movimenta_estoque'],
     [NaturezaOperacao::class, 'gera_financeiro'],
     [ServicoNfse::class, 'ativo'],
+    [User::class, 'ativo'],
 ]);

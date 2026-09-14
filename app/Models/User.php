@@ -50,6 +50,7 @@ class User extends Authenticatable implements PasskeyUser
      */
     protected $attributes = [
         'dono_do_produto' => false,
+        'ativo' => true,
     ];
 
     /**
@@ -96,6 +97,7 @@ class User extends Authenticatable implements PasskeyUser
             // Fora do `#[Fillable]` de propósito: só o comando
             // `produto:definir-dono` escreve aqui. Ver a migration.
             'dono_do_produto' => 'boolean',
+            'ativo' => 'boolean',
             'password' => 'hashed',
         ];
     }
