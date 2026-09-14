@@ -1,15 +1,14 @@
-{{-- Empilhado, não lado a lado: cabeçalho da página, listagem com uma fatia
-     da altura (30%, na proporção de 3 para 7 com o formulário) e o
-     formulário no resto. Cabe tudo numa tela só, sem rolar a página; só a
+{{-- Lado a lado, não empilhado: listagem numa coluna estreita (30% da
+     largura), formulário numa coluna larga (70%), as duas ocupando a
+     altura toda da tela. Cabe tudo numa tela só, sem rolar a página; só a
      listagem rola por dentro dela mesma, nas linhas da tabela. O formulário
      tem rolagem própria como reforço, para nunca ficar inalcançável numa
      tela baixa, mas em qualquer tela normal ele cabe inteiro sem rolar.
 
-     Só a partir de `lg`: travar a altura da tela num celular espreme a
-     listagem numa fatia minúscula, porque ali não sobra altura nenhuma
-     para dividir. Sem `lg:`, o celular volta ao que toda outra tela já
-     faz, cabeçalho e formulário no tamanho natural, com a página inteira
-     rolando quando for preciso. --}}
+     Só a partir de `lg`: uma coluna de 30% de largura num celular vira uma
+     fatia inútil. Sem `lg:`, o celular empilha listagem e formulário em
+     largura cheia, cada um no tamanho natural, com a página inteira
+     rolando quando for preciso — o mesmo que toda outra tela já faz. --}}
 <div class="flex flex-col gap-4 lg:h-full lg:min-h-0">
 
     <x-ui.page-header
@@ -34,68 +33,73 @@
         </x-ui.alert>
     @endif
 
-    {{-- Listagem: a fatia menor, sempre visível no topo. --}}
-    <x-ui.card title="Cadastrados" :padded="false" class="lg:flex lg:min-h-0 lg:flex-[3] lg:flex-col">
-        <x-slot:actions>
-            <x-ui.select wire:model.live="papel" class="w-auto">
-                <option value="todos">Todos os papéis</option>
-                <option value="clientes">Clientes</option>
-                <option value="fornecedores">Fornecedores</option>
-                <option value="transportadoras">Transportadoras</option>
-            </x-ui.select>
-            <x-ui.input wire:model.live.debounce.400ms="busca" placeholder="Buscar nome ou documento" class="w-56" />
-        </x-slot:actions>
+    {{-- Linha com as duas colunas. Em pé (mobile) ela nem existe como
+         "linha": as classes de `lg:` é que a tornam uma linha; sem elas, os
+         dois cards abaixo simplesmente se empilham na ordem em que aparecem. --}}
+    <div class="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:flex-row">
 
-        @if ($this->pessoas->isEmpty())
-            <x-ui.empty-state class="m-5" title="Nenhum cadastro" description="Use o formulário abaixo para incluir o primeiro." />
-        @else
-            <div class="flex h-full min-h-0 flex-col">
-                <div class="min-h-0 flex-1 overflow-y-auto">
-                    <x-ui.table>
-                        <thead>
-                            <tr class="border-b border-graphite-200">
-                                <th class="etiqueta px-2 py-2 text-left text-graphite-500">Nome</th>
-                                <th class="etiqueta px-2 py-2 text-left text-graphite-500">Documento</th>
-                                <th class="etiqueta px-2 py-2 text-left text-graphite-500">Município</th>
-                                <th class="etiqueta px-2 py-2 text-left text-graphite-500">Papéis</th>
-                                <th class="etiqueta px-2 py-2 text-right text-graphite-500">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($this->pessoas as $pessoa)
-                                <tr class="border-b border-graphite-100" wire:key="pessoa-{{ $pessoa->id }}">
-                                    <td class="px-2 py-2">
-                                        {{ $pessoa->razao_social }}
-                                        @if ($pessoa->nome_fantasia)
-                                            <span class="block text-xs text-graphite-500">{{ $pessoa->nome_fantasia }}</span>
-                                        @endif
-                                    </td>
-                                    <td class="num px-2 py-2">{{ $pessoa->documentoFormatado() }}</td>
-                                    <td class="px-2 py-2">{{ $pessoa->municipio }}/{{ $pessoa->uf }}</td>
-                                    <td class="px-2 py-2">
-                                        <span class="flex flex-wrap gap-1">
-                                            @if ($pessoa->e_cliente)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Cliente</span>@endif
-                                            @if ($pessoa->e_fornecedor)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Fornecedor</span>@endif
-                                            @if ($pessoa->e_transportadora)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Transp.</span>@endif
-                                        </span>
-                                    </td>
-                                    <td class="px-2 py-2 text-right">
-                                        <x-ui.button variant="ghost" size="sm" wire:click="editar({{ $pessoa->id }})">Editar</x-ui.button>
-                                    </td>
+        {{-- Listagem: a coluna estreita. --}}
+        <x-ui.card title="Cadastrados" :padded="false" class="lg:flex lg:w-[30%] lg:shrink-0 lg:min-h-0 lg:flex-col">
+            <x-slot:actions>
+                <x-ui.select wire:model.live="papel" class="w-auto">
+                    <option value="todos">Todos os papéis</option>
+                    <option value="clientes">Clientes</option>
+                    <option value="fornecedores">Fornecedores</option>
+                    <option value="transportadoras">Transportadoras</option>
+                </x-ui.select>
+                <x-ui.input wire:model.live.debounce.400ms="busca" placeholder="Buscar nome ou documento" class="w-56" />
+            </x-slot:actions>
+
+            @if ($this->pessoas->isEmpty())
+                <x-ui.empty-state class="m-5" title="Nenhum cadastro" description="Use o formulário ao lado para incluir o primeiro." />
+            @else
+                <div class="flex h-full min-h-0 min-w-0 flex-col">
+                    <div class="min-h-0 min-w-0 flex-1 overflow-y-auto">
+                        <x-ui.table>
+                            <thead>
+                                <tr class="border-b border-graphite-200">
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Nome</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Documento</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Município</th>
+                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Papéis</th>
+                                    <th class="etiqueta px-2 py-2 text-right text-graphite-500">Ações</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </x-ui.table>
+                            </thead>
+                            <tbody>
+                                @foreach ($this->pessoas as $pessoa)
+                                    <tr class="border-b border-graphite-100" wire:key="pessoa-{{ $pessoa->id }}">
+                                        <td class="px-2 py-2">
+                                            {{ $pessoa->razao_social }}
+                                            @if ($pessoa->nome_fantasia)
+                                                <span class="block text-xs text-graphite-500">{{ $pessoa->nome_fantasia }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="num px-2 py-2">{{ $pessoa->documentoFormatado() }}</td>
+                                        <td class="px-2 py-2">{{ $pessoa->municipio }}/{{ $pessoa->uf }}</td>
+                                        <td class="px-2 py-2">
+                                            <span class="flex flex-wrap gap-1">
+                                                @if ($pessoa->e_cliente)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Cliente</span>@endif
+                                                @if ($pessoa->e_fornecedor)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Fornecedor</span>@endif
+                                                @if ($pessoa->e_transportadora)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Transp.</span>@endif
+                                            </span>
+                                        </td>
+                                        <td class="px-2 py-2 text-right">
+                                            <x-ui.button variant="ghost" size="sm" wire:click="editar({{ $pessoa->id }})">Editar</x-ui.button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </x-ui.table>
+                    </div>
+
+                    <div class="shrink-0 border-t border-graphite-200/70 p-3">{{ $this->pessoas->links() }}</div>
                 </div>
+            @endif
+        </x-ui.card>
 
-                <div class="shrink-0 border-t border-graphite-200/70 p-3">{{ $this->pessoas->links() }}</div>
-            </div>
-        @endif
-    </x-ui.card>
-
-    {{-- Formulário: a fatia maior, sempre na tela. --}}
-    @can('pessoa.gerenciar')
-    <x-ui.card :title="$editandoId ? 'Editando' : 'Novo cadastro'" class="lg:min-h-0 lg:flex-[7] lg:overflow-y-auto">
+        {{-- Formulário: a coluna larga. --}}
+        @can('pessoa.gerenciar')
+        <x-ui.card :title="$editandoId ? 'Editando' : 'Novo cadastro'" class="lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
         <form wire:submit="salvar" class="grid gap-5">
 
             {{-- Identificação --}}
@@ -238,4 +242,5 @@
         </form>
     </x-ui.card>
     @endcan
+    </div>
 </div>
