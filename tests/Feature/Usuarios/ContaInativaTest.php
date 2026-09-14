@@ -36,3 +36,14 @@ it('usuario ativo continua navegando normalmente', function () {
     $this->get(route('dashboard'))->assertOk();
     $this->assertAuthenticated();
 });
+
+it('conta inativa nao autentica mesmo com senha certa', function () {
+    $user = User::factory()->create(['ativo' => false, 'password' => 'senha-de-teste']);
+
+    $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'senha-de-teste',
+    ]);
+
+    $this->assertGuest();
+});
