@@ -17,6 +17,7 @@ use App\Livewire\Pessoas\Cadastro;
 use App\Livewire\Produto\Empresas;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
+use App\Livewire\Usuarios\Cadastro as UsuariosCadastro;
 use Illuminate\Support\Facades\Route;
 
 // A raiz muda de superfície conforme o host: apresentação no domínio nu
@@ -49,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // `Cadastro` já nomeia o de pessoas neste arquivo, então este vai pelo
     // nome completo.
     Route::get('emitente', App\Livewire\Emitentes\Cadastro::class)->name('emitente');
+    Route::get('usuarios', UsuariosCadastro::class)->name('usuarios');
     Route::get('nfse', Configuracao::class)->name('nfse');
     Route::get('notas-servico', Notas::class)->name('notas-servico');
     Route::get('notas-servico/{nota}/pdf', [NotaServicoArquivoController::class, 'pdf'])->name('notas-servico.pdf');
