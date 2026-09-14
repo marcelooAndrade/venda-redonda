@@ -14,7 +14,7 @@ return [
     | diferentes, e cravar no código exigiria builds distintos.
     |
     */
-    'dominio' => env('PRODUTO_DOMINIO', 'vendaredonda.com.br'),
+    'dominio' => env('PRODUTO_DOMINIO', 'emitiragora.com.br'),
 
     /*
     |--------------------------------------------------------------------------
