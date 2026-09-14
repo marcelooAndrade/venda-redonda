@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Middleware\DefinirEmitenteDoContexto;
-use App\Http\Middleware\DefinirTenantDoUsuario;
 use App\Http\Middleware\RecusarCadastroEmDominioDeCliente;
 use App\Http\Middleware\ResolverTenant;
 use Illuminate\Foundation\Application;
@@ -24,13 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
-            // Antes de trocar o tenant pelo do usuário: aqui o que vale é o
-            // tenant que o host resolveu, e é ele que diz se a rota existe.
+            // Antes do que resolve emitente: aqui o que vale é o tenant que
+            // o host resolveu, e é ele que diz se a rota existe.
             RecusarCadastroEmDominioDeCliente::class,
 
-            // A ordem importa: o tenant do usuário vence o do host, e o
-            // emitente é resolvido já dentro do tenant certo.
-            DefinirTenantDoUsuario::class,
+            // Deriva o tenant do emitente resolvido, quando o host ainda
+            // não tiver fixado nenhum. Ver o doc comment da própria classe.
             DefinirEmitenteDoContexto::class,
         ]);
     })
