@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EscolherEmitenteController;
 use App\Http\Controllers\LogoTenantController;
 use App\Http\Controllers\NotaServicoArquivoController;
 use App\Http\Controllers\RaizController;
@@ -56,6 +57,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
     Route::get('empresas', Empresas::class)->name('empresas');
+
+    Route::post('emitente/escolher', EscolherEmitenteController::class)->name('emitente.escolher');
 });
 
 require __DIR__.'/settings.php';
