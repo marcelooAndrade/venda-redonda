@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\DefinirEmitenteDoContexto;
+use App\Http\Middleware\DerrubarUsuarioInativo;
 use App\Http\Middleware\RecusarCadastroEmDominioDeCliente;
 use App\Http\Middleware\ResolverTenant;
 use Illuminate\Foundation\Application;
@@ -26,6 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
             // Antes do que resolve emitente: aqui o que vale é o tenant que
             // o host resolveu, e é ele que diz se a rota existe.
             RecusarCadastroEmDominioDeCliente::class,
+
+            DerrubarUsuarioInativo::class,
 
             // Deriva o tenant do emitente resolvido, quando o host ainda
             // não tiver fixado nenhum. Ver o doc comment da própria classe.
