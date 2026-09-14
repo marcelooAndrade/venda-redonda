@@ -59,6 +59,23 @@ class EmitenteAtual
     }
 
     /**
+     * Todas as empresas que este login alcança, para o seletor no topo.
+     * Mesma regra de alcance do `resolver()`.
+     *
+     * @return \Illuminate\Support\Collection<int, Emitente>
+     */
+    public function alcancaveis(): \Illuminate\Support\Collection
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return collect();
+        }
+
+        return $this->consulta($user)->with('tenant')->orderBy('razao_social')->get();
+    }
+
+    /**
      * @throws AuthorizationException
      */
     public function escolher(Emitente $emitente): void
