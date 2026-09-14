@@ -5,6 +5,10 @@
     $tenant = app(\App\Support\TenantAtual::class)->obter();
     $user = auth()->user();
 
+    // Última consulta ao serviço de status, feita pelo comando agendado com o
+    // certificado do emitente. A tela só lê: nunca sai para a SEFAZ daqui.
+    $situacaoSefaz = $emitente ? app(\App\Services\Fiscal\MonitorSefaz::class)->situacao($emitente) : null;
+
     // A navegação reflete os módulos e a permissão de quem está olhando.
     // Item sem permissão não aparece: mostrar um caminho que leva a 403 é
     // pior do que não mostrar. `rota` nula é módulo ainda não construído.
@@ -120,10 +124,20 @@
                     <span class="text-xs text-graphite-500">Nenhum emitente vinculado</span>
                 @endif
 
-                <span class="ml-auto hidden items-center gap-2 text-xs text-graphite-500 sm:flex">
-                    <span class="size-1.5 rounded-full bg-success-600" aria-hidden="true"></span>
-                    SEFAZ-SP em operação
-                </span>
+                {{-- O `ml-auto` fica no contêiner, não no indicador: sem emitente o
+                     indicador não existe, e o menu do usuário precisa continuar
+                     encostado à direita mesmo assim. --}}
+                <div class="ml-auto flex items-center gap-3">
+                {{-- Até 14/09 isto era texto fixo com bolinha verde: dizia "em
+                     operação" sem consultar nada. Agora lê o MonitorSefaz, e o
+                     title conta o cStat e a hora da consulta. --}}
+                @if ($situacaoSefaz)
+                    <span class="hidden items-center gap-2 text-xs text-graphite-500 sm:flex"
+                          title="{{ $situacaoSefaz->descricao() }}">
+                        <span class="size-1.5 rounded-full {{ $situacaoSefaz->estado->classeIndicador() }}" aria-hidden="true"></span>
+                        {{ $situacaoSefaz->rotulo($emitente->uf) }}
+                    </span>
+                @endif
 
                 {{-- `<details>` em vez de um dropdown com Alpine: o layout inteiro é
                      hand-rolled, sem `x-data` em lugar nenhum, e o `<details>` já é o
@@ -165,6 +179,7 @@
                         </form>
                     </div>
                 </details>
+                </div>
             </header>
 
             {{-- O contêiner da página vive aqui, uma vez só. Cada view repetia

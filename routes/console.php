@@ -19,3 +19,10 @@ Schedule::command('produto:sincronizar-leads')
     ->dailyAt('06:30')
     ->timezone('America/Sao_Paulo')
     ->withoutOverlapping();
+
+// O indicador "SEFAZ-SP em operação" no topo lê esta consulta. Dez minutos
+// porque o serviço de status é conferência, não monitoramento, e repetição
+// sem necessidade é o que a SEFAZ chama de consumo indevido.
+Schedule::command('fiscal:consultar-status-sefaz')
+    ->everyTenMinutes()
+    ->withoutOverlapping();

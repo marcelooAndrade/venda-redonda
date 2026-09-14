@@ -196,10 +196,10 @@ function gatewayFake(array $roteiro): SefazGateway
 
         public function __construct(private array $roteiro) {}
 
-        private function responder(string $metodo): RespostaSefaz
+        private function responder(string $metodo, ?RespostaSefaz $padrao = null): RespostaSefaz
         {
             $this->chamadas[] = $metodo;
-            $r = $this->roteiro[$metodo] ?? new RespostaSefaz('999', "Sem roteiro para {$metodo}");
+            $r = $this->roteiro[$metodo] ?? $padrao ?? new RespostaSefaz('999', "Sem roteiro para {$metodo}");
 
             if ($r instanceof Throwable) {
                 throw $r;
@@ -223,11 +223,11 @@ function gatewayFake(array $roteiro): SefazGateway
             return $this->responder('consultarChave');
         }
 
+        // Sem roteiro, a SEFAZ está no ar. Passa por `responder` para que o
+        // roteiro possa mandar uma exceção, como faz com os outros métodos.
         public function statusServico(Emitente $e): RespostaSefaz
         {
-            $this->chamadas[] = 'statusServico';
-
-            return $this->roteiro['statusServico'] ?? new RespostaSefaz('107', 'Servico em operacao');
+            return $this->responder('statusServico', new RespostaSefaz('107', 'Servico em Operacao'));
         }
 
         public function cancelar(Emitente $e, string $chave, string $protocolo, string $justificativa): RespostaSefaz
