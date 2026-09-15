@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiPlataforma\WhatsappInstanciaController;
 use App\Http\Controllers\ApiPlataforma\WhatsappMensagemController;
+use App\Http\Controllers\ApiPlataforma\WhatsappWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -23,6 +24,12 @@ if (filled(config('api_plataforma.dominio'))) {
                 Route::get('instancia', [WhatsappInstanciaController::class, 'show']);
                 Route::post('instancia/conectar', [WhatsappInstanciaController::class, 'conectar']);
                 Route::post('mensagens', [WhatsappMensagemController::class, 'store']);
+                Route::put('webhook', [WhatsappWebhookController::class, 'atualizarUrl']);
             });
+
+        // Fora do grupo autenticado de propósito: quem chama é a uazapi, não
+        // o cliente. O segredo na URL identifica a instância.
+        Route::post('whatsapp/v1/uazapi-webhook/{secret}', [WhatsappWebhookController::class, 'receber'])
+            ->name('nodo.uazapi-webhook');
     });
 }

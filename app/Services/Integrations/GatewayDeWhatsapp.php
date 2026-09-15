@@ -25,4 +25,10 @@ interface GatewayDeWhatsapp
 
     /** @return array<string, mixed> */
     public function enviarTexto(string $instanceToken, string $numero, string $texto): array;
+
+    /**
+     * Aponta o webhook da instância para a URL de recebimento do Nodo. Só
+     * o evento "messages": é só mensagem que o Nodo repassa ao cliente.
+     */
+    public function configurarWebhook(string $instanceToken, string $urlDoNodo): void;
 }

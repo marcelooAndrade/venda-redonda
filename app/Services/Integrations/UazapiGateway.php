@@ -64,6 +64,15 @@ class UazapiGateway implements GatewayDeWhatsapp
         return (array) $resposta->json();
     }
 
+    public function configurarWebhook(string $instanceToken, string $urlDoNodo): void
+    {
+        $resposta = $this->cliente()
+            ->withHeader('token', $instanceToken)
+            ->post('/webhook', ['url' => $urlDoNodo, 'enabled' => true, 'events' => ['messages']]);
+
+        $this->falharSeErro($resposta, 'configurar o webhook');
+    }
+
     private function cliente(): PendingRequest
     {
         $url = (string) config('integracao.uazapi.url');

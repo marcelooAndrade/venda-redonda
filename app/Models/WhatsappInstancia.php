@@ -11,7 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class WhatsappInstancia extends Model
 {
-    protected $fillable = ['api_cliente_id', 'uazapi_instance_id', 'uazapi_token', 'nome', 'status'];
+    protected $fillable = [
+        'api_cliente_id', 'uazapi_instance_id', 'uazapi_token', 'nome', 'status',
+        'webhook_url', 'webhook_secret',
+    ];
 
     protected function casts(): array
     {

@@ -9,6 +9,7 @@ use App\Models\WhatsappInstancia;
 use App\Services\Integrations\GatewayDeWhatsapp;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class WhatsappInstanciaController extends Controller
 {
@@ -32,12 +33,28 @@ class WhatsappInstanciaController extends Controller
                 return response()->json(['erro' => $e->getMessage()], 503);
             }
 
+            $segredoWebhook = Str::random(40);
+
             $instancia = $cliente->whatsappInstancia()->create([
                 'uazapi_instance_id' => $criada['id'],
                 'uazapi_token' => $criada['token'],
                 'nome' => "cliente-{$cliente->id}",
                 'status' => 'disconnected',
+                'webhook_secret' => $segredoWebhook,
             ]);
+
+            // Aponta a uazapi para o receptor do Nodo com o segredo desta
+            // instância na URL: é assim que o receptor sabe de qual
+            // instância veio, sem exigir token (quem chama é a uazapi, não
+            // o cliente). Falha aqui não desfaz a instância já criada —
+            // dá para reconfigurar depois, mas não para perder a instância.
+            try {
+                $this->gateway->configurarWebhook($criada['token'], route('nodo.uazapi-webhook', $segredoWebhook));
+            } catch (UazapiIndisponivel) {
+                // Instância criada mesmo assim. O cliente pode conectar e
+                // mandar mensagem normalmente; só o recebimento fica sem
+                // repasse até reconfigurar.
+            }
         }
 
         return response()->json(['status' => $instancia->status], 201);

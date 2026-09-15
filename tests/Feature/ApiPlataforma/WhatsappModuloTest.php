@@ -30,13 +30,16 @@ it('recusa cliente sem o modulo whatsapp ativo', function () {
     $this->postJson('http://api.vendaredonda.test/whatsapp/v1/instancia')->assertForbidden();
 });
 
-it('cria a instancia do cliente autenticado', function () {
+it('cria a instancia do cliente autenticado, e configura o webhook na uazapi', function () {
     $cliente = clienteComWhatsapp();
     Sanctum::actingAs($cliente);
 
-    Http::fake(['uazapi.test/instance/init' => Http::response([
-        'token' => 'token-uazapi-1', 'instance' => ['id' => 'inst-1'],
-    ], 200)]);
+    Http::fake([
+        'uazapi.test/instance/init' => Http::response([
+            'token' => 'token-uazapi-1', 'instance' => ['id' => 'inst-1'],
+        ], 200),
+        'uazapi.test/webhook' => Http::response(['enabled' => true], 200),
+    ]);
 
     $this->postJson('http://api.vendaredonda.test/whatsapp/v1/instancia')
         ->assertCreated()
@@ -46,7 +49,30 @@ it('cria a instancia do cliente autenticado', function () {
 
     expect($instancia)->not->toBeNull()
         ->and($instancia->uazapi_instance_id)->toBe('inst-1')
-        ->and($instancia->uazapi_token)->toBe('token-uazapi-1');
+        ->and($instancia->uazapi_token)->toBe('token-uazapi-1')
+        ->and($instancia->webhook_secret)->not->toBeEmpty();
+
+    Http::assertSent(fn ($request) => $request->url() === 'https://uazapi.test/webhook'
+        && $request->hasHeader('token', 'token-uazapi-1')
+        && $request['enabled'] === true
+        && $request['events'] === ['messages']
+        && str_contains($request['url'], "uazapi-webhook/{$instancia->webhook_secret}"));
+});
+
+it('instancia continua criada mesmo se configurar o webhook falhar', function () {
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
+
+    Http::fake([
+        'uazapi.test/instance/init' => Http::response([
+            'token' => 'token-uazapi-1', 'instance' => ['id' => 'inst-1'],
+        ], 200),
+        'uazapi.test/webhook' => Http::response(['erro' => 'fora do ar'], 500),
+    ]);
+
+    $this->postJson('http://api.vendaredonda.test/whatsapp/v1/instancia')->assertCreated();
+
+    expect(WhatsappInstancia::firstWhere('api_cliente_id', $cliente->id))->not->toBeNull();
 });
 
 it('nao cria uma segunda instancia para quem ja tem uma', function () {
