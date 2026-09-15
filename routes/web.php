@@ -15,6 +15,7 @@ use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
 use App\Livewire\Produto\Empresas;
+use App\Livewire\Produto\NodoClientes;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use App\Livewire\Usuarios\Cadastro as UsuariosCadastro;
@@ -59,6 +60,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
     Route::get('empresas', Empresas::class)->name('empresas');
+
+    // Clientes do Nodo, produto à parte: não têm tenant nenhum, mas a tela
+    // exige a mesma permissão de dono do produto.
+    Route::get('admin', NodoClientes::class)->name('admin');
 
     Route::post('emitente/escolher', EscolherEmitenteController::class)->name('emitente.escolher');
 });
