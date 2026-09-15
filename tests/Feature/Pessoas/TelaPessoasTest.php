@@ -150,3 +150,33 @@ it('lista apenas pessoas do emitente em foco', function () {
         ->assertSee('Minha Cliente')
         ->assertDontSee('Cliente Alheia');
 });
+
+it('guarda a observacao e a traz de volta ao editar', function () {
+    [$user, $emitente] = usuarioPessoas();
+
+    Livewire::actingAs($user)->test(Cadastro::class)
+        ->set('form.tipo_pessoa', 'J')
+        ->set('form.documento', '11222333000181')
+        ->set('form.razao_social', 'Metalúrgica Piracicaba Ltda')
+        ->set('form.ind_ie_dest', IndIEDest::NaoContribuinte->value)
+        ->set('form.logradouro', 'Rua Industrial')->set('form.numero', '100')
+        ->set('form.bairro', 'Centro')->set('form.codigo_municipio', '3538709')
+        ->set('form.municipio', 'Piracicaba')->set('form.uf', 'SP')->set('form.cep', '13400000')
+        ->set('form.e_cliente', true)
+        ->set('form.observacoes', '  Paga sempre no dia 10. Falar com a Ana.  ')
+        ->call('salvar')
+        ->assertHasNoErrors();
+
+    $pessoa = Pessoa::where('emitente_id', $emitente->id)->sole();
+
+    expect($pessoa->observacoes)->toBe('Paga sempre no dia 10. Falar com a Ana.');
+
+    Livewire::actingAs($user)->test(Cadastro::class)
+        ->call('editar', $pessoa->id)
+        ->assertSet('form.observacoes', 'Paga sempre no dia 10. Falar com a Ana.')
+        ->set('form.observacoes', '')
+        ->call('salvar')
+        ->assertHasNoErrors();
+
+    expect($pessoa->fresh()->observacoes)->toBeNull();
+});

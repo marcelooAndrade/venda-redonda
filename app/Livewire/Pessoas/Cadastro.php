@@ -252,6 +252,7 @@ class Cadastro extends Component
 
         $dados = $this->form;
         $dados['inscricao_estadual'] = blank($dados['inscricao_estadual']) ? null : $dados['inscricao_estadual'];
+        $dados['observacoes'] = blank($dados['observacoes']) ? null : trim((string) $dados['observacoes']);
 
         $validador->validar($dados);
 

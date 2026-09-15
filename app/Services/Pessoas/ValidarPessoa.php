@@ -39,6 +39,7 @@ class ValidarPessoa
             'uf' => ['required', 'string', 'size:2'],
             'cep' => ['required', 'string'],
             'email' => ['nullable', 'email', 'max:255'],
+            'observacoes' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $validator->after(function ($validator) use ($dados): void {

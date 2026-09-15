@@ -201,6 +201,11 @@
                 <x-ui.field label="E-mail" for="p-mail" class="sm:col-span-2" :error="$errors->first('email')">
                     <x-ui.input id="p-mail" type="email" wire:model="form.email" />
                 </x-ui.field>
+
+                <x-ui.field label="Observações" for="p-obs" class="sm:col-span-2" :error="$errors->first('observacoes')"
+                    hint="Uso interno. Não sai na nota nem na fatura.">
+                    <x-ui.textarea id="p-obs" wire:model="form.observacoes" rows="3" maxlength="2000" />
+                </x-ui.field>
             </div>
 
             {{-- Papéis --}}
