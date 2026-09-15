@@ -54,42 +54,31 @@
                 <x-ui.empty-state class="m-5" title="Nenhum cadastro" description="Use o formulário ao lado para incluir o primeiro." />
             @else
                 <div class="flex h-full min-h-0 min-w-0 flex-col">
+                    {{-- Lista compacta, não tabela: a coluna é estreita (30% da
+                         largura), e uma tabela de várias colunas não cabe sem
+                         rolar na horizontal. Documento e município continuam
+                         no formulário ao editar; papéis viram filtro, não
+                         mais coluna. --}}
                     <div class="min-h-0 min-w-0 flex-1 overflow-y-auto">
-                        <x-ui.table>
-                            <thead>
-                                <tr class="border-b border-graphite-200">
-                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Nome</th>
-                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Documento</th>
-                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Município</th>
-                                    <th class="etiqueta px-2 py-2 text-left text-graphite-500">Papéis</th>
-                                    <th class="etiqueta px-2 py-2 text-right text-graphite-500">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($this->pessoas as $pessoa)
-                                    <tr class="border-b border-graphite-100" wire:key="pessoa-{{ $pessoa->id }}">
-                                        <td class="px-2 py-2">
-                                            {{ $pessoa->razao_social }}
-                                            @if ($pessoa->nome_fantasia)
-                                                <span class="block text-xs text-graphite-500">{{ $pessoa->nome_fantasia }}</span>
-                                            @endif
-                                        </td>
-                                        <td class="num px-2 py-2">{{ $pessoa->documentoFormatado() }}</td>
-                                        <td class="px-2 py-2">{{ $pessoa->municipio }}/{{ $pessoa->uf }}</td>
-                                        <td class="px-2 py-2">
-                                            <span class="flex flex-wrap gap-1">
-                                                @if ($pessoa->e_cliente)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Cliente</span>@endif
-                                                @if ($pessoa->e_fornecedor)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Fornecedor</span>@endif
-                                                @if ($pessoa->e_transportadora)<span class="etiqueta bg-graphite-100 px-1.5 py-0.5 text-graphite-700">Transp.</span>@endif
-                                            </span>
-                                        </td>
-                                        <td class="px-2 py-2 text-right">
-                                            <x-ui.button variant="ghost" size="sm" wire:click="editar({{ $pessoa->id }})">Editar</x-ui.button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </x-ui.table>
+                        <ul class="divide-y divide-graphite-100">
+                            @foreach ($this->pessoas as $pessoa)
+                                <li wire:key="pessoa-{{ $pessoa->id }}" class="flex min-w-0 items-center gap-3 px-3 py-2.5">
+                                    <flux:avatar :name="$pessoa->nome_fantasia ?: $pessoa->razao_social" size="sm" circle />
+
+                                    <div class="min-w-0 flex-1">
+                                        <p class="truncate text-sm font-medium text-graphite-900">{{ $pessoa->nome_fantasia ?: $pessoa->razao_social }}</p>
+                                        <p class="num truncate text-xs text-graphite-500">{{ $pessoa->documentoFormatado() }}</p>
+                                    </div>
+
+                                    <x-ui.button
+                                        variant="ghost" size="sm"
+                                        wire:click="editar({{ $pessoa->id }})"
+                                        aria-label="Editar {{ $pessoa->nome_fantasia ?: $pessoa->razao_social }}">
+                                        <flux:icon.pencil-square class="size-4" />
+                                    </x-ui.button>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
 
                     <div class="shrink-0 border-t border-graphite-200/70 p-3">{{ $this->pessoas->links() }}</div>
