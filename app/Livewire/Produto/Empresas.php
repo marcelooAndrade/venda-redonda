@@ -4,6 +4,7 @@ namespace App\Livewire\Produto;
 
 use App\Enums\Fiscal\NFeStatus;
 use App\Enums\PlanoTenant;
+use App\Enums\SituacaoComercialTenant;
 use App\Models\Emitente;
 use App\Models\Nota;
 use App\Models\NotaServico;
@@ -138,6 +139,16 @@ class Empresas extends Component
             ->exists();
 
         return ! $temNota && ! $temNfse;
+    }
+
+    /** Em que pé está a conversa comercial. Não mexe no acesso da empresa. */
+    public function mudarSituacao(int $tenantId, string $situacao): void
+    {
+        $this->authorize('produto.administrar');
+
+        Tenant::findOrFail($tenantId)->update(['situacao_comercial' => SituacaoComercialTenant::from($situacao)]);
+
+        unset($this->empresas);
     }
 
     public function iniciarExclusao(int $tenantId): void

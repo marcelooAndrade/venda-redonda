@@ -102,3 +102,14 @@ it('lista compromissos com o vencido na frente', function () {
         ->and($c[2]['vencido'])->toBeFalse()
         ->and($c[3]['vencimento'])->toBe('2026-10-01');
 });
+
+it('conta a base ativa: clientes e faturas ativas', function () {
+    destinatarioCompleto($this->emitente);
+    destinatarioCompleto($this->emitente, ['documento' => '11222333000181', 'razao_social' => 'Fornecedor', 'e_cliente' => false, 'e_fornecedor' => true]);
+    Fatura::create(['emitente_id' => $this->emitente->id, 'titulo' => 'Cancelada', 'status' => 'cancelada']);
+
+    $painel = app(PainelFinanceiroService::class)->montar($this->emitente->id);
+
+    expect($painel['clientes'])->toBe(1)
+        ->and($painel['faturasAtivas'])->toBe(1);
+});

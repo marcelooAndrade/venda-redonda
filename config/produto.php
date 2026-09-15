@@ -28,17 +28,4 @@ return [
     */
     'slugs_reservados' => ['app', 'www', 'admin', 'api', 'mail', 'painel', 'suporte', 'status'],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Tenant administrativo
-    |--------------------------------------------------------------------------
-    |
-    | Slug do tenant "Marcelo Andrade" (a empresa dona do produto), para a
-    | tela Clientes: mostra os destinatários marcados como cliente dessa
-    | empresa, não de qualquer tenant. Vazio por padrão — sem valor, a tela
-    | avisa que falta configurar, em vez de adivinhar qual tenant é.
-    |
-    */
-    'tenant_administrativo' => env('TENANT_ADMINISTRATIVO_SLUG'),
-
 ];

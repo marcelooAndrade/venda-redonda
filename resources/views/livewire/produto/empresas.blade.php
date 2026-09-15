@@ -58,6 +58,7 @@
                         <th class="etiqueta px-5 py-2 text-graphite-500">Plano</th>
                         <th class="etiqueta px-5 py-2 text-graphite-500">Cadastrada em</th>
                         <th class="etiqueta px-5 py-2 text-graphite-500">Último acesso</th>
+                        <th class="etiqueta px-5 py-2 text-graphite-500">Situação</th>
                         <th class="etiqueta px-5 py-2 text-right text-graphite-500">Ações</th>
                     </tr>
                 </thead>
@@ -100,6 +101,13 @@
                                     <span class="text-graphite-500">nunca entrou</span>
                                 @endif
                             </td>
+                            <td class="px-5 py-3">
+                                <x-ui.select wire:change="mudarSituacao({{ $tenant->id }}, $event.target.value)" class="min-h-8 py-0 text-xs" aria-label="Situação de {{ $tenant->nome }}">
+                                    @foreach (\App\Enums\SituacaoComercialTenant::cases() as $situacao)
+                                        <option value="{{ $situacao->value }}" @selected($situacao === $tenant->situacao_comercial)>{{ $situacao->rotulo() }}</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </td>
                             <td class="px-5 py-3 text-right">
                                 @if ($podeExcluir)
                                     <x-ui.button variant="ghost" size="sm" wire:click="iniciarExclusao({{ $tenant->id }})">Excluir</x-ui.button>
@@ -111,7 +119,7 @@
 
                         @if ($confirmandoExclusaoDe === $tenant->id)
                             <tr class="border-b border-graphite-100 bg-danger-50 last:border-0">
-                                <td colspan="7" class="px-5 py-4">
+                                <td colspan="8" class="px-5 py-4">
                                     <p class="text-sm text-danger-700">
                                         Isto apaga <strong>{{ $tenant->nome }}</strong> e tudo dela: emitente,
                                         usuários, financeiro, estoque e cadastros. Não tem como desfazer.

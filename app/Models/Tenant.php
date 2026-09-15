@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PlanoTenant;
+use App\Enums\SituacaoComercialTenant;
 use App\Models\Concerns\Auditavel;
 use App\Support\HostDoProduto;
 use App\Support\TemaMarca;
@@ -22,13 +23,19 @@ class Tenant extends Model
     protected $attributes = [
         'ativo' => true,
         'plano' => PlanoTenant::Gratuito->value,
+        'situacao_comercial' => SituacaoComercialTenant::Novo->value,
     ];
 
-    protected $fillable = ['nome', 'nome_curto', 'slug', 'dominio', 'logo_path', 'tema', 'ativo', 'plano'];
+    protected $fillable = ['nome', 'nome_curto', 'slug', 'dominio', 'logo_path', 'tema', 'ativo', 'plano', 'situacao_comercial'];
 
     protected function casts(): array
     {
-        return ['tema' => 'array', 'ativo' => 'boolean', 'plano' => PlanoTenant::class];
+        return [
+            'tema' => 'array',
+            'ativo' => 'boolean',
+            'plano' => PlanoTenant::class,
+            'situacao_comercial' => SituacaoComercialTenant::class,
+        ];
     }
 
     /**

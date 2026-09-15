@@ -305,6 +305,48 @@
         </div>
     </x-ui.card>
 
+    {{-- O tamanho da operação e os quatro caminhos mais batidos. --}}
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        <x-ui.card title="Base ativa" subtitle="O tamanho da operação hoje.">
+            <dl class="grid gap-3">
+                <a href="{{ route('destinatarios') }}" wire:navigate class="flex items-baseline justify-between gap-3 hover:text-primary-700">
+                    <dt class="text-sm text-graphite-700">Clientes</dt>
+                    <dd class="num text-2xl font-bold text-graphite-900">{{ $dados['clientes'] }}</dd>
+                </a>
+                <a href="{{ route('contas-a-receber') }}" wire:navigate class="flex items-baseline justify-between gap-3 hover:text-primary-700">
+                    <dt class="text-sm text-graphite-700">Faturas ativas</dt>
+                    <dd class="num text-2xl font-bold text-graphite-900">{{ $dados['faturasAtivas'] }}</dd>
+                </a>
+                @if ($this->contatosEmAndamento !== null)
+                    <a href="{{ route('crm') }}" wire:navigate class="flex items-baseline justify-between gap-3 hover:text-primary-700">
+                        <dt class="text-sm text-graphite-700">Contatos em andamento</dt>
+                        <dd class="num text-2xl font-bold text-graphite-900">{{ $this->contatosEmAndamento }}</dd>
+                    </a>
+                @endif
+            </dl>
+        </x-ui.card>
+
+        <x-ui.card title="Atalhos">
+            <div class="grid gap-2 sm:grid-cols-2">
+                @foreach ([
+                    ['Movimentar caixa', 'Registrar entrada ou saída', 'contas-bancarias'],
+                    ['Emitir fatura', 'Criar cobrança para cliente', 'contas-a-receber'],
+                    ['Nova conta a pagar', 'Registrar um compromisso', 'contas-a-pagar'],
+                    ['Analisar DRE', 'Ver receitas e despesas', 'dre'],
+                ] as [$titulo, $subtitulo, $rota])
+                    <a href="{{ route($rota) }}" wire:navigate
+                        class="flex items-center justify-between gap-3 rounded-md border border-graphite-200 px-4 py-3 transition-colors hover:border-graphite-400 hover:bg-graphite-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                        <span class="min-w-0">
+                            <span class="block truncate text-sm font-semibold text-graphite-900">{{ $titulo }}</span>
+                            <span class="block truncate text-xs text-graphite-500">{{ $subtitulo }}</span>
+                        </span>
+                        <span aria-hidden="true" class="shrink-0 text-graphite-400">→</span>
+                    </a>
+                @endforeach
+            </div>
+        </x-ui.card>
+    </div>
+
     {{-- Sete linhas, vencido primeiro. A lista completa tem tela própria: esta
          existe para caber na tela sem rolagem e dizer o que fazer hoje. --}}
     <x-ui.card title="Próximos compromissos" subtitle="Vencido primeiro, depois por data.">

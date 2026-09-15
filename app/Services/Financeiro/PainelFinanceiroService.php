@@ -4,8 +4,10 @@ namespace App\Services\Financeiro;
 
 use App\Models\ContaFinanceira;
 use App\Models\ContaPagar;
+use App\Models\Fatura;
 use App\Models\FaturaParcela;
 use App\Models\MovimentoCaixa;
+use App\Models\Pessoa;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -75,6 +77,10 @@ class PainelFinanceiroService
 
             'meses' => $this->seisMeses($emitenteId, $hoje),
             'compromissos' => $this->compromissos($aReceber, $aPagar, $hojeIso),
+
+            // "Base ativa" do painel de lá: o tamanho da operação em duas contagens.
+            'clientes' => Pessoa::where('emitente_id', $emitenteId)->where('e_cliente', true)->where('ativo', true)->count(),
+            'faturasAtivas' => Fatura::where('emitente_id', $emitenteId)->where('status', 'ativa')->count(),
         ];
     }
 

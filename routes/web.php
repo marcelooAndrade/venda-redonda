@@ -17,11 +17,9 @@ use App\Livewire\Nfse\Notas;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
-use App\Livewire\Produto\Clientes;
 use App\Livewire\Produto\Crm;
 use App\Livewire\Produto\Empresas;
 use App\Livewire\Produto\NodoClientes;
-use App\Livewire\Produto\VisaoGeral;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use App\Livewire\Usuarios\Cadastro as UsuariosCadastro;
@@ -66,10 +64,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notas-servico/{nota}/pdf', [NotaServicoArquivoController::class, 'pdf'])->name('notas-servico.pdf');
     Route::get('notas-servico/{nota}/xml', [NotaServicoArquivoController::class, 'xml'])->name('notas-servico.xml');
 
-    // Resumo do CRM, dos clientes e do financeiro da empresa Marcelo Andrade,
-    // numa tela só. Mesma permissão de dono do produto.
-    Route::get('visao-geral', VisaoGeral::class)->name('visao-geral');
-
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
     Route::get('empresas', Empresas::class)->name('empresas');
@@ -77,10 +71,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Funil de negócio da área administrativa, sem tenant nenhum: mesma
     // permissão de dono do produto.
     Route::get('crm', Crm::class)->name('crm');
-
-    // Mesmo Destinatário do tenant administrativo, só com visão diferente.
-    // Sem tenant fixo: o slug vem de config('produto.tenant_administrativo').
-    Route::get('clientes', Clientes::class)->name('clientes');
 
     // Clientes do Nodo, produto à parte: não têm tenant nenhum, mas a tela
     // exige a mesma permissão de dono do produto.

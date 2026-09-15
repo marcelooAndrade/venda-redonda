@@ -5,6 +5,7 @@ use App\Enums\Fiscal\NFeStatus;
 use App\Enums\Nfse\NfseStatus;
 use App\Enums\Perfil;
 use App\Enums\PlanoTenant;
+use App\Enums\SituacaoComercialTenant;
 use App\Livewire\Produto\Empresas;
 use App\Models\Emitente;
 use App\Models\Nota;
@@ -267,4 +268,18 @@ it('a marca de dono nao entra por preenchimento em massa', function () {
     ]);
 
     expect($user->fresh()->dono_do_produto)->toBeFalse();
+});
+
+it('toda empresa nasce com situacao comercial nova, e o dono muda pela lista', function () {
+    $tenant = empresaCadastrada('Empresa Em Conversa', '2026-09-01 08:00:00');
+
+    expect($tenant->fresh()->situacao_comercial)->toBe(SituacaoComercialTenant::Novo);
+
+    Livewire::actingAs(donoDoProduto())
+        ->test(Empresas::class)
+        ->call('mudarSituacao', $tenant->id, 'contatado');
+
+    expect($tenant->fresh()->situacao_comercial)->toBe(SituacaoComercialTenant::Contatado);
+
+    $this->actingAs(donoDoProduto())->get('/empresas')->assertOk()->assertSee('Contatado');
 });
