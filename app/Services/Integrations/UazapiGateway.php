@@ -55,7 +55,11 @@ class UazapiGateway implements GatewayDeWhatsapp
 
     public function enviarTexto(string $instanceToken, string $numero, string $texto): array
     {
-        $resposta = $this->cliente()
+        // Sem repetição automática aqui, diferente dos outros métodos: não
+        // dá para saber se uma falha "sem resposta" já mandou a mensagem do
+        // outro lado. Repetir arriscaria mandar a mesma mensagem duas vezes,
+        // o que WhatsApp não tem como desfazer.
+        $resposta = $this->cliente(comRepeticao: false)
             ->withHeader('token', $instanceToken)
             ->post('/send/text', ['number' => $numero, 'text' => $texto]);
 
@@ -84,7 +88,14 @@ class UazapiGateway implements GatewayDeWhatsapp
         return (array) $resposta->json('groups', []);
     }
 
-    private function cliente(): PendingRequest
+    /**
+     * Repetição ligada por padrão: a uazapi já falhou de forma passageira
+     * em produção (medido com a instância real de um cliente, que
+     * funcionou normalmente ao repetir a mesma chamada minutos depois).
+     * `AdminPessoalGateway` já usa o mesmo padrão. Desligada só onde
+     * repetir é arriscado — ver enviarTexto().
+     */
+    private function cliente(bool $comRepeticao = true): PendingRequest
     {
         $url = (string) config('integracao.uazapi.url');
 
@@ -92,7 +103,9 @@ class UazapiGateway implements GatewayDeWhatsapp
             throw new UazapiIndisponivel('Módulo WhatsApp sem configuração da uazapi.');
         }
 
-        return Http::baseUrl(rtrim($url, '/'))->timeout(15)->acceptJson();
+        $cliente = Http::baseUrl(rtrim($url, '/'))->timeout(15)->acceptJson();
+
+        return $comRepeticao ? $cliente->retry(2, 1000, throw: false) : $cliente;
     }
 
     private function adminToken(): string

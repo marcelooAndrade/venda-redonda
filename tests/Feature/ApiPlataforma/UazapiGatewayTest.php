@@ -80,6 +80,44 @@ it('lanca UazapiIndisponivel quando a uazapi recusa', function () {
     app(UazapiGateway::class)->status('token-qualquer');
 })->throws(UazapiIndisponivel::class);
 
+/**
+ * A uazapi já falhou de forma passageira em produção nesta mesma chamada
+ * (medido: a mesma instância real de um cliente funcionou ao repetir minutos
+ * depois). Repetição automática cobre exatamente esse caso.
+ */
+it('repete conectar quando a uazapi falha na primeira tentativa', function () {
+    Http::fake(['uazapi.test/instance/connect' => Http::sequence()
+        ->push(['error' => 'fora do ar'], 503)
+        ->push(['instance' => ['qrcode' => 'data:image/png;base64,xyz', 'status' => 'connecting']], 200)]);
+
+    $conexao = app(UazapiGateway::class)->conectar('token-da-instancia');
+
+    expect($conexao)->toBe(['qrcode' => 'data:image/png;base64,xyz', 'status' => 'connecting']);
+    Http::assertSentCount(2);
+});
+
+/**
+ * mandar mensagem não pode repetir sozinho: uma falha sem resposta pode já
+ * ter entregado a mensagem do outro lado, e repetir arriscaria duplicar.
+ */
+it('nao repete enviarTexto quando a uazapi falha', function () {
+    Http::fake(['uazapi.test/send/text' => Http::response(['error' => 'fora do ar'], 503)]);
+
+    app(UazapiGateway::class)->enviarTexto('token-da-instancia', '5519999998888', 'ola');
+})->throws(UazapiIndisponivel::class);
+
+it('confirma que enviarTexto so tentou uma vez', function () {
+    Http::fake(['uazapi.test/send/text' => Http::response(['error' => 'fora do ar'], 503)]);
+
+    try {
+        app(UazapiGateway::class)->enviarTexto('token-da-instancia', '5519999998888', 'ola');
+    } catch (UazapiIndisponivel) {
+        // esperado
+    }
+
+    Http::assertSentCount(1);
+});
+
 it('lanca UazapiIndisponivel sem configuracao, sem chamar a rede', function () {
     config(['integracao.uazapi.url' => null, 'integracao.uazapi.admin_token' => null]);
 
