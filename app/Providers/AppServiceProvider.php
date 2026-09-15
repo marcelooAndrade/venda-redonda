@@ -10,14 +10,19 @@ use App\Services\Fiscal\SefazGateway;
 use App\Services\Integrations\AdminPessoalGateway;
 use App\Services\Integrations\GatewayDeConversoes;
 use App\Services\Integrations\GatewayDeLeads;
+use App\Services\Integrations\GatewayDeWhatsapp;
 use App\Services\Integrations\MetaConversoesGateway;
+use App\Services\Integrations\UazapiGateway;
 use App\Services\Nfse\GatewayNfse;
 use App\Services\Nfse\SigissGateway;
 use App\Support\TenantAtual;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -32,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SefazGateway::class, NfephpSefazGateway::class);
         $this->app->bind(GatewayDeLeads::class, AdminPessoalGateway::class);
         $this->app->bind(GatewayDeConversoes::class, MetaConversoesGateway::class);
+        $this->app->bind(GatewayDeWhatsapp::class, UazapiGateway::class);
         $this->app->bind(GatewayNfse::class, SigissGateway::class);
         $this->app->singleton(TenantAtual::class);
 
@@ -51,6 +57,12 @@ class AppServiceProvider extends ServiceProvider
         // do spatie devolve nulo para habilidade que ele não conhece, e a
         // decisão cai aqui.
         Gate::define('produto.administrar', fn (User $user): bool => $user->dono_do_produto === true);
+
+        // Por cliente, não por IP: é o token que identifica quem está
+        // usando, e a cota real (a conta uazapi) é compartilhada por todos
+        // os clientes deste módulo. 30/min é ponto de partida, revisável
+        // quando houver uso de verdade.
+        RateLimiter::for('whatsapp', fn (Request $request): Limit => Limit::perMinute(30)->by($request->user()?->id));
     }
 
     /**

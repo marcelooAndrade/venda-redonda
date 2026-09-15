@@ -31,4 +31,21 @@ return [
         'access_token' => env('META_CAPI_ACCESS_TOKEN'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | uazapi
+    |--------------------------------------------------------------------------
+    |
+    | Gateway de WhatsApp por trás do módulo WhatsApp do Painel API. O
+    | AdminToken é da conta inteira, cria e lista instância; cada instância
+    | de cliente tem o próprio token, guardado em whatsapp_instancias, não
+    | aqui. Fica vazio em desenvolvimento e em teste: sem URL nem token,
+    | nada sai pela rede.
+    |
+    */
+    'uazapi' => [
+        'url' => env('UAZAPI_URL'),
+        'admin_token' => env('UAZAPI_ADMIN_TOKEN'),
+    ],
+
 ];
