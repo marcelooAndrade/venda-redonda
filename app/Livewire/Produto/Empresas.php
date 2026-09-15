@@ -2,7 +2,11 @@
 
 namespace App\Livewire\Produto;
 
+use App\Enums\Fiscal\NFeStatus;
 use App\Enums\PlanoTenant;
+use App\Models\Emitente;
+use App\Models\Nota;
+use App\Models\NotaServico;
 use App\Models\Tenant;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +30,11 @@ use Livewire\WithPagination;
 class Empresas extends Component
 {
     use WithPagination;
+
+    /** Id do tenant com a confirmação de exclusão aberta, um por vez. */
+    public ?int $confirmandoExclusaoDe = null;
+
+    public string $confirmacaoNome = '';
 
     /**
      * Propriedade, e não computed, para asserção direta no teste, como o
@@ -97,6 +106,74 @@ class Empresas extends Component
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(50);
+    }
+
+    /**
+     * Só permite excluir empresa que nunca emitiu nada de verdade: nenhuma
+     * nota além de rascunho, e nenhuma nota de serviço, em nenhum dos
+     * emitentes dela. Excluir arrasta emitente, usuário, financeiro e
+     * estoque via cascade do banco — e documento fiscal autorizado tem
+     * guarda legal de 5 anos, então bloqueia mesmo diante de dúvida.
+     */
+    public function podeExcluir(Tenant $tenant): bool
+    {
+        $emitenteIds = Emitente::query()
+            ->withoutGlobalScope('tenant')
+            ->where('tenant_id', $tenant->id)
+            ->pluck('id');
+
+        if ($emitenteIds->isEmpty()) {
+            return true;
+        }
+
+        $temNota = Nota::query()
+            ->withoutGlobalScope('tenant')
+            ->whereIn('emitente_id', $emitenteIds)
+            ->where('status', '!=', NFeStatus::Rascunho)
+            ->exists();
+
+        $temNfse = NotaServico::query()
+            ->withoutGlobalScope('tenant')
+            ->whereIn('emitente_id', $emitenteIds)
+            ->exists();
+
+        return ! $temNota && ! $temNfse;
+    }
+
+    public function iniciarExclusao(int $tenantId): void
+    {
+        $this->authorize('produto.administrar');
+
+        $this->confirmandoExclusaoDe = $tenantId;
+        $this->confirmacaoNome = '';
+        $this->resetErrorBag('confirmacaoNome');
+    }
+
+    public function cancelarExclusao(): void
+    {
+        $this->confirmandoExclusaoDe = null;
+        $this->confirmacaoNome = '';
+    }
+
+    public function excluir(int $tenantId): void
+    {
+        $this->authorize('produto.administrar');
+
+        $tenant = Tenant::findOrFail($tenantId);
+
+        abort_unless($this->podeExcluir($tenant), 403, 'Esta empresa tem nota fiscal ou de serviço emitida, e não pode ser excluída.');
+
+        if (trim($this->confirmacaoNome) !== $tenant->nome) {
+            $this->addError('confirmacaoNome', 'Digite o nome exato da empresa para confirmar.');
+
+            return;
+        }
+
+        $tenant->delete();
+
+        $this->cancelarExclusao();
+        unset($this->empresas);
+        $this->totais = $this->apurar();
     }
 
     public function render()

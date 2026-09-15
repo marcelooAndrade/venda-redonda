@@ -58,6 +58,7 @@
                         <th class="etiqueta px-5 py-2 text-graphite-500">Plano</th>
                         <th class="etiqueta px-5 py-2 text-graphite-500">Cadastrada em</th>
                         <th class="etiqueta px-5 py-2 text-graphite-500">Último acesso</th>
+                        <th class="etiqueta px-5 py-2 text-right text-graphite-500">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,6 +68,7 @@
                             $contato = $tenant->users->first();
                             // O último acesso da empresa é o mais recente entre as pessoas dela.
                             $ultimoAcesso = $tenant->users->max('ultimo_acesso_em');
+                            $podeExcluir = $this->podeExcluir($tenant);
                         @endphp
                         <tr class="border-b border-graphite-100 last:border-0" wire:key="empresa-{{ $tenant->id }}">
                             <td class="px-5 py-3">
@@ -98,7 +100,34 @@
                                     <span class="text-graphite-500">nunca entrou</span>
                                 @endif
                             </td>
+                            <td class="px-5 py-3 text-right">
+                                @if ($podeExcluir)
+                                    <x-ui.button variant="ghost" size="sm" wire:click="iniciarExclusao({{ $tenant->id }})">Excluir</x-ui.button>
+                                @else
+                                    <span class="etiqueta text-graphite-400" title="Tem nota fiscal ou de serviço emitida">Não pode excluir</span>
+                                @endif
+                            </td>
                         </tr>
+
+                        @if ($confirmandoExclusaoDe === $tenant->id)
+                            <tr class="border-b border-graphite-100 bg-danger-50 last:border-0">
+                                <td colspan="7" class="px-5 py-4">
+                                    <p class="text-sm text-danger-700">
+                                        Isto apaga <strong>{{ $tenant->nome }}</strong> e tudo dela: emitente,
+                                        usuários, financeiro, estoque e cadastros. Não tem como desfazer.
+                                        Digite <strong>{{ $tenant->nome }}</strong> para confirmar.
+                                    </p>
+                                    <div class="mt-3 flex flex-wrap items-center gap-2">
+                                        <x-ui.input wire:model="confirmacaoNome" placeholder="{{ $tenant->nome }}" class="w-64" />
+                                        <x-ui.button variant="destructive" size="sm" wire:click="excluir({{ $tenant->id }})">Confirmar exclusão</x-ui.button>
+                                        <x-ui.button variant="ghost" size="sm" wire:click="cancelarExclusao">Cancelar</x-ui.button>
+                                    </div>
+                                    @error('confirmacaoNome')
+                                        <p class="mt-2 text-xs text-danger-700">{{ $message }}</p>
+                                    @enderror
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </x-ui.table>

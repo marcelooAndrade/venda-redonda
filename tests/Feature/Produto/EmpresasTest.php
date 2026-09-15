@@ -1,9 +1,15 @@
 <?php
 
+use App\Enums\Fiscal\Ambiente;
+use App\Enums\Fiscal\NFeStatus;
+use App\Enums\Nfse\NfseStatus;
 use App\Enums\Perfil;
 use App\Enums\PlanoTenant;
 use App\Livewire\Produto\Empresas;
 use App\Models\Emitente;
+use App\Models\Nota;
+use App\Models\NotaServico;
+use App\Models\ServicoNfse;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Support\TenantAtual;
@@ -158,6 +164,98 @@ it('o comando marca o usuario como dono do produto', function () {
 it('o comando recusa email que nao existe', function () {
     $this->artisan('produto:definir-dono', ['email' => 'ninguem@exemplo.com.br'])
         ->assertFailed();
+});
+
+it('pode excluir empresa sem emitente', function () {
+    $tenant = Tenant::create(['nome' => 'Vazia', 'slug' => 'vazia']);
+
+    expect(app(Empresas::class)->podeExcluir($tenant))->toBeTrue();
+});
+
+it('pode excluir empresa cuja unica nota e rascunho', function () {
+    $tenant = empresaCadastrada('So Rascunho', '2026-09-01 08:00:00');
+    $emitente = $tenant->emitentes()->withoutGlobalScope('tenant')->first();
+
+    Nota::create([
+        'emitente_id' => $emitente->id, 'serie' => 1, 'ambiente' => Ambiente::Homologacao,
+        'data_emissao' => now(), 'status' => NFeStatus::Rascunho,
+    ]);
+
+    expect(app(Empresas::class)->podeExcluir($tenant->fresh()))->toBeTrue();
+});
+
+it('nao pode excluir empresa com nota autorizada', function () {
+    $tenant = empresaCadastrada('Com Nota', '2026-09-01 08:00:00');
+    $emitente = $tenant->emitentes()->withoutGlobalScope('tenant')->first();
+
+    Nota::create([
+        'emitente_id' => $emitente->id, 'serie' => 1, 'ambiente' => Ambiente::Homologacao,
+        'data_emissao' => now(), 'status' => NFeStatus::Autorizada,
+    ]);
+
+    expect(app(Empresas::class)->podeExcluir($tenant->fresh()))->toBeFalse();
+});
+
+it('nao pode excluir empresa com nota de servico, seja qual for o status', function () {
+    $tenant = empresaCadastrada('Com Nfse', '2026-09-01 08:00:00', emitente: ['inscricao_municipal' => '44307']);
+    $emitente = $tenant->emitentes()->withoutGlobalScope('tenant')->first();
+    $servico = ServicoNfse::create(['emitente_id' => $emitente->id, 'nome' => 'Consultoria', 'codigo_servico' => '17.01.00']);
+    $parcela = parcelaParaNfse($emitente);
+
+    NotaServico::create([
+        'emitente_id' => $emitente->id, 'fatura_parcela_id' => $parcela->id, 'servico_nfse_id' => $servico->id,
+        'ambiente' => Ambiente::Homologacao, 'status' => NfseStatus::Processando,
+        'numero_rps' => 1, 'serie_rps' => '1', 'codigo_servico' => '17.01.00',
+        'aliquota_iss_bp' => 200, 'iss_retido' => false, 'descricao' => 'Consultoria', 'valor_centavos' => 150000,
+    ]);
+
+    expect(app(Empresas::class)->podeExcluir($tenant->fresh()))->toBeFalse();
+});
+
+it('exclui a empresa e tudo dela quando a confirmacao bate com o nome', function () {
+    $tenant = empresaCadastrada('Empresa De Teste', '2026-09-01 08:00:00');
+    $emitenteId = $tenant->emitentes()->withoutGlobalScope('tenant')->first()->id;
+
+    Livewire::actingAs(donoDoProduto())
+        ->test(Empresas::class)
+        ->call('iniciarExclusao', $tenant->id)
+        ->set('confirmacaoNome', 'Empresa De Teste')
+        ->call('excluir', $tenant->id);
+
+    expect(Tenant::find($tenant->id))->toBeNull()
+        ->and(Emitente::withoutGlobalScope('tenant')->find($emitenteId))->toBeNull();
+});
+
+it('nao exclui quando a confirmacao nao bate com o nome', function () {
+    $tenant = empresaCadastrada('Empresa De Teste', '2026-09-01 08:00:00');
+
+    Livewire::actingAs(donoDoProduto())
+        ->test(Empresas::class)
+        ->call('iniciarExclusao', $tenant->id)
+        ->set('confirmacaoNome', 'nome errado')
+        ->call('excluir', $tenant->id)
+        ->assertHasErrors('confirmacaoNome');
+
+    expect(Tenant::find($tenant->id))->not->toBeNull();
+});
+
+it('recusa excluir empresa com nota autorizada mesmo com a confirmacao certa', function () {
+    $tenant = empresaCadastrada('Empresa Protegida', '2026-09-01 08:00:00');
+    $emitente = $tenant->emitentes()->withoutGlobalScope('tenant')->first();
+
+    Nota::create([
+        'emitente_id' => $emitente->id, 'serie' => 1, 'ambiente' => Ambiente::Homologacao,
+        'data_emissao' => now(), 'status' => NFeStatus::Autorizada,
+    ]);
+
+    Livewire::actingAs(donoDoProduto())
+        ->test(Empresas::class)
+        ->call('iniciarExclusao', $tenant->id)
+        ->set('confirmacaoNome', 'Empresa Protegida')
+        ->call('excluir', $tenant->id)
+        ->assertForbidden();
+
+    expect(Tenant::find($tenant->id))->not->toBeNull();
 });
 
 it('a marca de dono nao entra por preenchimento em massa', function () {
