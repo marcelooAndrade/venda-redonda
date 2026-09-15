@@ -23,6 +23,41 @@ it('recusa sem token', function () {
     $this->postJson('http://api.vendaredonda.test/whatsapp/v1/instancia')->assertUnauthorized();
 });
 
+/**
+ * `post()`/`get()` puros, sem o `Accept: application/json` que
+ * `postJson()`/`getJson()` mandam sozinhos — é o que um cliente real, sem
+ * essa preocupação, manda por padrão. Sem isto, a suíte inteira só testava
+ * o caminho feliz do cabeçalho, e não pegou uma resposta 302 para o /login
+ * do sistema fiscal (domínio errado) em vez de 401 em JSON, medida contra
+ * o domínio real. Ver shouldRenderJsonWhen em bootstrap/app.php.
+ */
+it('devolve 401 em json sem token, mesmo sem o cabecalho Accept json', function () {
+    $this->post('http://api.vendaredonda.test/whatsapp/v1/instancia')
+        ->assertUnauthorized()
+        ->assertHeader('Content-Type', 'application/json');
+});
+
+it('devolve 403 em json sem o modulo, mesmo sem o cabecalho Accept json', function () {
+    $cliente = ApiCliente::create(['nome' => 'Sem acesso', 'email' => 'semacesso@exemplo.com.br']);
+    Sanctum::actingAs($cliente);
+
+    $this->post('http://api.vendaredonda.test/whatsapp/v1/instancia')
+        ->assertForbidden()
+        ->assertHeader('Content-Type', 'application/json');
+});
+
+it('devolve 422 em json quando falta numero e texto, mesmo sem o cabecalho Accept json', function () {
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
+    $cliente->whatsappInstancia()->create([
+        'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'connected',
+    ]);
+
+    $this->post('http://api.vendaredonda.test/whatsapp/v1/mensagens', [])
+        ->assertStatus(422)
+        ->assertHeader('Content-Type', 'application/json');
+});
+
 it('recusa cliente sem o modulo whatsapp ativo', function () {
     $cliente = ApiCliente::create(['nome' => 'Sem acesso', 'email' => 'semacesso@exemplo.com.br']);
     Sanctum::actingAs($cliente);

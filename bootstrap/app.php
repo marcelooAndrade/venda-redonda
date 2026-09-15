@@ -50,6 +50,13 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            // `is('api/*')` não pega o Nodo: as rotas dele não têm prefixo
+            // `/api`, de propósito (o domínio já diz que é API). Sem esta
+            // checagem por host, cliente que não manda `Accept:
+            // application/json` recebia redirect para o /login do sistema
+            // fiscal, em vez de 401 em JSON — medido com um cliente real.
+            fn (Request $request) => $request->is('api/*')
+                || $request->expectsJson()
+                || $request->getHost() === (string) config('api_plataforma.dominio'),
         );
     })->create();
