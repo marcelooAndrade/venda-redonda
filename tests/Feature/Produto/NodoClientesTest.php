@@ -127,6 +127,43 @@ it('cliente novo sem modulo nenhum marcado nasce sem acesso a nada', function ()
     expect($cliente->modulos)->toBe([]);
 });
 
+it('a busca acha destinatario marcado como cliente, de qualquer emitente', function () {
+    $emitente = emitenteCompleto();
+    destinatarioCompleto($emitente, ['razao_social' => 'TRANSPORTES LEME LTDA', 'nome_fantasia' => 'Transm', 'email' => 'contato@transm.com.br']);
+
+    $componente = Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->set('formularioAberto', true)
+        ->set('buscaDestinatario', 'Transm');
+
+    expect($componente->get('resultadosBusca'))->toHaveCount(1);
+});
+
+it('a busca nao acha destinatario que nao e cliente', function () {
+    $emitente = emitenteCompleto();
+    destinatarioCompleto($emitente, ['razao_social' => 'FORNECEDOR LTDA', 'e_cliente' => false, 'e_fornecedor' => true]);
+
+    $componente = Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->set('formularioAberto', true)
+        ->set('buscaDestinatario', 'FORNECEDOR');
+
+    expect($componente->get('resultadosBusca'))->toHaveCount(0);
+});
+
+it('selecionar destinatario preenche nome e email do formulario', function () {
+    $emitente = emitenteCompleto();
+    $pessoa = destinatarioCompleto($emitente, ['nome_fantasia' => 'Transm', 'email' => 'contato@transm.com.br']);
+
+    Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->set('formularioAberto', true)
+        ->call('selecionarDestinatario', $pessoa->id)
+        ->assertSet('novoNome', 'Transm')
+        ->assertSet('novoEmail', 'contato@transm.com.br')
+        ->assertSet('buscaDestinatario', '');
+});
+
 it('edita os modulos de um cliente existente', function () {
     $cliente = ApiCliente::create(['nome' => 'Transm', 'email' => 'contato@transm.com.br', 'modulos' => []]);
 

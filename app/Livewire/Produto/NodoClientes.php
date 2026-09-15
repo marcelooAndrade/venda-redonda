@@ -4,7 +4,9 @@ namespace App\Livewire\Produto;
 
 use App\Enums\ModuloApi;
 use App\Models\ApiCliente;
+use App\Models\Pessoa;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -29,6 +31,9 @@ class NodoClientes extends Component
     use WithPagination;
 
     public bool $formularioAberto = false;
+
+    /** Busca por destinatário já cadastrado no sistema fiscal, para não digitar de novo. */
+    public string $buscaDestinatario = '';
 
     public string $novoNome = '';
 
@@ -63,6 +68,45 @@ class NodoClientes extends Component
             ->paginate(50);
     }
 
+    /**
+     * Destinatários marcados como cliente, de qualquer emitente — é tela de
+     * dono do produto, então atravessa tenant como /empresas já faz.
+     * Preenche o formulário em vez de criar cadastro duplicado: a mesma
+     * empresa já existe como destinatário em algum emitente do sistema
+     * fiscal na maioria dos casos reais.
+     *
+     * @return Collection<int, Pessoa>
+     */
+    #[Computed]
+    public function resultadosBusca(): Collection
+    {
+        $termo = trim($this->buscaDestinatario);
+
+        if (mb_strlen($termo) < 2) {
+            return new Collection;
+        }
+
+        return Pessoa::query()
+            ->withoutGlobalScope('tenant')
+            ->where('e_cliente', true)
+            ->where(fn ($q) => $q
+                ->where('razao_social', 'like', "%{$termo}%")
+                ->orWhere('nome_fantasia', 'like', "%{$termo}%")
+                ->orWhere('documento', 'like', "%{$termo}%"))
+            ->with('emitente')
+            ->limit(10)
+            ->get();
+    }
+
+    public function selecionarDestinatario(int $pessoaId): void
+    {
+        $pessoa = Pessoa::query()->withoutGlobalScope('tenant')->findOrFail($pessoaId);
+
+        $this->novoNome = $pessoa->nome_fantasia ?: $pessoa->razao_social;
+        $this->novoEmail = (string) $pessoa->email;
+        $this->buscaDestinatario = '';
+    }
+
     public function criarCliente(): void
     {
         $this->authorize('produto.administrar');
@@ -83,7 +127,7 @@ class NodoClientes extends Component
         $this->tokenRevelado = $cliente->createToken($cliente->nome)->plainTextToken;
         $this->clienteDoTokenRevelado = $cliente->id;
 
-        $this->reset(['novoNome', 'novoEmail', 'novosModulos', 'formularioAberto']);
+        $this->reset(['novoNome', 'novoEmail', 'novosModulos', 'formularioAberto', 'buscaDestinatario']);
         unset($this->clientes);
     }
 

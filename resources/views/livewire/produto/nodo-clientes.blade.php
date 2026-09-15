@@ -28,6 +28,25 @@
 
     @if ($formularioAberto)
         <x-ui.card title="Novo cliente">
+            <div class="mb-5">
+                <x-ui.field label="Buscar destinatário já cadastrado" for="busca-destinatario"
+                    hint="Preenche nome e e-mail a partir de um destinatário marcado como cliente, em qualquer empresa do sistema.">
+                    <x-ui.input id="busca-destinatario" wire:model.live.debounce.400ms="buscaDestinatario" placeholder="Nome ou documento" />
+                </x-ui.field>
+
+                @if ($this->resultadosBusca->isNotEmpty())
+                    <div class="mt-2 divide-y divide-graphite-100 rounded-md border border-graphite-200">
+                        @foreach ($this->resultadosBusca as $pessoa)
+                            <button type="button" wire:click="selecionarDestinatario({{ $pessoa->id }})"
+                                    class="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-graphite-50">
+                                <span class="font-medium text-graphite-900">{{ $pessoa->nome_fantasia ?: $pessoa->razao_social }}</span>
+                                <span class="text-xs text-graphite-500">{{ $pessoa->documento }} — {{ $pessoa->emitente?->nome_fantasia ?: $pessoa->emitente?->razao_social }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
             <form wire:submit="criarCliente" class="grid gap-4 sm:grid-cols-2">
                 <x-ui.field label="Nome" for="novo-nome" required :error="$errors->first('novoNome')">
                     <x-ui.input id="novo-nome" wire:model="novoNome" />
