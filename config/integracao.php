@@ -36,7 +36,7 @@ return [
     | uazapi
     |--------------------------------------------------------------------------
     |
-    | Gateway de WhatsApp por trás do módulo WhatsApp do Painel API. O
+    | Gateway de WhatsApp por trás do módulo WhatsApp do Nodo. O
     | AdminToken é da conta inteira, cria e lista instância; cada instância
     | de cliente tem o próprio token, guardado em whatsapp_instancias, não
     | aqui. Fica vazio em desenvolvimento e em teste: sem URL nem token,

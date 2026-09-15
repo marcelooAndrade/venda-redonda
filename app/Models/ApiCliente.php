@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
- * Cliente da plataforma de APIs (Painel API). Sem relação nenhuma com
+ * Cliente da plataforma de APIs (Nodo). Sem relação nenhuma com
  * `Tenant`/`User` do sistema fiscal: autentica só por token (Sanctum), sem
  * senha, sem sessão. Implementa `Authenticatable` só porque o guard do
  * Sanctum exige o contrato — não tem `password` nem tela de login nenhuma.

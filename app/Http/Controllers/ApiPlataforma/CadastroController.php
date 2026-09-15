@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
- * Cadastro do Painel API. Sem senha, sem sessão: o token aparece uma vez
+ * Cadastro do Nodo. Sem senha, sem sessão: o token aparece uma vez
  * só nesta resposta, e daí em diante o cliente só fala com a API por HTTP,
  * com o próprio token.
  *

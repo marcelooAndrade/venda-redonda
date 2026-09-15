@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Painel API — Seu token</title>
+    <title>Nodo — Seu token</title>
     @vite('resources/css/app.css')
 </head>
 <body class="flex min-h-dvh items-center justify-center bg-graphite-50 px-4 py-10 font-sans text-graphite-900 antialiased">

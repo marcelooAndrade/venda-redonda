@@ -6,7 +6,7 @@ use App\Http\Controllers\ApiPlataforma\WhatsappMensagemController;
 use Illuminate\Support\Facades\Route;
 
 /**
- * Domínio próprio do Painel API, separado do sistema fiscal: sem sessão,
+ * Domínio próprio do Nodo, separado do sistema fiscal: sem sessão,
  * sem os middlewares de tenant, sem nenhuma relação com routes/web.php.
  *
  * Sem API_DOMINIO configurada, este grupo não casa com host nenhum, mesma

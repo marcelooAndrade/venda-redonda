@@ -44,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // O Sanctum não registra estes aliases sozinho na estrutura nova de
-        // bootstrap/app.php. Usados pelas rotas do Painel API, em
+        // bootstrap/app.php. Usados pelas rotas do Nodo, em
         // routes/api_plataforma.php, para exigir a habilidade do token.
         $middleware->alias([
             'ability' => CheckForAnyAbility::class,

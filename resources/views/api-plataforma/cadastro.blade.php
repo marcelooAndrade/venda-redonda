@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Painel API — Cadastro</title>
+    <title>Nodo — Cadastro</title>
     @vite('resources/css/app.css')
 </head>
 <body class="flex min-h-dvh items-center justify-center bg-graphite-50 px-4 py-10 font-sans text-graphite-900 antialiased">
     <div class="w-full max-w-md rounded-lg border border-graphite-200 bg-white p-8 shadow-sm">
-        <p class="etiqueta text-graphite-500">Painel API</p>
+        <p class="etiqueta text-graphite-500">Nodo</p>
         <h1 class="display-title mt-1 text-2xl text-graphite-900">Módulo WhatsApp</h1>
         <p class="mt-3 text-sm text-graphite-600">
             Cadastre-se e receba um token de acesso. Sem senha: o token é a sua

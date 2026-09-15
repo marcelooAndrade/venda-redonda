@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Cliente da plataforma de APIs (Painel API), sem nenhuma relação com
+ * Cliente da plataforma de APIs (Nodo), sem nenhuma relação com
  * `tenants`/`users` do sistema fiscal: são dois produtos diferentes, e o
  * EmitirAgora é só mais um cliente daqui, sem tratamento especial.
  *
