@@ -3,7 +3,11 @@
     <x-ui.page-header
         eyebrow="Financeiro"
         title="Contas a receber"
-        description="A parcela é o título: é ela que vence, atrasa e é recebida." />
+        description="A parcela é o título: é ela que vence, atrasa e é recebida. A fatura nasce em Faturas.">
+        <x-slot:actions>
+            <x-ui.button :href="route('faturas')" wire:navigate variant="secondary">Ver faturas</x-ui.button>
+        </x-slot:actions>
+    </x-ui.page-header>
 
     @if (session('sucesso'))
         <x-ui.alert variant="success">{{ session('sucesso') }}</x-ui.alert>
@@ -32,105 +36,6 @@
             </p>
         </x-ui.card>
     </div>
-
-    @can('financeiro.gerenciar')
-        @if (blank($this->emitente->chave_pix))
-            <x-ui.alert variant="info" title="Cobrança Pix desligada">
-                Sem chave cadastrada a parcela nasce sem código de pagamento.
-                @can('emitente.gerenciar')
-                    Cadastre a chave em <a href="{{ route('emitente') }}" class="underline">Emitente</a>.
-                @else
-                    Peça a quem administra o emitente para cadastrar a chave.
-                @endcan
-            </x-ui.alert>
-        @endif
-
-        <x-ui.card title="Lançar fatura"
-            subtitle="Gere as parcelas a partir do total, e ajuste linha a linha se a negociação foi outra.">
-            <form wire:submit="lancar" class="grid gap-5">
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <x-ui.field label="Título" for="cr-titulo" required :error="$errors->first('titulo')">
-                        <x-ui.input id="cr-titulo" wire:model="titulo" maxlength="160" placeholder="Venda 1001" />
-                    </x-ui.field>
-
-                    <x-ui.field label="Valor total" for="cr-valor" required :error="$errors->first('valor')">
-                        <x-ui.input id="cr-valor" wire:model="valor" placeholder="R$ 0,00" />
-                    </x-ui.field>
-
-                    <x-ui.field label="Parcelas" for="cr-parc" required :error="$errors->first('parcelas')">
-                        <x-ui.input id="cr-parc" type="number" min="1" max="120" wire:model="parcelas" />
-                    </x-ui.field>
-
-                    <x-ui.field label="Primeiro vencimento" for="cr-venc" required
-                        :error="$errors->first('primeiroVencimento')" hint="As demais caem de mês em mês.">
-                        <x-ui.input id="cr-venc" type="date" wire:model="primeiroVencimento" />
-                    </x-ui.field>
-                </div>
-
-                @if ($this->clientes->isNotEmpty())
-                    <x-ui.field label="Cliente" for="cr-cli" class="max-w-md">
-                        <x-ui.select id="cr-cli" wire:model="pessoaId">
-                            <option value="">Sem cliente vinculado</option>
-                            @foreach ($this->clientes as $cliente)
-                                <option value="{{ $cliente->id }}">{{ $cliente->razao_social }}</option>
-                            @endforeach
-                        </x-ui.select>
-                    </x-ui.field>
-                @endif
-
-                <div class="flex flex-wrap gap-2">
-                    <x-ui.button type="button" variant="secondary" wire:click="gerarLinhas">
-                        Gerar parcelas
-                    </x-ui.button>
-                    <x-ui.button type="submit">Lançar</x-ui.button>
-                </div>
-
-                {{-- As parcelas viram linhas editáveis. É aqui que negociação de
-                     verdade cabe: entrada maior, saldo em datas irregulares. --}}
-                @if ($linhas !== [])
-                    <div class="border-t border-graphite-200 pt-5">
-                        <p class="etiqueta mb-3 text-graphite-500">
-                            Parcelas · total {{ App\Support\Dinheiro::formatar(collect($linhas)->sum(fn ($l) => App\Support\Dinheiro::emCentavos((string) ($l['valor'] ?? '')))) }}
-                        </p>
-
-                        <div class="grid gap-3">
-                            @foreach ($linhas as $i => $linha)
-                                <div class="grid min-w-0 gap-3 sm:grid-cols-[1fr_9rem_10rem_auto] sm:items-start">
-                                    <x-ui.field :label="$i === 0 ? 'Descrição' : null" :error="$errors->first('linhas.'.$i.'.descricao')">
-                                        <x-ui.input wire:model="linhas.{{ $i }}.descricao" maxlength="160" />
-                                    </x-ui.field>
-
-                                    <x-ui.field :label="$i === 0 ? 'Valor' : null" :error="$errors->first('linhas.'.$i.'.valor')">
-                                        <x-ui.input wire:model="linhas.{{ $i }}.valor" placeholder="R$ 0,00" />
-                                    </x-ui.field>
-
-                                    <x-ui.field :label="$i === 0 ? 'Vencimento' : null" :error="$errors->first('linhas.'.$i.'.vencimento')">
-                                        <x-ui.input type="date" wire:model="linhas.{{ $i }}.vencimento" />
-                                    </x-ui.field>
-
-                                    <div class="{{ $i === 0 ? 'sm:mt-6' : '' }}">
-                                        <x-ui.button type="button" variant="ghost" size="sm"
-                                            wire:click="removerLinha({{ $i }})"
-                                            aria-label="Remover parcela {{ $i + 1 }}">Remover</x-ui.button>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        <div class="mt-3">
-                            <x-ui.button type="button" variant="ghost" size="sm" wire:click="adicionarLinha">
-                                Acrescentar parcela
-                            </x-ui.button>
-                        </div>
-                    </div>
-                @endif
-
-                @error('linhas')
-                    <p class="text-xs text-danger-700">{{ $message }}</p>
-                @enderror
-            </form>
-        </x-ui.card>
-    @endcan
 
     @if ($nfseParcelaId !== null)
         @php($parcelaNfse = $this->titulos->firstWhere('id', $nfseParcelaId))
@@ -192,13 +97,13 @@
         @if ($this->titulos->isEmpty())
             <x-ui.empty-state
                 title="Nenhum título aqui"
-                description="Lance uma fatura acima. Se ela tiver parcelas, cada uma vira um título com vencimento próprio." />
+                description="Lance uma fatura em Faturas. Se ela tiver parcelas, cada uma vira um título com vencimento próprio." />
         @else
             <x-ui.table>
                 <thead>
                     <tr class="border-b border-graphite-200">
                         <th class="etiqueta px-2 py-2 text-left text-graphite-500">Vencimento</th>
-                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Título</th>
+                        <th class="etiqueta px-2 py-2 text-left text-graphite-500">Fatura</th>
                         <th class="etiqueta px-2 py-2 text-left text-graphite-500">Cliente</th>
                         <th class="etiqueta px-2 py-2 text-right text-graphite-500">Parcela</th>
                         <th class="etiqueta px-2 py-2 text-right text-graphite-500">Valor</th>
@@ -216,7 +121,9 @@
                             <td class="num px-2 py-2 whitespace-nowrap {{ $vencida ? 'font-semibold text-danger-700' : 'text-graphite-700' }}">
                                 {{ $parcela->vencimento->format('d/m/Y') }}
                             </td>
-                            <td class="px-2 py-2 text-graphite-900">{{ $parcela->fatura->titulo }}</td>
+                            <td class="px-2 py-2">
+                                <a href="{{ route('faturas.detalhe', $parcela->fatura_id) }}" wire:navigate class="text-graphite-900 hover:underline">{{ $parcela->fatura->titulo }}</a>
+                            </td>
                             <td class="px-2 py-2 text-graphite-600">
                                 {{ $parcela->fatura->destinatario?->razao_social ?: '—' }}
                             </td>

@@ -25,6 +25,9 @@
         <!-- Domínio à parte do Painel API, sempre presente em teste para as
              rotas de routes/api_plataforma.php existirem no host. -->
         <env name="API_DOMINIO" value="api.vendaredonda.test"/>
+        <!-- A suíte passou de 900 testes e acumula mais que os 128M padrão do
+             PHP numa rodada só. Medido em 15/09/2026: com 1G passa inteira. -->
+        <ini name="memory_limit" value="512M"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

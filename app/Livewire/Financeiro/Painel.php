@@ -2,12 +2,9 @@
 
 namespace App\Livewire\Financeiro;
 
-use App\Enums\EtapaCrm;
-use App\Models\ContatoCrm;
 use App\Models\Emitente;
 use App\Services\Financeiro\PainelFinanceiroService;
 use App\Support\EmitenteAtual;
-use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -34,22 +31,6 @@ class Painel extends Component
     public function dados(): array
     {
         return app(PainelFinanceiroService::class)->montar($this->emitente->getKey());
-    }
-
-    /**
-     * Contatos do funil que ainda não fecharam. O CRM é do dono do produto,
-     * não do tenant: quem não é dono não vê a contagem, e ela vem nula.
-     */
-    #[Computed]
-    public function contatosEmAndamento(): ?int
-    {
-        if (! Gate::allows('produto.administrar')) {
-            return null;
-        }
-
-        $terminais = collect(EtapaCrm::cases())->filter(fn (EtapaCrm $e): bool => $e->terminal())->map->value->all();
-
-        return ContatoCrm::query()->whereNotIn('etapa', $terminais)->count();
     }
 
     /**

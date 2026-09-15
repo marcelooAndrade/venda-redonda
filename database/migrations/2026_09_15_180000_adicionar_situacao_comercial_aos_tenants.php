@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\SituacaoComercialTenant;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +10,7 @@ return new class extends Migration
     {
         // `string`, não `json`/`text`: pode ter DEFAULT em MySQL.
         Schema::table('tenants', function (Blueprint $table) {
-            $table->string('situacao_comercial', 20)->default(SituacaoComercialTenant::Novo->value)->after('plano');
+            $table->string('situacao_comercial', 20)->default('novo')->after('plano');
         });
     }
 

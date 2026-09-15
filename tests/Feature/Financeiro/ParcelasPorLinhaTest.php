@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\Perfil;
-use App\Livewire\Financeiro\ContasReceber;
+use App\Livewire\Financeiro\Faturas;
 use App\Models\Fatura;
 use App\Models\FaturaParcela;
 use App\Models\User;
@@ -24,7 +24,7 @@ beforeEach(function () {
 });
 
 it('gerar preenche as linhas com a divisao', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 3001')
         ->set('valor', '900,00')
         ->set('parcelas', 3)
@@ -36,7 +36,7 @@ it('gerar preenche as linhas com a divisao', function () {
 });
 
 it('lanca com entrada e saldo, valores e datas diferentes', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 3002')
         ->set('linhas', [
             ['descricao' => 'Entrada', 'valor' => '500,00', 'vencimento' => '2026-10-01'],
@@ -57,7 +57,7 @@ it('lanca com entrada e saldo, valores e datas diferentes', function () {
 });
 
 it('recusa linha com valor zerado, sem criar fatura pela metade', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 3003')
         ->set('linhas', [
             ['descricao' => 'Primeira', 'valor' => '100,00', 'vencimento' => '2026-10-01'],
@@ -71,7 +71,7 @@ it('recusa linha com valor zerado, sem criar fatura pela metade', function () {
 });
 
 it('recusa linha sem vencimento', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 3004')
         ->set('linhas', [
             ['descricao' => 'Sem data', 'valor' => '100,00', 'vencimento' => ''],
@@ -83,7 +83,7 @@ it('recusa linha sem vencimento', function () {
 });
 
 it('sem linhas, nao lanca nada', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 3005')
         ->set('linhas', [])
         ->call('lancar')

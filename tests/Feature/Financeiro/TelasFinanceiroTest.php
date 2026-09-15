@@ -2,7 +2,7 @@
 
 use App\Enums\Perfil;
 use App\Livewire\Financeiro\ContasPagar;
-use App\Livewire\Financeiro\ContasReceber;
+use App\Livewire\Financeiro\Faturas;
 use App\Livewire\Financeiro\Painel as PainelFinanceiro;
 use App\Models\ContaFinanceira;
 use App\Models\ContaPagar as TituloPagar;
@@ -98,7 +98,7 @@ it('nao enxerga titulo de outro emitente', function () {
 });
 
 it('cria fatura com parcelas e o total confere', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 1001')
         ->set('valor', '900,00')
         ->set('parcelas', 3)
@@ -114,7 +114,7 @@ it('cria fatura com parcelas e o total confere', function () {
 });
 
 it('divide sobra de centavo na primeira parcela, e nao no ar', function () {
-    Livewire::actingAs($this->user)->test(ContasReceber::class)
+    Livewire::actingAs($this->user)->test(Faturas::class)
         ->set('titulo', 'Venda 1002')
         ->set('valor', '100,00')
         ->set('parcelas', 3)

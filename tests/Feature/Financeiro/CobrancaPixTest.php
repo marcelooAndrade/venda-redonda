@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\Perfil;
-use App\Livewire\Financeiro\ContasReceber;
+use App\Livewire\Financeiro\Faturas;
 use App\Models\FaturaParcela;
 use App\Models\User;
 use App\Support\Pix;
@@ -19,7 +19,7 @@ beforeEach(function () {
 
 function lancarFatura($user, string $valor = '900,00', int $parcelas = 3): void
 {
-    Livewire::actingAs($user)->test(ContasReceber::class)
+    Livewire::actingAs($user)->test(Faturas::class)
         ->set('titulo', 'Venda 2001')
         ->set('valor', $valor)
         ->set('parcelas', $parcelas)

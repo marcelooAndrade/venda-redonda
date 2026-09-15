@@ -2,7 +2,7 @@
 
 use App\Enums\Perfil;
 use App\Livewire\Emitentes\Cadastro;
-use App\Livewire\Financeiro\ContasReceber;
+use App\Livewire\Financeiro\Faturas;
 use App\Models\FaturaParcela;
 use App\Services\Integrations\RespostaCep;
 use App\Services\Integrations\ViaCepService;
@@ -115,7 +115,7 @@ it('a chave pix salva aqui faz a parcela nascer com cobranca', function () {
         ->call('salvar')
         ->assertHasNoErrors();
 
-    Livewire::actingAs($user)->test(ContasReceber::class)
+    Livewire::actingAs($user)->test(Faturas::class)
         ->set('titulo', 'Venda 3001')
         ->set('valor', '100,00')
         ->set('parcelas', 1)

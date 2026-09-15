@@ -22,9 +22,7 @@
     //
     // Painel fica sem grupo, solto no topo: é o único destino que todo
     // mundo sempre usa, e não precisa de rótulo para ser encontrado.
-    //
-    // "Produto" só existe para o dono do produto, e o filtro abaixo cuida disso.
-    $grupos = ['', 'Fiscal', 'Financeiro', 'Estoque e cadastros', 'Configuração', 'Produto'];
+    $grupos = ['', 'Fiscal', 'Financeiro', 'Estoque e cadastros', 'Configuração'];
 
     $navegacao = collect([
         ['Painel', 'dashboard', 'relatorio.ver', '', 'M3 12h18M3 6h18M3 18h18'],
@@ -34,6 +32,7 @@
         ['Contabilidade', 'contabilidade', 'contador.exportar', 'Fiscal', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
 
         ['Financeiro', 'financeiro', 'financeiro.ver', 'Financeiro', 'M3 3v16a2 2 0 002 2h16M7 15l3.5-4 3 3L20 7'],
+        ['Faturas', 'faturas', 'financeiro.ver', 'Financeiro', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
         ['Contas a pagar', 'contas-a-pagar', 'financeiro.ver', 'Financeiro', 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
         ['Contas a receber', 'contas-a-receber', 'financeiro.ver', 'Financeiro', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
         ['Contas bancárias', 'contas-bancarias', 'financeiro.ver', 'Financeiro', 'M3 10h18M5 6l7-3 7 3M5 10v9m4-9v9m6-9v9m4-9v9M3 19h18'],
@@ -52,9 +51,6 @@
         ['NFS-e', 'nfse', 'nfse.configurar', 'Configuração', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
         ['Usuários', 'usuarios', 'usuario.gerenciar', 'Configuração', 'M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'],
 
-        ['Empresas', 'empresas', 'produto.administrar', 'Produto', 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
-        ['CRM', 'crm', 'produto.administrar', 'Produto', 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
-        ['Clientes Nodo', 'admin', 'produto.administrar', 'Produto', 'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
     ])->filter(fn (array $item): bool => $item[2] === null || $user?->can($item[2]))->groupBy(3);
 @endphp
 

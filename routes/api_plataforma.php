@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Route;
  * Domínio próprio do Nodo, separado do sistema fiscal: sem sessão,
  * sem os middlewares de tenant, sem nenhuma relação com routes/web.php.
  *
- * Sem cadastro público: só o admin cria cliente e escolhe os módulos, em
- * /admin, dentro do EmitirAgora. Ver App\Livewire\Produto\NodoClientes.
+ * Sem cadastro público nem tela de gestão aqui: cliente e módulos são
+ * criados por quem administra o Nodo, fora deste sistema (ver docs).
  *
  * Sem API_DOMINIO configurada, este grupo não casa com host nenhum, mesma
  * regra de "sem configuração, recurso desligado" das outras integrações.

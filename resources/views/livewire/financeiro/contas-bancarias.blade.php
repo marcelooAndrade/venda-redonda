@@ -143,6 +143,7 @@
                                             {{ match ($movimento->origem_tipo) {
                                                 'conta_pagar' => 'Conta a pagar',
                                                 'fatura_parcela' => 'Conta a receber',
+                                                'estorno' => 'Estorno',
                                                 default => 'Ajuste manual',
                                             } }}
                                         </td>

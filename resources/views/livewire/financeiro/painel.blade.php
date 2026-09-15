@@ -317,12 +317,6 @@
                     <dt class="text-sm text-graphite-700">Faturas ativas</dt>
                     <dd class="num text-2xl font-bold text-graphite-900">{{ $dados['faturasAtivas'] }}</dd>
                 </a>
-                @if ($this->contatosEmAndamento !== null)
-                    <a href="{{ route('crm') }}" wire:navigate class="flex items-baseline justify-between gap-3 hover:text-primary-700">
-                        <dt class="text-sm text-graphite-700">Contatos em andamento</dt>
-                        <dd class="num text-2xl font-bold text-graphite-900">{{ $this->contatosEmAndamento }}</dd>
-                    </a>
-                @endif
             </dl>
         </x-ui.card>
 

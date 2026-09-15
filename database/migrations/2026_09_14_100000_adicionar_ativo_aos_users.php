@@ -15,7 +15,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->boolean('ativo')->default(true)->after('dono_do_produto');
+            $table->boolean('ativo')->default(true)->after('ultimo_acesso_em');
         });
     }
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EscolherEmitenteController;
+use App\Http\Controllers\FaturaPublicaController;
 use App\Http\Controllers\LogoTenantController;
 use App\Http\Controllers\NotaServicoArquivoController;
 use App\Http\Controllers\RaizController;
@@ -12,14 +13,13 @@ use App\Livewire\Financeiro\ContasBancarias;
 use App\Livewire\Financeiro\ContasPagar;
 use App\Livewire\Financeiro\ContasReceber;
 use App\Livewire\Financeiro\Dre;
+use App\Livewire\Financeiro\FaturaDetalhe;
+use App\Livewire\Financeiro\Faturas;
 use App\Livewire\Nfse\Configuracao;
 use App\Livewire\Nfse\Notas;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
-use App\Livewire\Produto\Crm;
-use App\Livewire\Produto\Empresas;
-use App\Livewire\Produto\NodoClientes;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use App\Livewire\Usuarios\Cadastro as UsuariosCadastro;
@@ -35,6 +35,11 @@ Route::get('/', RaizController::class)->name('home');
 // do host resolvido, não de identificador na URL.
 Route::get('logo', LogoTenantController::class)->name('logo');
 
+// A fatura como o cliente a vê. Pública de propósito: o token é o único
+// identificador, sorteado por fatura, e a marca vem da empresa dona dela.
+Route::get('fatura/{token}', [FaturaPublicaController::class, 'show'])->name('fatura.publica');
+Route::get('fatura/{token}/logo', [FaturaPublicaController::class, 'logo'])->name('fatura.publica.logo');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', Inicio::class)->name('dashboard');
 
@@ -47,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('financeiro', App\Livewire\Financeiro\Painel::class)->name('financeiro');
     Route::get('contas-a-pagar', ContasPagar::class)->name('contas-a-pagar');
     Route::get('contas-a-receber', ContasReceber::class)->name('contas-a-receber');
+    Route::get('faturas', Faturas::class)->name('faturas');
+    Route::get('faturas/{fatura}', FaturaDetalhe::class)->name('faturas.detalhe');
     Route::get('contas-bancarias', ContasBancarias::class)->name('contas-bancarias');
     Route::get('centros-de-custo', CentrosCusto::class)->name('centros-de-custo');
     Route::get('dre', Dre::class)->name('dre');
@@ -63,18 +70,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notas-servico', Notas::class)->name('notas-servico');
     Route::get('notas-servico/{nota}/pdf', [NotaServicoArquivoController::class, 'pdf'])->name('notas-servico.pdf');
     Route::get('notas-servico/{nota}/xml', [NotaServicoArquivoController::class, 'xml'])->name('notas-servico.xml');
-
-    // Atravessa tenants. O componente exige `produto.administrar`, que só o
-    // dono do produto tem.
-    Route::get('empresas', Empresas::class)->name('empresas');
-
-    // Funil de negócio da área administrativa, sem tenant nenhum: mesma
-    // permissão de dono do produto.
-    Route::get('crm', Crm::class)->name('crm');
-
-    // Clientes do Nodo, produto à parte: não têm tenant nenhum, mas a tela
-    // exige a mesma permissão de dono do produto.
-    Route::get('admin', NodoClientes::class)->name('admin');
 
     Route::post('emitente/escolher', EscolherEmitenteController::class)->name('emitente.escolher');
 });

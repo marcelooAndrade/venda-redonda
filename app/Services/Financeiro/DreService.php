@@ -25,7 +25,9 @@ use Illuminate\Support\Collection;
  * O centro de custo de cada movimento não é gravado nele: é resolvido pela
  * origem. `conta_pagar` tem `centro_custo_id` direto; `fatura_parcela` pega o
  * da fatura. Um `ajuste` lançado direto numa conta não tem origem com centro
- * de custo, e cai no grupo "Sem centro de custo".
+ * de custo, e cai no grupo "Sem centro de custo". Um `estorno` aponta para o
+ * movimento original e é descontado dele: um recebimento estornado some da
+ * receita, em vez de aparecer como despesa.
  */
 class DreService
 {
@@ -40,36 +42,35 @@ class DreService
             ->whereBetween('ocorrido_em', [$inicio->toDateString(), $fim->toDateString()])
             ->get();
 
-        $centroCustoPorMovimento = $this->resolverCentrosCusto($movimentos);
+        $lancamentos = $this->lancamentosEfetivos($movimentos);
 
-        $receitaCentavos = (int) $movimentos->where('sentido', 'credito')->sum('valor_centavos');
-        $despesaCentavos = (int) $movimentos->where('sentido', 'debito')->sum('valor_centavos');
+        $receitaCentavos = (int) $lancamentos->where('sentido', 'credito')->sum('valor');
+        $despesaCentavos = (int) $lancamentos->where('sentido', 'debito')->sum('valor');
 
         return [
             'mes' => $mes,
             'receitaCentavos' => $receitaCentavos,
             'despesaCentavos' => $despesaCentavos,
             'resultadoCentavos' => $receitaCentavos - $despesaCentavos,
-            'porCentroCusto' => $this->agruparPorCentroCusto($movimentos, $centroCustoPorMovimento, $emitenteId),
+            'porCentroCusto' => $this->agruparPorCentroCusto($lancamentos, $emitenteId),
         ];
     }
 
     /**
-     * Resolve o centro de custo de cada movimento pela origem, com um único
-     * carregamento em lote por tipo de origem, para não consultar linha a
-     * linha.
+     * Cada movimento vira um lançamento com centro resolvido e valor com
+     * sinal. O estorno herda o centro e o sentido do original, com valor
+     * negativo: é assim que ele desconta em vez de somar do outro lado.
      *
      * @param  Collection<int, MovimentoCaixa>  $movimentos
-     * @return array<int, ?int> chave é o id do movimento, valor é o id do centro de custo (ou null)
+     * @return Collection<int, array{centro: int|null, sentido: string, valor: int}>
      */
-    private function resolverCentrosCusto(Collection $movimentos): array
+    private function lancamentosEfetivos(Collection $movimentos): Collection
     {
         $idsContaPagar = $movimentos->where('origem_tipo', 'conta_pagar')->pluck('origem_id')->filter()->all();
         $idsFaturaParcela = $movimentos->where('origem_tipo', 'fatura_parcela')->pluck('origem_id')->filter()->all();
+        $idsEstornados = $movimentos->where('origem_tipo', 'estorno')->pluck('origem_id')->filter()->all();
 
-        $centroPorContaPagar = ContaPagar::query()
-            ->whereIn('id', $idsContaPagar)
-            ->pluck('centro_custo_id', 'id');
+        $centroPorContaPagar = ContaPagar::query()->whereIn('id', $idsContaPagar)->pluck('centro_custo_id', 'id');
 
         $centroPorFaturaParcela = [];
 
@@ -78,29 +79,42 @@ class DreService
             $centroPorFaturaParcela[$parcela->id] = $fatura?->centro_custo_id;
         }
 
-        $resultado = [];
+        // O original de um estorno pode estar noutro mês: busca à parte, e
+        // resolve o centro dele pela mesma regra, recursivamente uma vez.
+        $originais = MovimentoCaixa::query()->whereIn('id', $idsEstornados)->get()->keyBy('id');
+        $centroDosOriginais = $originais->isEmpty() ? collect() : $this->lancamentosEfetivos($originais)->keyBy('id');
 
-        foreach ($movimentos as $movimento) {
-            $resultado[$movimento->id] = match ($movimento->origem_tipo) {
-                'conta_pagar' => $centroPorContaPagar[$movimento->origem_id] ?? null,
-                'fatura_parcela' => $centroPorFaturaParcela[$movimento->origem_id] ?? null,
+        return $movimentos->map(function (MovimentoCaixa $m) use ($centroPorContaPagar, $centroPorFaturaParcela, $originais, $centroDosOriginais): array {
+            if ($m->origem_tipo === 'estorno') {
+                $original = $originais->get($m->origem_id);
+
+                return [
+                    'id' => $m->id,
+                    'centro' => $centroDosOriginais->get($m->origem_id)['centro'] ?? null,
+                    'sentido' => $original?->sentido ?? ($m->sentido === 'credito' ? 'debito' : 'credito'),
+                    'valor' => -(int) $m->valor_centavos,
+                ];
+            }
+
+            $centro = match ($m->origem_tipo) {
+                'conta_pagar' => $centroPorContaPagar[$m->origem_id] ?? null,
+                'fatura_parcela' => $centroPorFaturaParcela[$m->origem_id] ?? null,
                 default => null,
             };
-        }
 
-        return $resultado;
+            return ['id' => $m->id, 'centro' => $centro === null ? null : (int) $centro, 'sentido' => $m->sentido, 'valor' => (int) $m->valor_centavos];
+        });
     }
 
     /**
-     * @param  Collection<int, MovimentoCaixa>  $movimentos
-     * @param  array<int, ?int>  $centroCustoPorMovimento
+     * @param  Collection<int, array{centro: int|null, sentido: string, valor: int}>  $lancamentos
      * @return array<int, array<string, mixed>>
      */
-    private function agruparPorCentroCusto(Collection $movimentos, array $centroCustoPorMovimento, int $emitenteId): array
+    private function agruparPorCentroCusto(Collection $lancamentos, int $emitenteId): array
     {
         $centros = CentroCusto::where('emitente_id', $emitenteId)->get()->keyBy('id');
 
-        $porGrupo = $movimentos->groupBy(fn (MovimentoCaixa $m) => $centroCustoPorMovimento[$m->id] ?? 'sem_centro');
+        $porGrupo = $lancamentos->groupBy(fn (array $l) => $l['centro'] ?? 'sem_centro');
 
         $linhas = $porGrupo->map(function (Collection $doGrupo, int|string $centroCustoId) use ($centros): array {
             $centro = $centroCustoId === 'sem_centro' ? null : $centros->get($centroCustoId);
@@ -109,8 +123,8 @@ class DreService
                 'centroCustoId' => $centro?->id,
                 'codigo' => $centro?->codigo,
                 'nome' => $centro === null ? 'Sem centro de custo' : $centro->nome,
-                'receitaCentavos' => (int) $doGrupo->where('sentido', 'credito')->sum('valor_centavos'),
-                'despesaCentavos' => (int) $doGrupo->where('sentido', 'debito')->sum('valor_centavos'),
+                'receitaCentavos' => (int) $doGrupo->where('sentido', 'credito')->sum('valor'),
+                'despesaCentavos' => (int) $doGrupo->where('sentido', 'debito')->sum('valor'),
             ];
         })->values()->all();
 
