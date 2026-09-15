@@ -6,9 +6,14 @@ use App\Exceptions\UazapiIndisponivel;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Throwable;
 
 class UazapiGateway implements GatewayDeWhatsapp
 {
+    private const REPETICOES = 2;
+
+    private const ESPERA_MS = 1000;
+
     public function criarInstancia(string $nome): array
     {
         $adminToken = $this->adminToken();
@@ -27,8 +32,12 @@ class UazapiGateway implements GatewayDeWhatsapp
 
     public function conectar(string $instanceToken): array
     {
+        // Corpo `{}` explícito: `post()` sem dados serializa `[]`, e a uazapi
+        // responde "Invalid payload" (400) para isso. Medido em produção com
+        // a instância real de um cliente: `[]` recusa, `{}` devolve o QR code.
         $resposta = $this->cliente()
             ->withHeader('token', $instanceToken)
+            ->withBody('{}', 'application/json')
             ->post('/instance/connect');
 
         $this->falharSeErro($resposta, 'conectar a instância');
@@ -89,11 +98,11 @@ class UazapiGateway implements GatewayDeWhatsapp
     }
 
     /**
-     * Repetição ligada por padrão: a uazapi já falhou de forma passageira
-     * em produção (medido com a instância real de um cliente, que
-     * funcionou normalmente ao repetir a mesma chamada minutos depois).
-     * `AdminPessoalGateway` já usa o mesmo padrão. Desligada só onde
-     * repetir é arriscado — ver enviarTexto().
+     * Repetição ligada por padrão, só em falha de conexão e erro 5xx
+     * (PoliticaDeRepeticao, a mesma da ReceitaWS e do ViaCEP): 4xx é
+     * definitivo, repetir só segura a resposta ao cliente. Desligada só
+     * onde repetir é arriscado — ver enviarTexto(). `retry()` conta
+     * tentativas, não repetições, por isso o `1 +`.
      */
     private function cliente(bool $comRepeticao = true): PendingRequest
     {
@@ -105,7 +114,9 @@ class UazapiGateway implements GatewayDeWhatsapp
 
         $cliente = Http::baseUrl(rtrim($url, '/'))->timeout(15)->acceptJson();
 
-        return $comRepeticao ? $cliente->retry(2, 1000, throw: false) : $cliente;
+        return $comRepeticao
+            ? $cliente->retry(1 + self::REPETICOES, self::ESPERA_MS, fn (Throwable $e) => PoliticaDeRepeticao::valeRepetir($e), throw: false)
+            : $cliente;
     }
 
     private function adminToken(): string

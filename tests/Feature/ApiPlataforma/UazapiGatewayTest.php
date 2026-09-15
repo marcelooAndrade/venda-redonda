@@ -39,6 +39,34 @@ it('conecta a instancia com o token dela, nao o admin token', function () {
         && ! $request->hasHeader('AdminToken'));
 });
 
+/**
+ * `post()` sem dados serializa `[]`, e a uazapi responde "Invalid payload"
+ * (400) para isso. Medido em produção com a instância real de um cliente,
+ * que só devolvia 503 ao conectar. O corpo precisa ser `{}` de verdade.
+ */
+it('conectar manda um objeto json vazio no corpo, nunca uma lista vazia', function () {
+    Http::fake(['uazapi.test/instance/connect' => Http::response([
+        'instance' => ['qrcode' => 'x', 'status' => 'connecting'],
+    ], 200)]);
+
+    app(UazapiGateway::class)->conectar('token-da-instancia');
+
+    Http::assertSent(fn ($request) => $request->body() === '{}');
+});
+
+/** 4xx é resposta definitiva: repetir só seguraria a resposta ao cliente. */
+it('nao repete quando a uazapi responde 4xx', function () {
+    Http::fake(['uazapi.test/instance/connect' => Http::response(['error' => 'Invalid payload'], 400)]);
+
+    try {
+        app(UazapiGateway::class)->conectar('token-da-instancia');
+    } catch (UazapiIndisponivel) {
+        // esperado
+    }
+
+    Http::assertSentCount(1);
+});
+
 it('le o status da instancia', function () {
     Http::fake(['uazapi.test/instance/status' => Http::response([
         'instance' => ['status' => 'connected'],
