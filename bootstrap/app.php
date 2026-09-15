@@ -2,14 +2,13 @@
 
 use App\Http\Middleware\DefinirEmitenteDoContexto;
 use App\Http\Middleware\DerrubarUsuarioInativo;
+use App\Http\Middleware\ExigeModuloApi;
 use App\Http\Middleware\RecusarCadastroEmDominioDeCliente;
 use App\Http\Middleware\ResolverTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Laravel\Sanctum\Http\Middleware\CheckAbilities;
-use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -43,12 +42,10 @@ return Application::configure(basePath: dirname(__DIR__))
             DefinirEmitenteDoContexto::class,
         ]);
 
-        // O Sanctum não registra estes aliases sozinho na estrutura nova de
-        // bootstrap/app.php. Usados pelas rotas do Nodo, em
-        // routes/api_plataforma.php, para exigir a habilidade do token.
+        // Usado pelas rotas do Nodo, em routes/api_plataforma.php, para
+        // exigir o módulo ligado no cliente autenticado.
         $middleware->alias([
-            'ability' => CheckForAnyAbility::class,
-            'abilities' => CheckAbilities::class,
+            'modulo' => ExigeModuloApi::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

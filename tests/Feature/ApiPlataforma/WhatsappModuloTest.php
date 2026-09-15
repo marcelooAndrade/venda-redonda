@@ -12,20 +12,27 @@ beforeEach(function () {
     ]);
 });
 
+function clienteComWhatsapp(array $extra = []): ApiCliente
+{
+    return ApiCliente::create(array_merge([
+        'nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br', 'modulos' => ['whatsapp'],
+    ], $extra));
+}
+
 it('recusa sem token', function () {
     $this->postJson('http://api.vendaredonda.test/whatsapp/v1/instancia')->assertUnauthorized();
 });
 
-it('recusa token sem a habilidade whatsapp', function () {
+it('recusa cliente sem o modulo whatsapp ativo', function () {
     $cliente = ApiCliente::create(['nome' => 'Sem acesso', 'email' => 'semacesso@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['outra-coisa']);
+    Sanctum::actingAs($cliente);
 
     $this->postJson('http://api.vendaredonda.test/whatsapp/v1/instancia')->assertForbidden();
 });
 
 it('cria a instancia do cliente autenticado', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
 
     Http::fake(['uazapi.test/instance/init' => Http::response([
         'token' => 'token-uazapi-1', 'instance' => ['id' => 'inst-1'],
@@ -43,8 +50,8 @@ it('cria a instancia do cliente autenticado', function () {
 });
 
 it('nao cria uma segunda instancia para quem ja tem uma', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
     $cliente->whatsappInstancia()->create([
         'uazapi_instance_id' => 'inst-existente', 'uazapi_token' => 'token-existente', 'nome' => 'x',
     ]);
@@ -57,15 +64,15 @@ it('nao cria uma segunda instancia para quem ja tem uma', function () {
 });
 
 it('devolve 404 ao consultar status sem instancia criada', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
 
     $this->getJson('http://api.vendaredonda.test/whatsapp/v1/instancia')->assertNotFound();
 });
 
 it('conecta e devolve o qrcode, atualizando o status guardado', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
     $cliente->whatsappInstancia()->create([
         'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'disconnected',
     ]);
@@ -82,8 +89,8 @@ it('conecta e devolve o qrcode, atualizando o status guardado', function () {
 });
 
 it('recusa mandar mensagem sem instancia conectada', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
     $cliente->whatsappInstancia()->create([
         'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'disconnected',
     ]);
@@ -95,8 +102,8 @@ it('recusa mandar mensagem sem instancia conectada', function () {
 });
 
 it('manda mensagem quando a instancia esta conectada', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
     $cliente->whatsappInstancia()->create([
         'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'connected',
     ]);
@@ -111,8 +118,8 @@ it('manda mensagem quando a instancia esta conectada', function () {
 });
 
 it('exige numero e texto', function () {
-    $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    Sanctum::actingAs($cliente, ['whatsapp']);
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
     $cliente->whatsappInstancia()->create([
         'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'connected',
     ]);

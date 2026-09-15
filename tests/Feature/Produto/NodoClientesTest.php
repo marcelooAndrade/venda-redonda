@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ModuloApi;
 use App\Enums\Perfil;
 use App\Livewire\Produto\NodoClientes;
 use App\Models\ApiCliente;
@@ -68,16 +69,72 @@ it('mostra o status da instancia de quem ja tem uma', function () {
 
 it('reemite o token, revogando o antigo e mostrando o novo uma vez', function () {
     $cliente = ApiCliente::create(['nome' => 'Marcelo', 'email' => 'marcelo@exemplo.com.br']);
-    $cliente->createToken('token velho', ['whatsapp']);
+    $cliente->createToken('token velho');
 
     expect($cliente->tokens()->count())->toBe(1);
 
     $componente = Livewire::actingAs(donoDoProdutoNodo())
         ->test(NodoClientes::class)
         ->call('reemitirToken', $cliente->id)
-        ->assertSet('clienteDoTokenReemitido', $cliente->id);
+        ->assertSet('clienteDoTokenRevelado', $cliente->id);
 
-    expect($componente->get('tokenReemitido'))->toBeString()->not->toBeEmpty()
+    expect($componente->get('tokenRevelado'))->toBeString()->not->toBeEmpty()
         ->and($cliente->tokens()->count())->toBe(1)
         ->and($cliente->tokens()->first()->name)->toBe('Marcelo');
+});
+
+it('cadastra cliente novo com os modulos escolhidos, e mostra o token uma vez', function () {
+    $componente = Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->set('novoNome', 'Transm')
+        ->set('novoEmail', 'contato@transm.com.br')
+        ->set('novosModulos', ['whatsapp'])
+        ->call('criarCliente');
+
+    $cliente = ApiCliente::firstWhere('email', 'contato@transm.com.br');
+
+    expect($cliente)->not->toBeNull()
+        ->and($cliente->modulos)->toBe(['whatsapp'])
+        ->and($cliente->temModulo(ModuloApi::Whatsapp))->toBeTrue()
+        ->and($cliente->tokens()->count())->toBe(1);
+
+    $componente->assertSet('clienteDoTokenRevelado', $cliente->id);
+    expect($componente->get('tokenRevelado'))->toBeString()->not->toBeEmpty();
+});
+
+it('cadastro novo recusa e-mail duplicado', function () {
+    ApiCliente::create(['nome' => 'Ja existe', 'email' => 'contato@transm.com.br']);
+
+    Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->set('novoNome', 'Transm')
+        ->set('novoEmail', 'contato@transm.com.br')
+        ->call('criarCliente')
+        ->assertHasErrors('novoEmail');
+
+    expect(ApiCliente::where('email', 'contato@transm.com.br')->count())->toBe(1);
+});
+
+it('cliente novo sem modulo nenhum marcado nasce sem acesso a nada', function () {
+    Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->set('novoNome', 'Sem Modulo')
+        ->set('novoEmail', 'semmodulo@exemplo.com.br')
+        ->call('criarCliente');
+
+    $cliente = ApiCliente::firstWhere('email', 'semmodulo@exemplo.com.br');
+
+    expect($cliente->modulos)->toBe([]);
+});
+
+it('edita os modulos de um cliente existente', function () {
+    $cliente = ApiCliente::create(['nome' => 'Transm', 'email' => 'contato@transm.com.br', 'modulos' => []]);
+
+    Livewire::actingAs(donoDoProdutoNodo())
+        ->test(NodoClientes::class)
+        ->call('iniciarEdicaoModulos', $cliente->id)
+        ->set('modulosEmEdicao', ['whatsapp'])
+        ->call('salvarModulos', $cliente->id);
+
+    expect($cliente->fresh()->modulos)->toBe(['whatsapp']);
 });
