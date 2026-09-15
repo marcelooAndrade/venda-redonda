@@ -143,6 +143,35 @@ it('manda mensagem quando a instancia esta conectada', function () {
     Http::assertSent(fn ($request) => $request->hasHeader('token', 'token-uazapi-1'));
 });
 
+it('recusa listar grupos sem instancia conectada', function () {
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
+    $cliente->whatsappInstancia()->create([
+        'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'disconnected',
+    ]);
+
+    // Sem Http::fake: instância desconectada nem deveria tentar listar.
+    $this->getJson('http://api.vendaredonda.test/whatsapp/v1/grupos')->assertStatus(422);
+});
+
+it('lista os grupos quando a instancia esta conectada', function () {
+    $cliente = clienteComWhatsapp();
+    Sanctum::actingAs($cliente);
+    $cliente->whatsappInstancia()->create([
+        'uazapi_instance_id' => 'inst-1', 'uazapi_token' => 'token-uazapi-1', 'nome' => 'x', 'status' => 'connected',
+    ]);
+
+    Http::fake(['uazapi.test/group/list' => Http::response([
+        'groups' => [['id' => '123-456@g.us', 'name' => 'Grupo de teste']],
+    ], 200)]);
+
+    $this->getJson('http://api.vendaredonda.test/whatsapp/v1/grupos')
+        ->assertOk()
+        ->assertJson(['grupos' => [['id' => '123-456@g.us', 'name' => 'Grupo de teste']]]);
+
+    Http::assertSent(fn ($request) => $request->hasHeader('token', 'token-uazapi-1'));
+});
+
 it('exige numero e texto', function () {
     $cliente = clienteComWhatsapp();
     Sanctum::actingAs($cliente);

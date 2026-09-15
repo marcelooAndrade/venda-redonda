@@ -60,6 +60,20 @@ it('manda texto com numero e texto no corpo', function () {
     Http::assertSent(fn ($request) => $request['number'] === '5519999998888' && $request['text'] === 'ola');
 });
 
+it('lista os grupos da instancia', function () {
+    Http::fake(['uazapi.test/group/list' => Http::response([
+        'groups' => [['id' => '123-456@g.us', 'name' => 'Grupo de teste']],
+    ], 200)]);
+
+    $grupos = app(UazapiGateway::class)->listarGrupos('token-da-instancia');
+
+    expect($grupos)->toBe([['id' => '123-456@g.us', 'name' => 'Grupo de teste']]);
+
+    Http::assertSent(fn ($request) => $request->url() === 'https://uazapi.test/group/list'
+        && $request->hasHeader('token', 'token-da-instancia')
+        && $request->method() === 'GET');
+});
+
 it('lanca UazapiIndisponivel quando a uazapi recusa', function () {
     Http::fake(['uazapi.test/*' => Http::response(['error' => 'motivo qualquer'], 400)]);
 

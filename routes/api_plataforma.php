@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiPlataforma\WhatsappGrupoController;
 use App\Http\Controllers\ApiPlataforma\WhatsappInstanciaController;
 use App\Http\Controllers\ApiPlataforma\WhatsappMensagemController;
 use App\Http\Controllers\ApiPlataforma\WhatsappWebhookController;
@@ -24,6 +25,7 @@ if (filled(config('api_plataforma.dominio'))) {
                 Route::get('instancia', [WhatsappInstanciaController::class, 'show']);
                 Route::post('instancia/conectar', [WhatsappInstanciaController::class, 'conectar']);
                 Route::post('mensagens', [WhatsappMensagemController::class, 'store']);
+                Route::get('grupos', [WhatsappGrupoController::class, 'index']);
                 Route::put('webhook', [WhatsappWebhookController::class, 'atualizarUrl']);
             });
 

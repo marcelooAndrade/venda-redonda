@@ -73,6 +73,17 @@ class UazapiGateway implements GatewayDeWhatsapp
         $this->falharSeErro($resposta, 'configurar o webhook');
     }
 
+    public function listarGrupos(string $instanceToken): array
+    {
+        $resposta = $this->cliente()
+            ->withHeader('token', $instanceToken)
+            ->get('/group/list');
+
+        $this->falharSeErro($resposta, 'listar os grupos');
+
+        return (array) $resposta->json('groups', []);
+    }
+
     private function cliente(): PendingRequest
     {
         $url = (string) config('integracao.uazapi.url');

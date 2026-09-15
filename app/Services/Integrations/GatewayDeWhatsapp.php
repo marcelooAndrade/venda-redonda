@@ -31,4 +31,7 @@ interface GatewayDeWhatsapp
      * o evento "messages": é só mensagem que o Nodo repassa ao cliente.
      */
     public function configurarWebhook(string $instanceToken, string $urlDoNodo): void;
+
+    /** @return array<int, array<string, mixed>> */
+    public function listarGrupos(string $instanceToken): array;
 }
