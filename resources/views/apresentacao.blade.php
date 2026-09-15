@@ -64,6 +64,10 @@
     <meta name="twitter:card" content="summary">
 
     <script type="application/ld+json">{!! $dadosEstruturados !!}</script>
+
+    @if (filled(config('integracao.meta.pixel_id')))
+        @include('partials.pixel-meta', ['pixelId' => config('integracao.meta.pixel_id')])
+    @endif
 </head>
 <body class="fonte-inter relative min-h-screen overflow-x-hidden bg-graphite-50 text-graphite-900 antialiased selection:bg-primary-200 selection:text-primary-900">
 
