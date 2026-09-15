@@ -28,6 +28,7 @@ class ApiCliente extends Model implements AuthenticatableContract
 
     protected $attributes = [
         'ativo' => true,
+        'modulos' => '[]',
     ];
 
     protected $fillable = ['nome', 'email', 'ativo', 'modulos'];
