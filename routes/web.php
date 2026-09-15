@@ -7,15 +7,21 @@ use App\Http\Controllers\RaizController;
 use App\Livewire\Certificados\Gerenciar;
 use App\Livewire\Contador\Exportacao;
 use App\Livewire\Estoque\Painel;
+use App\Livewire\Financeiro\CentrosCusto;
+use App\Livewire\Financeiro\ContasBancarias;
 use App\Livewire\Financeiro\ContasPagar;
 use App\Livewire\Financeiro\ContasReceber;
+use App\Livewire\Financeiro\Dre;
 use App\Livewire\Nfse\Configuracao;
 use App\Livewire\Nfse\Notas;
 use App\Livewire\Notas\Emissao;
 use App\Livewire\Painel\Inicio;
 use App\Livewire\Pessoas\Cadastro;
+use App\Livewire\Produto\Clientes;
+use App\Livewire\Produto\Crm;
 use App\Livewire\Produto\Empresas;
 use App\Livewire\Produto\NodoClientes;
+use App\Livewire\Produto\VisaoGeral;
 use App\Livewire\Tenancy\Marca;
 use App\Livewire\Tributacao\Regras;
 use App\Livewire\Usuarios\Cadastro as UsuariosCadastro;
@@ -43,6 +49,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('financeiro', App\Livewire\Financeiro\Painel::class)->name('financeiro');
     Route::get('contas-a-pagar', ContasPagar::class)->name('contas-a-pagar');
     Route::get('contas-a-receber', ContasReceber::class)->name('contas-a-receber');
+    Route::get('contas-bancarias', ContasBancarias::class)->name('contas-bancarias');
+    Route::get('centros-de-custo', CentrosCusto::class)->name('centros-de-custo');
+    Route::get('dre', Dre::class)->name('dre');
     Route::get('marca', Marca::class)->name('marca');
     Route::get('produtos', App\Livewire\Produtos\Cadastro::class)->name('produtos');
     Route::get('regras-fiscais', Regras::class)->name('regras-fiscais');
@@ -57,9 +66,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notas-servico/{nota}/pdf', [NotaServicoArquivoController::class, 'pdf'])->name('notas-servico.pdf');
     Route::get('notas-servico/{nota}/xml', [NotaServicoArquivoController::class, 'xml'])->name('notas-servico.xml');
 
+    // Resumo do CRM, dos clientes e do financeiro da empresa Marcelo Andrade,
+    // numa tela só. Mesma permissão de dono do produto.
+    Route::get('visao-geral', VisaoGeral::class)->name('visao-geral');
+
     // Atravessa tenants. O componente exige `produto.administrar`, que só o
     // dono do produto tem.
     Route::get('empresas', Empresas::class)->name('empresas');
+
+    // Funil de negócio da área administrativa, sem tenant nenhum: mesma
+    // permissão de dono do produto.
+    Route::get('crm', Crm::class)->name('crm');
+
+    // Mesmo Destinatário do tenant administrativo, só com visão diferente.
+    // Sem tenant fixo: o slug vem de config('produto.tenant_administrativo').
+    Route::get('clientes', Clientes::class)->name('clientes');
 
     // Clientes do Nodo, produto à parte: não têm tenant nenhum, mas a tela
     // exige a mesma permissão de dono do produto.
