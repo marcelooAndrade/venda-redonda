@@ -495,7 +495,14 @@
             <div aria-hidden="true" class="trama-pontos pointer-events-none absolute inset-0 opacity-[0.16]"></div>
 
             <div class="relative">
-                <div aria-hidden="true" class="linha-fluxo pointer-events-none absolute left-10 right-10 top-6 hidden h-px bg-gradient-to-r from-transparent via-primary-500/70 to-transparent lg:block"></div>
+                {{-- Linha de base sempre visível, cheia. O brilho que percorre
+                     ela (.linha-fluxo) é um acréscimo, nunca a única coisa que
+                     desenha a linha: uma foto parada pega o brilho em trânsito
+                     na metade do percurso, e sem a base a linha inteira some. --}}
+                <div aria-hidden="true" class="pointer-events-none absolute left-10 right-10 top-6 hidden h-px bg-gradient-to-r from-primary-200 via-primary-300 to-primary-200 lg:block"></div>
+                <div aria-hidden="true" class="pointer-events-none absolute left-10 right-10 top-6 hidden h-px overflow-hidden lg:block">
+                    <div class="linha-fluxo absolute inset-y-0 w-28 bg-gradient-to-r from-transparent via-primary-600 to-transparent"></div>
+                </div>
 
                 <ol class="relative grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-5">
                     @foreach ([
@@ -510,11 +517,16 @@
                                 {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}
                             </span>
 
-                            <div class="{{ $cartao }} w-full">
+                            {{-- flex flex-1 flex-col + mt-auto no selo: os cinco
+                                 textos têm tamanhos diferentes, e sem isso o
+                                 selo de cada card ficava numa altura diferente,
+                                 serrilhado. Com isso todos os selos alinham na
+                                 mesma linha de base, do card mais alto. --}}
+                            <div class="{{ $cartao }} flex w-full flex-1 flex-col">
                                 {!! $chip($icone, 'w-10 h-10') !!}
                                 <h3 class="mt-4 text-base font-normal tracking-tight text-graphite-900">{{ $tituloEtapa }}</h3>
                                 <p class="mt-2 text-sm font-light leading-7 text-graphite-600">{{ $texto }}</p>
-                                <span class="fonte-mono mt-4 inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-[0.65rem] tracking-[-0.04em] text-primary-800">
+                                <span class="fonte-mono mt-4 inline-flex items-center gap-1.5 self-start rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-[0.65rem] tracking-[-0.04em] text-primary-800 lg:mt-auto">
                                     <span aria-hidden="true" class="h-1 w-1 rounded-full bg-primary-600"></span>
                                     {{ $selo }}
                                 </span>
