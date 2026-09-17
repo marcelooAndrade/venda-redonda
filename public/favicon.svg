@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Venda Redonda">
-<path fill="#0e1b1f" d="M0 0 H44 A56 56 0 0 0 100 56 V100 H0 Z" />
-<path fill="#e4572e" d="M100 0 H56 A44 44 0 0 0 100 44 Z" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="EmitirAgora">
+<rect width="100" height="100" rx="18" fill="#0e1b1f" />
+<path fill="none" stroke="#e4572e" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" d="M40,22 H70 A16 16 0 0 1 86 38 V62 A16 16 0 0 1 70 78 H40" />
+<rect fill="#e4572e" x="10" y="41" width="38" height="12" rx="6" />
+<rect fill="#e4572e" x="10" y="65" width="26" height="12" rx="6" />
 </svg>
