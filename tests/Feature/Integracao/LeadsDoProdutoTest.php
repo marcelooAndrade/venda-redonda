@@ -71,7 +71,7 @@ it('manda o lead com o token no cabecalho', function () {
     app(AdminPessoalGateway::class)->enviar([['tenant_id' => 7]]);
 
     Http::assertSent(function ($request) {
-        return $request->url() === 'https://exemplo.test/api/integrations/venda-redonda/leads'
+        return $request->url() === 'https://exemplo.test/api/integrations/emitir-agora/leads'
             && $request->hasHeader('Authorization', 'Bearer segredo-de-teste')
             && $request['leads'] === [['tenant_id' => 7]];
     });

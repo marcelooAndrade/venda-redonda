@@ -8,7 +8,7 @@ use RuntimeException;
 
 class AdminPessoalGateway implements GatewayDeLeads
 {
-    private const CAMINHO = '/api/integrations/venda-redonda/leads';
+    private const CAMINHO = '/api/integrations/emitir-agora/leads';
 
     public function enviar(array $leads): void
     {
