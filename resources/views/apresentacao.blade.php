@@ -187,6 +187,11 @@
                     <a href="#recursos" class="{{ $botaoClaro }} px-6 py-3 text-sm">Ver o que ele faz</a>
                 </div>
 
+                <p data-entra="4" class="mt-4 text-center text-xs font-light text-graphite-500 lg:text-left">
+                    Gratuito para começar, até 30 notas. Avançado por R$3,97 por dia (R$119 por mês) —
+                    <a href="https://wa.me/55199971351777?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20o%20EmitirAgora" target="_blank" rel="noopener" class="font-medium text-primary-700 underline decoration-primary-200 underline-offset-4 hover:text-primary-800">fale no WhatsApp</a>.
+                </p>
+
                 <div data-entra="5" class="mt-8 flex flex-col flex-wrap items-center justify-center gap-3 text-xs font-light text-graphite-600 sm:flex-row lg:justify-start">
                     @foreach ([
                         ['escudo', 'Tributo calculado no servidor'],
@@ -262,6 +267,37 @@
                     Diferença zero
                 </span>
             </div>
+        </div>
+    </section>
+
+    {{-- ------------------------------------------------- o que tem dentro --}}
+    <section data-revelar class="mx-auto max-w-7xl px-6 py-20">
+        <div class="mx-auto mb-14 max-w-5xl text-center">
+            <p class="{{ $rotulo }}">O QUE TEM DENTRO</p>
+            <h2 class="{{ $titulo }}">Fiscal, estoque e financeiro, no mesmo lugar</h2>
+            <p class="{{ $subtitulo }}">
+                Não são três sistemas integrados depois. É a mesma base de dados
+                desde o primeiro registro.
+            </p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+            @foreach ([
+                ['recibo', 'Fiscal', 'Emite a nota e corrige quando precisa, sob a regra do seu contador.', ['Emissão de NF-e', 'NFS-e de Araras (SIGISS)', 'Carta de Correção', 'Regras fiscais com vigência']],
+                ['caixas', 'Estoque', 'Kardex fiel, corrigido por estorno, nunca reescrito.', ['Kardex, razão imutável', 'Conferência por inventário', 'Importação de XML de compra']],
+                ['dinheiro', 'Financeiro', 'Título com vencimento, baixa no caixa, cobrança por Pix.', ['Contas a pagar e a receber', 'Faturas com página pública', 'Cobrança por Pix', 'Fechamento do mês em ZIP']],
+            ] as [$icone, $modulo, $texto, $tags])
+                <div class="{{ $cartao }}">
+                    {!! $chip($icone) !!}
+                    <h3 class="mt-5 text-xl font-normal tracking-tight text-graphite-900">{{ $modulo }}</h3>
+                    <p class="mt-3 text-sm font-light leading-7 text-graphite-600">{{ $texto }}</p>
+                    <ul class="mt-5 flex flex-wrap gap-1.5">
+                        @foreach ($tags as $tag)
+                            <li class="fonte-mono rounded-full border border-white bg-white/70 px-2.5 py-1 text-[0.65rem] tracking-[-0.04em] text-graphite-600">{{ $tag }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endforeach
         </div>
     </section>
 
@@ -622,7 +658,7 @@
             <h2 class="{{ $titulo }}">Comece pelo gratuito</h2>
             <p class="{{ $subtitulo }}">
                 Os dois planos têm o mesmo sistema fiscal, de estoque e financeiro.
-                O que muda é a porta de entrada.
+                O que muda é o limite de notas e a porta de entrada.
             </p>
         </div>
 
@@ -638,6 +674,7 @@
                 <ul class="mt-7 space-y-3 border-t border-primary-200/70 pt-6 text-sm font-light text-graphite-700">
                     @foreach ([
                         'Cadastro imediato, sem contrato',
+                        'Até 30 notas fiscais no total',
                         'Emissão de NF-e e de NFS-e',
                         'Estoque como razão imutável',
                         'Contas a pagar e a receber',
@@ -658,11 +695,15 @@
                 </span>
 
                 <p class="fonte-mono text-xs font-medium tracking-[-0.04em] text-graphite-500">Avançado</p>
+                <p class="mt-2 flex items-baseline gap-2">
+                    <span class="text-3xl font-normal tracking-tight text-graphite-900">R$119</span>
+                    <span class="text-sm font-light text-graphite-500">por mês · R$3,97 por dia</span>
+                </p>
                 <p class="mt-3 text-sm font-light leading-7 text-graphite-600">Domínio próprio, com a marca do cliente já na tela de login.</p>
 
                 <ul class="mt-7 space-y-3 border-t border-graphite-200/70 pt-6 text-sm font-light text-graphite-700">
                     @foreach ([
-                        'Tudo do plano gratuito',
+                        'Notas fiscais sem limite',
                         'Domínio próprio',
                         'Marca do cliente na tela de login',
                     ] as $item)
@@ -673,9 +714,11 @@
                     @endforeach
                 </ul>
 
-                <p class="mt-8 text-sm font-light leading-7 text-graphite-500">
-                    Comece no gratuito. O avançado é ativado para quem já é
-                    cliente.
+                <a href="https://wa.me/55199971351777?text=Ol%C3%A1%2C%20quero%20contratar%20o%20plano%20Avan%C3%A7ado%20do%20EmitirAgora" target="_blank" rel="noopener" class="{{ $botaoClaro }} mt-8 w-full py-3 text-sm">
+                    Falar no WhatsApp
+                </a>
+                <p class="mt-3 text-center text-xs font-light text-graphite-500">
+                    Comece no gratuito. O avançado é ativado para quem já é cliente.
                 </p>
             </div>
         </div>
@@ -746,6 +789,9 @@
                         custou nada além do tempo de criar a conta.
                     </p>
                     <a href="{{ route('register') }}" class="{{ $botaoCheio }} mt-7 w-full py-3 text-sm">Criar conta grátis</a>
+                    <a href="https://wa.me/55199971351777?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20o%20EmitirAgora" target="_blank" rel="noopener" class="mt-3 block text-center text-xs font-light text-graphite-300 underline decoration-white/30 underline-offset-4 hover:text-white">
+                        ou fale no WhatsApp
+                    </a>
                 </div>
 
                 <div class="space-y-3">
@@ -754,7 +800,7 @@
                         ['escudo', 'Meu contador consegue mexer na regra fiscal sozinho?', 'Sim. Tela própria, permissão própria, sem depender de programador para mudar alíquota ou CST.'],
                         ['predio', 'Serve para matriz e filial?', 'Sim. Um tenant pode ter mais de um emitente, cada um com CNPJ e certificado próprios.'],
                         ['relogio', 'O que ainda falta no sistema?', 'Está listado na seção acima, sem esconder.'],
-                        ['dinheiro', 'O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço do EmitirAgora, sem domínio próprio.'],
+                        ['dinheiro', 'O plano gratuito cobra alguma coisa?', 'Não. Entra pelo endereço do EmitirAgora, sem domínio próprio, até 30 notas fiscais no total. Depois disso, o avançado custa R$119 por mês.'],
                         ['pasta', 'Onde ficam os meus dados?', 'No disco privado da conta, isolado por emitente. Certificado e senha nunca são logados.'],
                     ] as [$icone, $pergunta, $resposta])
                         <details class="group rounded-[1.5rem] border border-white bg-white/72 px-5 py-4 shadow-[0_8px_22px_-18px_rgba(14,27,31,0.3),inset_0_1px_0_white] transition-colors duration-300 open:bg-white/90">
