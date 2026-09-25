@@ -204,47 +204,16 @@
                         <span aria-hidden="true" class="h-2.5 w-2.5 rounded-full bg-danger-300"></span>
                         <span aria-hidden="true" class="h-2.5 w-2.5 rounded-full bg-ember-300"></span>
                         <span aria-hidden="true" class="h-2.5 w-2.5 rounded-full bg-success-300"></span>
-                        <span class="fonte-mono ml-2 text-[0.65rem] tracking-[-0.04em] text-graphite-500">PAINEL DE ESTOQUE</span>
+                        <span class="fonte-mono ml-2 text-[0.65rem] tracking-[-0.04em] text-graphite-500">PAINEL FINANCEIRO</span>
                     </div>
 
-                    <figure class="rounded-[1.5rem] border border-white bg-white p-5 shadow-[0_10px_28px_-20px_rgba(14,27,31,0.3)]">
-                        <figcaption class="text-sm font-light text-graphite-500">
-                            Conferência de estoque, exemplo
-                            <span class="mt-1 block font-normal text-graphite-800">Produto A, lote de 12 unidades</span>
-                        </figcaption>
-
-                        <dl class="mt-5 space-y-2">
-                            @foreach ([
-                                ['painel', 'O sistema diz', '200'],
-                                ['caixas', 'O estoque tem', '200'],
-                            ] as [$icone, $rotuloLinha, $valor])
-                                <div class="flex items-center justify-between gap-4 rounded-2xl bg-graphite-50 px-4 py-3">
-                                    <dt class="flex items-center gap-2 text-sm font-light text-graphite-600">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-graphite-500" aria-hidden="true">{!! $icones[$icone] !!}</svg>
-                                        {{ $rotuloLinha }}
-                                    </dt>
-                                    <dd class="num text-lg font-normal text-graphite-900">{{ $valor }}</dd>
-                                </div>
-                            @endforeach
-
-                            <div class="flex items-center justify-between gap-4 rounded-2xl border border-primary-200 bg-gradient-to-b from-primary-100 to-primary-50 px-4 py-3">
-                                <dt class="flex items-center gap-2 text-sm font-medium text-graphite-900">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-primary-700" aria-hidden="true">{!! $icones['check'] !!}</svg>
-                                    Diferença
-                                </dt>
-                                <dd class="flex items-center gap-2.5">
-                                    <span class="num text-lg font-medium text-graphite-900">0</span>
-                                    <span class="fonte-mono rounded-full bg-primary-600 px-2.5 py-0.5 text-[0.65rem] tracking-[-0.04em] text-on-primary">CONFERE</span>
-                                </dd>
-                            </div>
-                        </dl>
-
-                        <p class="mt-4 text-sm font-light leading-6 text-graphite-500">
-                            A compra entra pelo XML do fornecedor e a baixa acontece no
-                            momento da emissão. A diferença não é corrigida depois: ela
-                            nasce zero.
-                        </p>
-                    </figure>
+                    {{-- Captura real da tela /financeiro, não maquete: dados de
+                         uma conta de demonstração local, nunca de cliente. --}}
+                    <img
+                        src="{{ asset('images/painel-financeiro-demo.png') }}"
+                        alt="Painel financeiro do EmitirAgora, com saldo em caixa, resultado do mês e títulos a vencer"
+                        class="w-full rounded-[1.5rem] border border-white shadow-[0_10px_28px_-20px_rgba(14,27,31,0.3)]"
+                    >
                 </div>
 
                 <span aria-hidden="true" data-entra="6" class="flutua absolute -top-4 right-14 z-10 hidden items-center gap-1.5 rounded-full border border-white bg-white px-3 py-2 text-xs font-light text-graphite-700 shadow-[0_10px_30px_-12px_rgba(14,27,31,0.4)] sm:inline-flex">
@@ -254,7 +223,7 @@
 
                 <span aria-hidden="true" data-entra="6" class="flutua absolute -bottom-4 right-8 z-10 hidden items-center gap-1.5 rounded-full border border-white bg-white px-3 py-2 text-xs font-light text-graphite-700 shadow-[0_10px_30px_-12px_rgba(14,27,31,0.4)] sm:inline-flex">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5 text-success-600">{!! $icones['check'] !!}</svg>
-                    Diferença zero
+                    Caixa em dia
                 </span>
             </div>
         </div>
