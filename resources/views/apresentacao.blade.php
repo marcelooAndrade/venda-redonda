@@ -163,11 +163,6 @@
     <section class="mx-auto max-w-7xl overflow-x-clip px-6 pb-20 pt-32 md:pt-40">
         <div class="grid items-center gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:gap-16">
             <div class="text-center lg:text-left">
-                <div data-entra="1" class="mb-8 inline-flex items-center gap-2 rounded-full border border-white bg-white/75 px-3.5 py-2 shadow-[0_6px_18px_-12px_rgba(14,27,31,0.3),inset_0_1px_0_white]">
-                    <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-primary-600"></span>
-                    <span class="fonte-mono text-xs font-medium tracking-[-0.04em] text-graphite-600">FISCAL · ESTOQUE · FINANCEIRO</span>
-                </div>
-
                 {{-- Três linhas curtas, como o template: as duas primeiras no peso
                      leve e a terceira, que é o nome da marca, na placa de cor. --}}
                 <h1 data-entra="2" class="text-[3.25rem] font-light leading-[0.92] tracking-[-0.075em] text-graphite-900 md:text-[4.5rem] lg:text-[5.25rem]">
@@ -187,16 +182,11 @@
                     <a href="#recursos" class="{{ $botaoClaro }} px-6 py-3 text-sm">Ver o que ele faz</a>
                 </div>
 
-                <p data-entra="4" class="mt-4 text-center text-xs font-light text-graphite-500 lg:text-left">
-                    Gratuito para começar, até 30 notas. Avançado por R$3,97 por dia (R$119 por mês) —
-                    <a href="https://wa.me/55199971351777?text=Ol%C3%A1%2C%20quero%20saber%20mais%20sobre%20o%20EmitirAgora" target="_blank" rel="noopener" class="font-medium text-primary-700 underline decoration-primary-200 underline-offset-4 hover:text-primary-800">fale no WhatsApp</a>.
-                </p>
-
                 <div data-entra="5" class="mt-8 flex flex-col flex-wrap items-center justify-center gap-3 text-xs font-light text-graphite-600 sm:flex-row lg:justify-start">
                     @foreach ([
-                        ['escudo', 'Tributo calculado no servidor'],
-                        ['caixas', 'Estoque como razão imutável'],
-                        ['pasta', 'Dados isolados por emitente'],
+                        ['escudo', 'Cálculo no servidor'],
+                        ['caixas', 'Estoque imutável'],
+                        ['pasta', 'Isolado por emitente'],
                     ] as [$icone, $texto])
                         <span class="inline-flex items-center gap-1.5">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-primary-700" aria-hidden="true">{!! $icones[$icone] !!}</svg>
