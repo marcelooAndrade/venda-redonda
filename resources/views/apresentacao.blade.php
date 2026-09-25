@@ -262,7 +262,7 @@
                     Baixa automática
                 </span>
 
-                <span aria-hidden="true" data-entra="6" class="flutua absolute -right-3 bottom-8 z-10 hidden items-center gap-1.5 rounded-full border border-white bg-white px-3 py-2 text-xs font-light text-graphite-700 shadow-[0_10px_30px_-12px_rgba(14,27,31,0.4)] sm:inline-flex">
+                <span aria-hidden="true" data-entra="6" class="flutua absolute -bottom-4 right-8 z-10 hidden items-center gap-1.5 rounded-full border border-white bg-white px-3 py-2 text-xs font-light text-graphite-700 shadow-[0_10px_30px_-12px_rgba(14,27,31,0.4)] sm:inline-flex">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5 text-success-600">{!! $icones['check'] !!}</svg>
                     Diferença zero
                 </span>
